@@ -1,0 +1,8 @@
+{
+  "src": [
+    "pages/ContactHomePage",
+    "pages/ContactDetailPage",
+    "pages/ContactAddAndEditPage",
+    "pages/ContactDeletePage"
+  ]
+}

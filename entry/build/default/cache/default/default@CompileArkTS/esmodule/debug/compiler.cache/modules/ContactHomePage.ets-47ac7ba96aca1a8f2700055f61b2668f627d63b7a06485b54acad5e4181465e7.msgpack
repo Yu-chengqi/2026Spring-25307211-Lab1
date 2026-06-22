@@ -1,0 +1,1001 @@
+Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚc¹if (!("finalizeConstruction" in ViewPU.prototype)) {
+    Reflect.set(ViewPU.prototype, "finalizeConstruction", () => { });
+}
+import hilog from "@ohos.hilog";
+import CommonConstants from '../common/CommonConstants';
+import { ListItemData } from '../viewmodel/ContactViewModel';
+import { ContactListItem } from '../components/ContactListItem';
+import { ContactDeviceManager } from '../utils/ContactDeviceManager';
+import ContactDeviceDialog from '../components/ContactDeviceDialog';
+class ContactHomePage extends ViewPU {
+    constructor(parent, params, __localStorage, elmtId = -1, paramsLambda = undefined, extraInfo) {
+        super(parent, __localStorage, elmtId, extraInfo);
+        if (typeof paramsLambda === "function") {
+            this.paramsGenerator_ = paramsLambda;
+        }
+        this.__uiContext = new ObservedPropertyObjectPU(AppStorage.get('uiContext'), this, "uiContext");
+        this.__contactList = new ObservedPropertyObjectPU([], this, "contactList");
+        this.__initContactList = new ObservedPropertyObjectPU([], this, "initContactList");
+        this.__isShowPopup = new ObservedPropertySimplePU(false, this, "isShowPopup");
+        this.__deviceList = new ObservedPropertyObjectPU([], this, "deviceList");
+        this.__selectedDeviceIndex = new ObservedPropertySimplePU(0, this, "selectedDeviceIndex");
+        this.__searchValue = new ObservedPropertySimplePU('', this, "searchValue");
+        this.context = this.getUIContext().getHostContext();
+        this.contactDeviceManager = new ContactDeviceManager(this.context);
+        this.kvManager = AppStorage.get('kvManager');
+        this.dialogController = new CustomDialogController({
+            builder: () => {
+                let jsDialog = new ContactDeviceDialog(this, {
+                    deviceList: this.__deviceList,
+                    selectedDeviceIndex: this.__selectedDeviceIndex,
+                    onSelectedIndexChange: (index) => this.onSelectedIndexChange(index)
+                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 42, col: 14 });
+                jsDialog.setController(this.dialogController);
+                ViewPU.create(jsDialog);
+                let paramsLambda = () => {
+                    return {
+                        deviceList: this.__deviceList,
+                        selectedDeviceIndex: this.__selectedDeviceIndex,
+                        onSelectedIndexChange: (index) => this.onSelectedIndexChange(index)
+                    };
+                };
+                jsDialog.paramsGenerator_ = paramsLambda;
+            },
+            cancel: () => {
+                this.onClose();
+            },
+            autoCancel: true
+        }, this);
+        this.setInitiallyProvidedValue(params);
+        this.finalizeConstruction();
+    }
+    setInitiallyProvidedValue(params) {
+        if (params.uiContext !== undefined) {
+            this.uiContext = params.uiContext;
+        }
+        if (params.contactList !== undefined) {
+            this.contactList = params.contactList;
+        }
+        if (params.initContactList !== undefined) {
+            this.initContactList = params.initContactList;
+        }
+        if (params.isShowPopup !== undefined) {
+            this.isShowPopup = params.isShowPopup;
+        }
+        if (params.deviceList !== undefined) {
+            this.deviceList = params.deviceList;
+        }
+        if (params.selectedDeviceIndex !== undefined) {
+            this.selectedDeviceIndex = params.selectedDeviceIndex;
+        }
+        if (params.searchValue !== undefined) {
+            this.searchValue = params.searchValue;
+        }
+        if (params.context !== undefined) {
+            this.context = params.context;
+        }
+        if (params.contactDeviceManager !== undefined) {
+            this.contactDeviceManager = params.contactDeviceManager;
+        }
+        if (params.kvManager !== undefined) {
+            this.kvManager = params.kvManager;
+        }
+        if (params.dialogController !== undefined) {
+            this.dialogController = params.dialogController;
+        }
+    }
+    updateStateVars(params) {
+    }
+    purgeVariableDependenciesOnElmtId(rmElmtId) {
+        this.__uiContext.purgeDependencyOnElmtId(rmElmtId);
+        this.__contactList.purgeDependencyOnElmtId(rmElmtId);
+        this.__initContactList.purgeDependencyOnElmtId(rmElmtId);
+        this.__isShowPopup.purgeDependencyOnElmtId(rmElmtId);
+        this.__deviceList.purgeDependencyOnElmtId(rmElmtId);
+        this.__selectedDeviceIndex.purgeDependencyOnElmtId(rmElmtId);
+        this.__searchValue.purgeDependencyOnElmtId(rmElmtId);
+    }
+    aboutToBeDeleted() {
+        this.__uiContext.aboutToBeDeleted();
+        this.__contactList.aboutToBeDeleted();
+        this.__initContactList.aboutToBeDeleted();
+        this.__isShowPopup.aboutToBeDeleted();
+        this.__deviceList.aboutToBeDeleted();
+        this.__selectedDeviceIndex.aboutToBeDeleted();
+        this.__searchValue.aboutToBeDeleted();
+        SubscriberManager.Get().delete(this.id__());
+        this.aboutToBeDeletedInternal();
+    }
+    get uiContext() {
+        return this.__uiContext.get();
+    }
+    set uiContext(newValue) {
+        this.__uiContext.set(newValue);
+    }
+    get contactList() {
+        return this.__contactList.get();
+    }
+    set contactList(newValue) {
+        this.__contactList.set(newValue);
+    }
+    get initContactList() {
+        return this.__initContactList.get();
+    }
+    set initContactList(newValue) {
+        this.__initContactList.set(newValue);
+    }
+    get isShowPopup() {
+        return this.__isShowPopup.get();
+    }
+    set isShowPopup(newValue) {
+        this.__isShowPopup.set(newValue);
+    }
+    get deviceList() {
+        return this.__deviceList.get();
+    }
+    set deviceList(newValue) {
+        this.__deviceList.set(newValue);
+    }
+    get selectedDeviceIndex() {
+        return this.__selectedDeviceIndex.get();
+    }
+    set selectedDeviceIndex(newValue) {
+        this.__selectedDeviceIndex.set(newValue);
+    }
+    get searchValue() {
+        return this.__searchValue.get();
+    }
+    set searchValue(newValue) {
+        this.__searchValue.set(newValue);
+    }
+    aboutToAppear() {
+        this.kvManager.subscriptionKvStore(() => {
+            this.getAllData();
+        });
+    }
+    onPageShow() {
+        this.getAllData();
+    }
+    onBackPress() {
+        this.context.terminateSelf().catch((err) => {
+            hilog.error(0x0000, 'ContactHomePage', `onBackPress err: ${err.code}  msg:${err.message}`);
+        });
+        return true;
+    }
+    getAllData() {
+        this.kvManager.getEntries(CommonConstants.CONTACTS_DATABASE_KEY, (err, entries) => {
+            hilog.info(0x0000, 'ContactHomePage', `getAllData entries: ${JSON.stringify(entries)}`);
+            if (err) {
+                hilog.error(0x0000, 'ContactHomePage', `Fail to get Entries: ${err.code}  msg:${err.message}`);
+                return;
+            }
+            let listItems = [];
+            entries.forEach((item, index) => {
+                let itemInfo = new ListItemData();
+                itemInfo.name = JSON.parse(item.value.value).name;
+                itemInfo.id = index;
+                listItems.push(itemInfo);
+            });
+            this.contactList = this.initContactList = listItems;
+        });
+    }
+    async onSelectedIndexChange(index) {
+        this.selectedDeviceIndex = index;
+        if (index === 0) {
+            this.onClose();
+        }
+        else {
+            this.selectDevice();
+        }
+    }
+    onClose() {
+        this.deviceList = [];
+        this.dialogController.close();
+        this.contactDeviceManager.unregisterDeviceListCallback();
+    }
+    selectDevice() {
+        if (this.contactDeviceManager.discoverList.length <= 0) {
+            this.contactDeviceManager.startAbility(this.deviceList[this.selectedDeviceIndex].networkId);
+        }
+        else {
+            this.contactDeviceManager.authenticateDevice(this.deviceList[this.selectedDeviceIndex], () => {
+                for (let i = 0; i < this.contactDeviceManager.deviceList.length; i++) {
+                    const result = this.contactDeviceManager.deviceList[i].deviceName ===
+                        this.deviceList[this.selectedDeviceIndex].deviceName;
+                    if (result) {
+                        this.contactDeviceManager.startAbility(this.contactDeviceManager.deviceList[i].networkId);
+                    }
+                }
+            });
+        }
+        this.onClose();
+    }
+    showDeviceDialog() {
+        // Register a listening callback.
+        // A dialog box is displayed when a device is discovered or an authenticated device is found.
+        this.contactDeviceManager.registerDeviceListCallback(() => {
+            this.deviceList = [];
+            this.deviceList.push({
+                deviceId: '0',
+                deviceName: CommonConstants.LOCALHOST_NAME,
+                deviceType: '0',
+                networkId: ''
+            });
+            let deviceTempList = this.contactDeviceManager.discoverList.length > 0 ?
+                this.contactDeviceManager.discoverList : this.contactDeviceManager.deviceList;
+            if (deviceTempList.length) {
+                deviceTempList.forEach((item) => {
+                    this.deviceList.push({
+                        deviceId: item.deviceId,
+                        deviceName: item.deviceName,
+                        deviceType: item.deviceType,
+                        networkId: item.networkId
+                    });
+                });
+            }
+        });
+        this.dialogController.open();
+    }
+    initialRender() {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Flex.create({ direction: FlexDirection.Column });
+            Flex.width('100%');
+            Flex.height('100%');
+            Flex.padding({ left: 16, right: 16 });
+            Flex.backgroundColor(Color.White);
+            Flex.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM]);
+        }, Flex);
+        this.NavigationTitle.bind(this)();
+        this.ContactList.bind(this)();
+        Flex.pop();
+    }
+    NavigationTitle(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Flex.create({ alignItems: ItemAlign.Center });
+            Flex.height(56);
+            Flex.flexShrink(0);
+        }, Flex);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777252, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontSize(20);
+            Text.fontWeight(700);
+            Text.lineHeight(27);
+            Text.fontColor('rgba(0, 0, 0, 0.9)');
+            Text.flexGrow(1);
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.alignItems(VerticalAlign.Center);
+            Row.justifyContent(FlexAlign.Center);
+            Row.width(40);
+            Row.height(40);
+            Row.backgroundColor('rgba(0, 0, 0, 0.05)');
+            Row.borderRadius(40);
+            Row.margin({ right: 8 });
+            Row.onClick(() => {
+                this.getUIContext().getRouter().pushUrl({
+                    url: 'pages/ContactAddAndEditPage',
+                    params: {
+                        isEdit: false
+                    }
+                }).catch((err) => {
+                    hilog.error(0x0000, 'ContactHomePage', `ContactAddAndEditPage err: ${err.code}  msg:${err.message}`);
+                });
+            });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            SymbolGlyph.create({ "id": 125831481, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            SymbolGlyph.fontSize(24);
+            SymbolGlyph.fontWeight(400);
+        }, SymbolGlyph);
+        Row.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.alignItems(VerticalAlign.Center);
+            Row.justifyContent(FlexAlign.Center);
+            Row.width(40);
+            Row.height(40);
+            Row.backgroundColor('rgba(0, 0, 0, 0.05)');
+            Row.borderRadius(40);
+            Row.margin({ right: 8 });
+            Row.bindPopup(this.isShowPopup, {
+                builder: { builder: this.popupBuilder.bind(this) },
+                placement: Placement.BottomRight,
+                popupColor: Color.White,
+                enableArrow: false
+            });
+            Row.onClick(() => {
+                this.isShowPopup = !this.isShowPopup;
+            });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            SymbolGlyph.create({ "id": 125831714, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            SymbolGlyph.fontSize(24);
+            SymbolGlyph.fontWeight(400);
+        }, SymbolGlyph);
+        Row.pop();
+        Flex.pop();
+    }
+    ContactList(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (!this.contactList.length) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.emptyView.bind(this)();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                    this.dataView.bind(this)();
+                });
+            }
+        }, If);
+        If.pop();
+    }
+    emptyView(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.flexGrow(1);
+            Column.width('100%');
+            Column.justifyContent(FlexAlign.Center);
+            Column.alignItems(HorizontalAlign.Center);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Image.create({ "id": 16777402, "type": 20000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Image.width({ "id": 16777291, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Image.height({ "id": 16777291, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+        }, Image);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777228, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontSize({ "id": 16777293, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontColor({ "id": 16777270, "type": 10001, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+        }, Text);
+        Text.pop();
+        Column.pop();
+    }
+    dataView(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Flex.create({ direction: FlexDirection.Column });
+            Flex.width('100%');
+            Flex.flexGrow(1);
+            Flex.margin({ top: 8 });
+        }, Flex);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Search.create({ value: { value: this.searchValue, changeEvent: newValue => { this.searchValue = newValue; } }, placeholder: Object({ "id": 16777256, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }) });
+            Search.width('100%');
+            Search.height(40);
+            Search.flexShrink(0);
+            Search.borderRadius(24);
+            Search.placeholderColor('rgba(0, 0, 0, 0.6)');
+            Search.placeholderFont({
+                size: 16,
+                weight: 400,
+            });
+            Search.textFont({ size: 16 });
+            Search.padding({
+                top: 9,
+                right: 12,
+                bottom: 9,
+                left: 12
+            });
+            Search.onChange((searchValue) => {
+                if (searchValue === '') {
+                    this.contactList = this.initContactList;
+                }
+            });
+            Search.onSubmit((searchValue) => {
+                const filterArr = this.contactList.filter((item) => item.name === searchValue);
+                if (filterArr.length > 0) {
+                    this.contactList = filterArr;
+                }
+                else {
+                    try {
+                        this.uiContext.getPromptAction().showToast({
+                            message: { "id": 16777251, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                            duration: CommonConstants.PROMPT_DURATION,
+                        });
+                    }
+                    catch (error) {
+                        hilog.error(0x0000, 'ContactHomePage', `have error .Code:${error.code},message: ${error.message}`);
+                    }
+                }
+            });
+        }, Search);
+        Search.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('100%');
+            Column.flexGrow(1);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            List.create();
+            List.scrollBar(BarState.Off);
+            List.width('100%');
+            List.height('100%');
+            List.margin({ bottom: { "id": 16777370, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" } });
+        }, List);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            ForEach.create();
+            const forEachItemGenFunction = _item => {
+                const item = _item;
+                {
+                    const itemCreation = (elmtId, isInitialRender) => {
+                        ViewStackProcessor.StartGetAccessRecordingFor(elmtId);
+                        ListItem.create(deepRenderFunction, true);
+                        if (!isInitialRender) {
+                            ListItem.pop();
+                        }
+                        ViewStackProcessor.StopGetAccessRecording();
+                    };
+                    const itemCreation2 = (elmtId, isInitialRender) => {
+                        ListItem.create(deepRenderFunction, true);
+                        ListItem.onClick(() => {
+                            const contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + item.name;
+                            this.getUIContext().getRouter().pushUrl({
+                                url: 'pages/ContactDetailPage',
+                                params: {
+                                    key: contactsKey,
+                                },
+                            }).catch((err) => {
+                                hilog.error(0x0000, 'ContactHomePage', `ContactAddAndEditPage err: ${err.code}  msg:${err.message}`);
+                            });
+                        });
+                    };
+                    const deepRenderFunction = (elmtId, isInitialRender) => {
+                        itemCreation(elmtId, isInitialRender);
+                        {
+                            this.observeComponentCreation2((elmtId, isInitialRender) => {
+                                if (isInitialRender) {
+                                    let componentCall = new ContactListItem(this, { itemInfo: item }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 289, col: 15 });
+                                    ViewPU.create(componentCall);
+                                    let paramsLambda = () => {
+                                        return {
+                                            itemInfo: item
+                                        };
+                                    };
+                                    componentCall.paramsGenerator_ = paramsLambda;
+                                }
+                                else {
+                                    this.updateStateVarsOfChildByElmtId(elmtId, {});
+                                }
+                            }, { name: "ContactListItem" });
+                        }
+                        ListItem.pop();
+                    };
+                    this.observeComponentCreation2(itemCreation2, ListItem);
+                    ListItem.pop();
+                }
+            };
+            this.forEachUpdateFunction(elmtId, this.contactList, forEachItemGenFunction, (item) => JSON.stringify(item), false, false);
+        }, ForEach);
+        ForEach.pop();
+        List.pop();
+        Column.pop();
+        Flex.pop();
+    }
+    popupBuilder(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width({ "id": 16777385, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Column.height({ "id": 16777383, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Column.alignItems(HorizontalAlign.Start);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777231, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontSize({ "id": 16777382, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.padding({
+                top: { "id": 16777304, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                bottom: { "id": 16777304, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                left: { "id": 16777303, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+            });
+            Text.width('100%');
+            Text.onClick(() => {
+                this.getUIContext().getRouter().pushUrl({
+                    url: 'pages/ContactDeletePage'
+                }).catch((err) => {
+                    hilog.error(0x0000, 'ContactHomePage', `ContactAddAndEditPage err: ${err.code}  msg:${err.message}`);
+                });
+            });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Divider.create();
+            Divider.height({ "id": 16777345, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Divider.backgroundColor({ "id": 16777272, "type": 10001, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Divider.margin({
+                left: { "id": 16777303, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                right: { "id": 16777303, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+            });
+        }, Divider);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777226, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.width('100%');
+            Text.fontSize({ "id": 16777382, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.padding({
+                top: { "id": 16777304, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                bottom: { "id": 16777304, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                left: { "id": 16777303, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+            });
+            Text.onClick(() => {
+                this.isShowPopup = !this.isShowPopup;
+                this.showDeviceDialog();
+            });
+        }, Text);
+        Text.pop();
+        Column.pop();
+    }
+    rerender() {
+        this.updateDirtyElements();
+    }
+    static getEntryName() {
+        return "ContactHomePage";
+    }
+}
+registerNamedRoute(() => new ContactHomePage(undefined, {}), "", { bundleName: "com.example.distributedcontacts", moduleName: "entry", pagePath: "pages/ContactHomePage", pageFullPath: "entry/src/main/ets/pages/ContactHomePage", integratedHsp: "false", moduleType: "followWithHap" });
+//# sourceMappingURL=ContactHomePage.js.mapÂ–Ùe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\viewmodel\ContactViewModel.etsÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactListItem.etsÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\utils\ContactDeviceManager.etsÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeviceDialog.etsÙ\C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\pages\ContactHomePage.etsÔrB›ªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo°belongModulePath§checker¬shouldEmitJs¥entryÃÂÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÙ/C:\Users\86182\Desktop\2026Spring-25307211-Lab1¥entry¥1.0.0Ô  Ù5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÔrCÜ ®¬getNodeCount²getIdentifierCount®getSymbolCount¬getTypeCountµgetInstantiationCountµgetRelationCacheSizes±isUndefinedSymbol±isArgumentsSymbol¯isUnknownSymbol¯getMergedSymbol®getDiagnostics´getGlobalDiagnostics´getRecursionIdentity¶getUnmatchedProperties¹getTypeOfSymbolAtLocation¯getTypeOfSymbolÙ(getSymbolsOfParameterPropertyDeclaration·getDeclaredTypeOfSymbol³getPropertiesOfType±getPropertyOfTypeÙ"getPrivateIdentifierPropertyOfType·getTypeOfPropertyOfType²getIndexInfoOfType³getIndexInfosOfTypeºgetIndexInfosOfIndexSymbol³getSignaturesOfType²getIndexTypeOfType¬getIndexType¬getBaseTypes¸getBaseTypeOfLiteralType®getWidenedType³getTypeFromTypeNode°getParameterTypeÙ$getParameterIdentifierNameAtPosition¸getPromisedTypeOfPromise®getAwaitedType¸getReturnTypeOfSignature®isNullableType¯getNullableType²getNonNullableType²getNonOptionalType°getTypeArguments®typeToTypeNodeÙ$indexInfoToIndexSignatureDeclaration¿signatureToSignatureDeclaration²symbolToEntityName²symbolToExpression¬symbolToNodeÙ!symbolToTypeParameterDeclarations¼symbolToParameterDeclarationºtypeParameterToDeclaration±getSymbolsInScope³getSymbolAtLocation·getIndexInfosAtLocationÙ!getShorthandAssignmentValueSymbolÙ#getExportSpecifierLocalTargetSymbol·getExportSymbolOfSymbol±getTypeAtLocationºgetTypeAtLocationForLinterÙ tryGetTypeAtLocationWithoutCheckºgetTypeOfAssignmentPatternÙ*getPropertySymbolOfDestructuringAssignment±signatureToString¬typeToString®symbolToStringµtypePredicateToString®writeSignature©writeType«writeSymbol²writeTypePredicate¼getAugmentedPropertiesOfType®getRootSymbols²getSymbolOfExpando±getContextualTypeÙ(getContextualTypeForObjectLiteralElementÙ#getContextualTypeForArgumentAtIndexÙ getContextualTypeForJsxAttribute²isContextSensitiveÙ!getTypeOfPropertyOfContextualTypeµgetFullyQualifiedNameÙ#tryGetResolvedSignatureWithoutCheck´getResolvedSignatureÙ/getResolvedSignatureForStringLiteralCompletionsÙ$getResolvedSignatureForSignatureHelpµgetExpandedParameters¹hasEffectiveRestParameterºcontainsArgumentsReference°getConstantValueµisValidPropertyAccessÙ#isValidPropertyAccessForCompletions»getSignatureFromDeclarationºisImplementationOfOverload¹getImmediateAliasedSymbol°getAliasedSymbol¯getEmitResolver²getExportsOfModule¿getExportsAndPropertiesOfModuleÙ forEachExportAndPropertyOfModule¯getSymbolWalker±getAmbientModules¹getJsxIntrinsicTagNamesAt³isOptionalParameter»tryGetMemberInModuleExportsÙ(tryGetMemberInModuleExportsAndProperties´tryFindAmbientModuleÙ(tryFindAmbientModuleWithoutAugmentations¯getApparentType¬getUnionType²isTypeAssignableTo³createAnonymousType¯createSignature¬createSymbol¯createIndexInfoªgetAnyType­getStringType­getNumberType±createPromiseType¯createArrayType¹getElementTypeOfArrayType®getBooleanType¬getFalseType«getTrueType«getVoidType°getUndefinedType«getNullType¯getESSymbolType¬getNeverType¯getOptionalType®getPromiseType²getPromiseLikeType´getAsyncIterableType²isSymbolAccessible«isArrayType«isTupleType¯isArrayLikeTypeÙ#isTypeInvalidDueToUnionDiscriminantºgetExactOptionalProperties¿getAllPossiblePropertiesOfTypesÙ(getSuggestedSymbolForNonexistentPropertyÙ#getSuggestionForNonexistentPropertyÙ,getSuggestedSymbolForNonexistentJSXAttributeÙ&getSuggestedSymbolForNonexistentSymbolÙ!getSuggestionForNonexistentSymbolÙ&getSuggestedSymbolForNonexistentModuleÙ!getSuggestionForNonexistentExportÙ+getSuggestedSymbolForNonexistentClassMember·getBaseConstraintOfType»getDefaultFromTypeParameter«resolveName¯getJsxNamespaceµgetJsxFragmentFactory¸getAccessibleSymbolChain»getTypePredicateOfSignature¹resolveExternalModuleName»resolveExternalModuleSymbol°tryGetThisTypeAt¹getTypeArgumentConstraint¸getSuggestionDiagnostics¸runWithCancellationTokenÙ3getLocalTypeParametersOfClassOrInterfaceOrTypeAlias´isDeclarationVisible´isPropertyAccessible»getTypeOnlyAliasDeclaration¿getMemberOverrideModifierStatusÙ!isTypeParameterPossiblyReferenced²getConstEnumRelate´clearConstEnumRelateµdeleteConstEnumRelateÙ$getTypeArgumentsForResolvedSignatureµgetCheckedSourceFilesÙ"collectHaveTsNoCheckFilesForLinter·clearQualifiedNameCache®isStaticRecord²isStaticSourceFileÔ  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  ÃÃÚ-İ/*
+ *  Copyright (c) 2025 Huawei Device Co., Ltd.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+import { common } from '@kit.AbilityKit';
+import { distributedDeviceManager } from '@kit.DistributedServiceKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { distributedKVStore } from '@kit.ArkData';
+import CommonConstants from '../common/CommonConstants';
+import { ListItemData } from '../viewmodel/ContactViewModel';
+import { ContactListItem } from '../components/ContactListItem';
+import { ContactDeviceManager } from '../utils/ContactDeviceManager';
+import ContactDeviceDialog from '../components/ContactDeviceDialog';
+import { KvManager } from '../utils/KvManager';
+
+@Entry
+@Component
+struct ContactHomePage {
+  @State uiContext: UIContext | undefined = AppStorage.get('uiContext');
+  @State contactList: Array<ListItemData> = [];
+  @State initContactList: Array<ListItemData> = [];
+  @State isShowPopup: boolean = false;
+  @State deviceList: Array<distributedDeviceManager.DeviceBasicInfo> = [];
+  @State selectedDeviceIndex: number = 0;
+  @State searchValue: string = '';
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  private contactDeviceManager: ContactDeviceManager = new ContactDeviceManager(this.context);
+  kvManager = AppStorage.get('kvManager') as KvManager;
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: ContactDeviceDialog({
+      deviceList: $deviceList,
+      selectedDeviceIndex: $selectedDeviceIndex,
+      onSelectedIndexChange: (index: number): Promise<void> => this.onSelectedIndexChange(index)
+    }),
+    cancel: () => {
+      this.onClose();
+    },
+    autoCancel: true
+  });
+
+  aboutToAppear(): void {
+    this.kvManager.subscriptionKvStore(() => {
+      this.getAllData();
+    });
+  }
+
+  onPageShow(): void {
+    this.getAllData();
+  }
+
+  onBackPress() {
+    this.context.terminateSelf().catch((err: BusinessError) => {
+      hilog.error(0x0000, 'ContactHomePage', `onBackPress err: ${err.code}  msg:${err.message}`);
+    });
+    return true;
+  }
+
+  getAllData() {
+    this.kvManager.getEntries(CommonConstants.CONTACTS_DATABASE_KEY, (
+      err: BusinessError,
+      entries: distributedKVStore.Entry[]) => {
+      hilog.info(0x0000, 'ContactHomePage', `getAllData entries: ${JSON.stringify(entries)}`);
+      if (err) {
+        hilog.error(0x0000, 'ContactHomePage', `Fail to get Entries: ${err.code}  msg:${err.message}`);
+        return;
+      }
+      let listItems: Array<ListItemData> = [];
+      entries.forEach((item, index) => {
+        let itemInfo: ListItemData = new ListItemData();
+        itemInfo.name = JSON.parse(item.value.value as string).name;
+        itemInfo.id = index;
+        listItems.push(itemInfo);
+      });
+      this.contactList = this.initContactList = listItems;
+    });
+  }
+
+  async onSelectedIndexChange(index: number) {
+    this.selectedDeviceIndex = index;
+    if (index === 0) {
+      this.onClose();
+    } else {
+      this.selectDevice();
+    }
+  };
+
+  onClose(): void {
+    this.deviceList = [];
+    this.dialogController.close();
+    this.contactDeviceManager.unregisterDeviceListCallback();
+  }
+
+  selectDevice(): void {
+    if (this.contactDeviceManager.discoverList.length <= 0) {
+      this.contactDeviceManager.startAbility(this.deviceList[this.selectedDeviceIndex].networkId);
+    } else {
+      this.contactDeviceManager.authenticateDevice(this.deviceList[this.selectedDeviceIndex], () => {
+        for (let i = 0; i < this.contactDeviceManager.deviceList!.length; i++) {
+          const result = this.contactDeviceManager.deviceList![i].deviceName ===
+          this.deviceList[this.selectedDeviceIndex].deviceName;
+          if (result) {
+            this.contactDeviceManager.startAbility(this.contactDeviceManager.deviceList![i].networkId);
+          }
+        }
+      });
+    }
+    this.onClose();
+  }
+
+  showDeviceDialog(): void {
+    // Register a listening callback.
+    // A dialog box is displayed when a device is discovered or an authenticated device is found.
+    this.contactDeviceManager.registerDeviceListCallback(() => {
+      this.deviceList = [];
+      this.deviceList.push({
+        deviceId: '0',
+        deviceName: CommonConstants.LOCALHOST_NAME,
+        deviceType: '0',
+        networkId: ''
+      });
+      let deviceTempList = this.contactDeviceManager.discoverList.length > 0 ?
+        this.contactDeviceManager.discoverList : this.contactDeviceManager.deviceList;
+      if (deviceTempList.length) {
+        deviceTempList.forEach((item) => {
+          this.deviceList.push({
+            deviceId: item.deviceId,
+            deviceName: item.deviceName,
+            deviceType: item.deviceType,
+            networkId: item.networkId
+          });
+        });
+      }
+    });
+    this.dialogController.open();
+  }
+
+  build() {
+    Flex({ direction: FlexDirection.Column }) {
+      this.NavigationTitle();
+      this.ContactList();
+    }
+    .width('100%')
+    .height('100%')
+    .padding({ left: 16, right: 16 })
+    .backgroundColor(Color.White)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder
+  NavigationTitle() {
+    Flex({ alignItems: ItemAlign.Center }) {
+      Text($r('app.string.page_title'))
+        .fontSize(20)
+        .fontWeight(700)
+        .lineHeight(27)
+        .fontColor('rgba(0, 0, 0, 0.9)')
+        .flexGrow(1)
+
+      Row() {
+        SymbolGlyph($r('sys.symbol.plus'))
+          .fontSize(24)
+          .fontWeight(400)
+      }
+      .alignItems(VerticalAlign.Center)
+      .justifyContent(FlexAlign.Center)
+      .width(40)
+      .height(40)
+      .backgroundColor('rgba(0, 0, 0, 0.05)')
+      .borderRadius(40)
+      .margin({ right: 8 })
+      .onClick(() => {
+        this.getUIContext().getRouter().pushUrl({
+          url: 'pages/ContactAddAndEditPage',
+          params: {
+            isEdit: false
+          }
+        }).catch((err: BusinessError) => {
+          hilog.error(0x0000, 'ContactHomePage', `ContactAddAndEditPage err: ${err.code}  msg:${err.message}`);
+        });
+      })
+
+      Row() {
+        SymbolGlyph($r('sys.symbol.dot_grid_2x2'))
+          .fontSize(24)
+          .fontWeight(400)
+      }
+      .alignItems(VerticalAlign.Center)
+      .justifyContent(FlexAlign.Center)
+      .width(40)
+      .height(40)
+      .backgroundColor('rgba(0, 0, 0, 0.05)')
+      .borderRadius(40)
+      .margin({ right: 8 })
+      .bindPopup(this.isShowPopup, {
+        builder: this.popupBuilder,
+        placement: Placement.BottomRight,
+        popupColor: Color.White,
+        enableArrow: false
+      })
+      .onClick(() => {
+        this.isShowPopup = !this.isShowPopup;
+      })
+    }
+    .height(56)
+    .flexShrink(0)
+  }
+
+  @Builder
+  ContactList() {
+    if (!this.contactList.length) {
+      this.emptyView();
+    } else {
+      this.dataView();
+    }
+  }
+
+  @Builder
+  emptyView() {
+    Column() {
+      Image($r('app.media.ic_empty'))
+        .width($r('app.float.contact_picture_size'))
+        .height($r('app.float.contact_picture_size'))
+      Text($r('app.string.contacts_empty'))
+        .fontSize($r('app.float.contacts_empty_size'))
+        .fontColor($r('app.color.empty_font_color'))
+    }
+    .flexGrow(1)
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+  }
+
+  @Builder
+  dataView() {
+    Flex({ direction: FlexDirection.Column }) {
+      Search({ value: $$this.searchValue, placeholder: Object($r('app.string.search_contact')) })
+        .width('100%')
+        .height(40)
+        .flexShrink(0)
+        .borderRadius(24)
+        .placeholderColor('rgba(0, 0, 0, 0.6)')
+        .placeholderFont({
+          size: 16,
+          weight: 400,
+        })
+        .textFont({ size: 16 })
+        .padding({
+          top: 9,
+          right: 12,
+          bottom: 9,
+          left: 12
+        })
+        .onChange((searchValue: string) => {
+          if (searchValue === '') {
+            this.contactList = this.initContactList;
+          }
+        })
+        .onSubmit((searchValue: string) => {
+          const filterArr = this.contactList.filter((item) => item.name === searchValue);
+          if (filterArr.length > 0) {
+            this.contactList = filterArr;
+          } else {
+            try {
+              this.uiContext!.getPromptAction().showToast({
+                message: $r('app.string.no_matching_data'),
+                duration: CommonConstants.PROMPT_DURATION,
+              });
+            } catch (error) {
+              hilog.error(0x0000, 'ContactHomePage', `have error .Code:${error.code},message: ${error.message}`);
+            }
+          }
+        })
+      Column() {
+        List() {
+          ForEach(this.contactList, (item: ListItemData) => {
+            ListItem() {
+              ContactListItem({ itemInfo: item })
+            }
+            .onClick(() => {
+              const contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + item.name;
+              this.getUIContext().getRouter().pushUrl({
+                url: 'pages/ContactDetailPage',
+                params: {
+                  key: contactsKey,
+                },
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'ContactHomePage', `ContactAddAndEditPage err: ${err.code}  msg:${err.message}`);
+              });
+            })
+          }, (item: ListItemData) => JSON.stringify(item))
+        }
+        .scrollBar(BarState.Off)
+        .width('100%')
+        .height('100%')
+        .margin({ bottom: $r('app.float.list_area_height') })
+      }
+      .width('100%')
+      .flexGrow(1)
+    }
+    .width('100%')
+    .flexGrow(1)
+    .margin({ top: 8 })
+  }
+
+  @Builder
+  popupBuilder() {
+    Column() {
+      Text($r('app.string.delete_batch'))
+        .fontSize($r('app.float.popup_font_size'))
+        .padding({
+          top: $r('app.float.delete_padding_vertical'),
+          bottom: $r('app.float.delete_padding_vertical'),
+          left: $r('app.float.delete_padding_left')
+        })
+        .width('100%')
+        .onClick(() => {
+          this.getUIContext().getRouter().pushUrl({
+            url: 'pages/ContactDeletePage'
+          }).catch((err: BusinessError) => {
+            hilog.error(0x0000, 'ContactHomePage', `ContactAddAndEditPage err: ${err.code}  msg:${err.message}`);
+          });
+        })
+      Divider()
+        .height($r('app.float.divider_height'))
+        .backgroundColor($r('app.color.list_divider'))
+        .margin({
+          left: $r('app.float.delete_padding_left'),
+          right: $r('app.float.delete_padding_left')
+        })
+      Text($r('app.string.connection_device'))
+        .width('100%')
+        .fontSize($r('app.float.popup_font_size'))
+        .padding({
+          top: $r('app.float.delete_padding_vertical'),
+          bottom: $r('app.float.delete_padding_vertical'),
+          left: $r('app.float.delete_padding_left')
+        })
+        .onClick(() => {
+          this.isShowPopup = !this.isShowPopup;
+          this.showDeviceDialog();
+        })
+    }
+    .width($r('app.float.popup_width'))
+    .height($r('app.float.popup_height'))
+    .alignItems(HorizontalAlign.Start)
+  }
+}ÀÔrD–«@ohos.hilog¹../common/CommonConstants½../viewmodel/ContactViewModel½../utils/ContactDeviceManagerÙ!../components/ContactDeviceDialog½../components/ContactListItemÔrE—ªassertions¨external¢id¤meta±moduleSideEffectsªresolvedByµsyntheticNamedExportsAÃÙe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsAÃªoh-resolveÂEAÂÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsAÃªoh-resolveÂEAÂÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\viewmodel\ContactViewModel.etsAÃªoh-resolveÂEAÂÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\utils\ContactDeviceManager.etsAÃªoh-resolveÂEAÂÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeviceDialog.etsAÃªoh-resolveÂEAÂÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactListItem.etsAÃªoh-resolveÂ“ÔrF–§version¤fileªsourceRoot§sources¥names¨mappings²ContactHomePage.js ‘³ContactHomePage.etsÜ–”   ” 	” ” ” 3”  4–”   ” ” ” ”7 7”8 8˜”   ” ”	 	” ” ” ”< <”= =˜”   ” ”	 	” ” ”   ”? ?”Ì@ Ì@˜”   ” ”	 	” ” ”% %”ÌD ÌD”ÌE ÌE–”   ” ” ”   ”ÌC ÌC”ÌD ÌD’” ” ‘”  —”8 ,”ÌB 6”ÌC 7”ÌF :”ÌG ;”ÌR ÌF”ÌS ÌG’”: ,”< .’”>  0”Ì@  2’”: ! ”? !%’”9 "ÌG”; "ÌI’”ÌB #'”ÌC #(’”: $”< $!˜” %-” %1” %2”( %>”* %Ì@”+ %ÌA”9 %ÌO”; %Ìl˜”$ &7”( &;”< &ÌO”= &ÌP”ÌA &ÌT”ÌB &ÌU”ÌI &Ì\”ÌJ &Ì]—” '”# '”$ '”' '”( '”3 '(”4 '6’”$ (1”: (ÌG’” )” )“”# )”6 ) ”= )!“” *” *”1 *“” +”' +”ÌC +/” ,”) ,”+ ,”, ,”1 ,+”3 ,<”5 ,>”6 ,?”: ,ÌC”; ,ÌD”ÌP ,ÌY”ÌQ ,ÌZ”ÌV ,Ì_”ÌW ,Ì`‘” -’”, (”< (’” *”" *’” +”+ +” ,”- ,”/ ,”0 ,”5 ,+”7 ,<”9 ,>”: ,?”> ,ÌC”? ,ÌD”ÌT ,ÌY”ÌU ,ÌZ”ÌZ ,Ì_”Ì[ ,Ì`‘” -•” .” .
+” .” .” .–” /” /
+” /” /” /” /’” 0” 0”” 1” 1” 1” 1‘” /’” 	” ’” 	” ’” 	” ’” 	” ’”  	”  ’”  	”  ’” !	” !’” !	” !’” "	” "’” "	” "’” #	” #’” #	” #’” $	” $’” $	” $’” 4” 4™” 5” 5” 5	” 5” 5”* 5&”+ 5'”. 5*”0 5,–” 6” 6
+” 6” 6” 6” 6”” 7”	 7”
+ 7” 7’” 8” 8’” :” :–” ;” ;” ;	” ;” ;” ;’” <” <’” >” >” ?” ?” ?	” ?” ?”" ?”$ ? ”% ?!”* ?&”+ ?'”, ?(”/ ?:”1 ?<”3 ?>Ü ” Ì@” Ì@” Ì@” Ì@” Ì@” Ì@”  Ì@”1 Ì@+”3 Ì@-”ÌG Ì@ÌA”ÌJ Ì@ÌD”ÌK Ì@ÌE”ÌO Ì@ÌI”ÌX Ì@ÌR”Ì[ Ì@ÌU”Ì\ Ì@ÌV”Ìc Ì@Ì]”Ìe Ì@Ì_”Ìf Ì@Ì`”Ìg Ì@Ìa”” ÌA”	 ÌA”
+ ÌA” ÌA”” ÌB” ÌB” ÌB” ÌB’” ÌC” ÌC’” ÌE” ÌEÜ ” ÌF” ÌF” ÌF	” ÌF” ÌF”! ÌF”" ÌF”1 ÌF-”2 ÌF.”ÌG ÌFÌC”ÌI ÌFÌE”ÌJ ÌG”ÌM ÌG”ÌO ÌH”ÌV ÌH)”ÌX ÌH+”ÌZ ÌH-Ü ” ÌI” ÌI” ÌI” ÌI” ÌI” ÌI” ÌI”0 ÌI*”2 ÌI,”ÌI ÌIÌC”ÌM ÌIÌG”ÌN ÌIÌH”ÌW ÌIÌQ”ÌX ÌIÌR”Ì_ ÌIÌY”Ì` ÌIÌZ”Ìb ÌIÌ\”Ìc ÌIÌ]”Ìd ÌIÌ^”” ÌJ” ÌJ
+” ÌJ” ÌJÜ ” ÌK” ÌK” ÌK” ÌK” ÌK”" ÌK”$ ÌK”5 ÌK-”7 ÌK/”ÌO ÌKÌG”ÌR ÌKÌJ”ÌS ÌKÌK”ÌW ÌKÌO”Ì` ÌKÌX”Ìc ÌKÌ[”Ìd ÌKÌ\”Ìk ÌKÌc”Ìm ÌKÌe”Ìn ÌKÌf”Ìo ÌKÌg’” ÌL” ÌL‘” ÌM–” ÌN” ÌN
+” ÌN” ÌN+” ÌN-” ÌN.›” ÌO” ÌO” ÌO” ÌO” ÌO” ÌO”! ÌO”# ÌO”( ÌO"”* ÌO$”, ÌO&˜” ÌP” ÌP” ÌP” ÌP%”# ÌP)”/ ÌP5”1 ÌP7”2 ÌP8Ü ” ÌQ” ÌQ” ÌQ” ÌQ”  ÌQ”$ ÌQ”% ÌQ”* ÌQ"”+ ÌQ#”/ ÌQ'”0 ÌQ(”5 ÌQ-”6 ÌQ.”; ÌQ=”< ÌQ>”= ÌQ?”ÌA ÌQÌC”ÌB ÌQÌD—” ÌR” ÌR” ÌR” ÌR” ÌR”# ÌR”$ ÌR˜” ÌS” ÌS” ÌS” ÌS” ÌS”' ÌS”( ÌS ”) ÌS!”” ÌT” ÌT” ÌT” ÌT	›” ÌU” ÌU
+” ÌU” ÌU” ÌU”# ÌU”$ ÌU”3 ÌU-”6 ÌU0”? ÌU9”Ì@ ÌU:”” ÌV”	 ÌV”
+ ÌV” ÌV’” ÌW” ÌW–” ÌY”	 ÌY”
+ ÌY” ÌY”  ÌY”% ÌY+—” ÌZ” ÌZ” ÌZ	”  ÌZ”# ÌZ”( ÌZ$”) ÌZ%–” Ì[” Ì[” Ì[” Ì[” Ì[” Ì[–” Ì\” Ì\
+” Ì\” Ì\” Ì\” Ì\‘”	 Ì]‘” Ì]–” Ì^” Ì^
+” Ì^” Ì^” Ì^”  Ì^‘”	 Ì_’” Ì`” Ì`’” Ìb” Ìb	—” Ìc” Ìc” Ìc	” Ìc” Ìc” Ìc” Ìc˜” Ìd” Ìd” Ìd	” Ìd” Ìd”# Ìd”% Ìd!”& Ìd"˜” Ìe” Ìe” Ìe	”! Ìe”" Ìe”> Ìe:”Ì@ Ìe<”ÌA Ìe=’” Ìf” Ìf’” Ìh” Ìhœ” Ìi” Ìi” Ìi” Ìi”% Ìi!”& Ìi"”2 Ìi.”3 Ìi/”9 Ìi5”= Ìi9”> Ìi:”Ì@ Ìi<Ü ” Ìj” Ìj
+” Ìj”% Ìj”& Ìj ”2 Ìj,”3 Ìj-”7 Ìj1”8 Ìj2”ÌB Ìj<”ÌC Ìj=”ÌG ÌjÌA”ÌH ÌjÌB”Ì[ ÌjÌU”Ì\ ÌjÌV”Ì] ÌjÌW”Ìf ÌjÌ`”Ìg ÌjÌa”Ìh ÌjÌb‘”	 Ìk‘” ÌkÜ ” Ìl” Ìl
+” Ìl”% Ìl”& Ìl ”8 Ìl2”9 Ìl3”= Ìl7”> Ìl8”ÌH ÌlÌB”ÌI ÌlÌC”ÌM ÌlÌG”ÌN ÌlÌH”Ìa ÌlÌ[”Ìb ÌlÌ\”Ìd ÌlÌ^”Ìg ÌlÌa”Ìi ÌlÌcÜ ” Ìm” Ìm” Ìm” Ìm” Ìm” Ìm”  Ìm”! Ìm”$ Ìm”( Ìm ”) Ìm!”= Ìm5”> Ìm6”ÌH ÌmÌA”ÌI ÌmÌB”ÌO ÌmÌH”ÌQ ÌmÌJ”ÌR ÌmÌK”ÌT ÌmÌM”ÌV ÌmÌO” Ìn
+” Ìn”  Ìn”# Ìn”' Ìn”( Ìn”< Ìn2”= Ìn3”ÌG Ìn>”ÌH Ìn?”ÌI ÌnÌ@”ÌJ ÌnÌA”ÌK ÌnÌB”ÌU ÌnÌLœ” Ìo
+” Ìo” Ìo”' Ìo”( Ìo”, Ìo”- Ìo”Ì@ Ìo2”ÌA Ìo3”ÌB Ìo4”ÌL Ìo>”ÌM Ìo?”” Ìp
+” Ìp” Ìp”  ÌpÜ ” Ìq” Ìq” Ìq”1 Ìq%”2 Ìq&”> Ìq2”? Ìq3”ÌC Ìq7”ÌD Ìq8”ÌX ÌqÌL”ÌY ÌqÌM”Ìc ÌqÌX”Ìd ÌqÌY”Ìe ÌqÌZ”Ìf ÌqÌ[”Ìg ÌqÌ\”Ìp ÌqÌe”Ìq ÌqÌf”Ìr ÌqÌg‘” Ìr‘” Ìs	”” Ìt” Ìt” Ìt” Ìt	‘”	 Ìu–” Ìv” Ìv” Ìv	” Ìv” Ìv” Ìv’” Ìw” Ìw’” Ìy” Ìy’” Ìz”) Ìz%’” Ì{”Ìe Ì{Ìa™” Ì|” Ì|” Ì|	”! Ì|”" Ì|”< Ì|8”= Ì|9”Ì@ Ì|<”ÌB Ì|>—” Ì}” Ì}
+” Ì}” Ì}” Ì}”  Ì}”! Ì}—” Ì~” Ì~
+” Ì~” Ì~” Ì~”  Ì~”! Ì~”” Ì” Ì” Ì” Ì–” Ì€” Ì€” Ì€”+ Ì€#”, Ì€$”: Ì€2”” Ì” Ì” Ì” Ì”” Ì‚” Ì‚” Ì‚” Ì‚“” Ìƒ” Ìƒ” Ìƒ	Ÿ” Ì„” Ì„
+” Ì„”! Ì„”% Ì„”& Ì„ ”: Ì„4”; Ì„5”ÌG Ì„ÌA”ÌH Ì„ÌB”ÌN Ì„ÌH”ÌQ Ì„ÌK”ÌR Ì„ÌL”ÌS Ì„ÌM”ÌT Ì„ÌNŸ” Ì…” Ì…” Ì…”) Ì…!”* Ì…"”6 Ì….”7 Ì…/”8 Ì…0”9 Ì…1”= Ì…5”> Ì…6”ÌR Ì…ÌJ”ÌS Ì…ÌK”Ì] Ì…ÌU”Ì^ Ì…ÌV–” Ì†” Ì†
+” Ì†” Ì†”% Ì†”' Ì†!™” Ì‡” Ì‡” Ì‡”& Ì‡”' Ì‡”( Ì‡ ”, Ì‡$”. Ì‡&”0 Ì‡(—” Ìˆ
+” Ìˆ” Ìˆ”# Ìˆ”$ Ìˆ”( Ìˆ”) Ìˆ–” Ì‰”  Ì‰”" Ì‰”& Ì‰”' Ì‰”/ Ì‰#–” ÌŠ”" ÌŠ”$ ÌŠ”( ÌŠ”) ÌŠ”3 ÌŠ'–” Ì‹”" Ì‹”$ Ì‹”( Ì‹”) Ì‹”3 Ì‹'–” ÌŒ”! ÌŒ”# ÌŒ”' ÌŒ”( ÌŒ”1 ÌŒ%“” Ì” Ì” Ì”” Ì” Ì	” Ì
+” Ì‘” Ì”” Ì”	 Ì”
+ Ì” Ì˜” Ì‘” Ì‘” Ì‘	” Ì‘” Ì‘”" Ì‘”$ Ì‘ ”% Ì‘!’” Ì’” Ì’‘” Ì”š” Ì•” Ì•” Ì•	” Ì•”# Ì•”% Ì•”2 Ì•#”3 Ì•$”9 Ì•*”; Ì•,–” Ì•” Ì•” Ì™” Ì™
+” Ì™” Ì™–” Ì•” Ì•” Ìš” Ìš” Ìš” Ìš” Ì•” Ì•” Ì›” Ì›” Ì›” Ì›” Ì›”! Ì›”# Ì›”% Ì›”* Ì›”, Ì› ”. Ì›"”0 Ì›$˜” Ì•” Ì•” Ìœ”  Ìœ”! Ìœ”& Ìœ”' Ìœ”, Ìœ Ü ” Ì•” Ì•” Ì” Ì”  Ì”! Ì”- Ì!”. Ì"”4 Ì(”5 Ì)”7 Ì+”8 Ì,”ÌD Ì8”ÌE Ì9”ÌH Ì<”ÌJ Ì>”ÌV ÌÌJ”ÌW ÌÌK”Ì] ÌÌQ”Ì^ ÌÌR•” Ì–” Ì–
+” Ì–” Ì–”) Ì–•” Ì—” Ì—
+” Ì—” Ì—”% Ì—’” Ì•” Ì•‘” Ì’” Ì¡” Ì¡š” Ì¢” Ì¢” Ì¢	” Ì¢”$ Ì¢”& Ì¢”/ Ì¢ ”0 Ì¢!”6 Ì¢'”8 Ì¢)–” Ì¢” Ì¢” Ì×” Ì×” Ì×” Ì×–” Ì¢” Ì¢” ÌØ” ÌØ” ÌØ” ÌØ’” Ì£” Ì£
+–” Ì£” Ì£
+” Ì¤	” Ì¤” Ì¤” Ì¤–” Ì£” Ì£
+” Ì¥	” Ì¥” Ì¥” Ì¥–” Ì£” Ì£
+” Ì¦	” Ì¦” Ì¦” Ì¦–” Ì£” Ì£
+” Ì§	” Ì§” Ì§”/ Ì§'–” Ì£” Ì£
+” Ì¨	” Ì¨” Ì¨” Ì¨’” Ì£” Ì£
+’” Ìª” Ìª	˜” Ìª” Ìª	” Ì¯” Ì¯” Ì¯”( Ì¯”) Ì¯ ”/ Ì¯&˜” Ìª” Ìª	” Ì°” Ì°” Ì°”( Ì°”) Ì° ”/ Ì°&–” Ìª” Ìª	” Ì±” Ì±” Ì±” Ì±–” Ìª” Ìª	” Ì²” Ì²” Ì²” Ì²–” Ìª” Ìª	” Ì³” Ì³”  Ì³”5 Ì³,–” Ìª” Ìª	” Ì´” Ì´” Ì´” Ì´š” Ìª” Ìª	” Ìµ” Ìµ” Ìµ” Ìµ” Ìµ”  Ìµ”! Ìµ”# Ìµ—” Ìª” Ìª	” Ì¶” Ì¶” Ì¶” Ì¶” Ì¶›” Ì·” Ì·” Ì·”! Ì·”# Ì·”$ Ì·”- Ì·%”/ Ì·'”0 Ì·(”7 Ì·/”8 Ì·0”” Ì¸
+” Ì¸” Ì¸”6 Ì¸,“” Ì¹
+” Ì¹” Ì¹”” Ìº” Ìº”  Ìº”% Ìº‘” Ì»™” Ì¼	” Ì¼
+” Ì¼” Ì¼” Ì¼” Ì¼” Ì¼$” Ì¼&”! Ì¼(Ü ” Ì½
+” Ì½” Ì½” Ì½”  Ì½”& Ì½”( Ì½”9 Ì½/”; Ì½1”ÌY Ì½ÌO”Ì\ Ì½ÌR”Ì] Ì½ÌS”Ìa Ì½ÌW”Ìj Ì½Ì`”Ìm Ì½Ìc”Ìn Ì½Ìd”Ìu Ì½Ìk”Ìw Ì½Ìm”Ìx Ì½Ìn”Ìy Ì½Ìo”” Ì¾” Ì¾	” Ì¾
+” Ì¾’” Ì¿” Ì¿’” Ì«” Ì«–” Ì«” Ì«” Ì¬”  Ì¬”! Ì¬”# Ì¬–” Ì«” Ì«” Ì­”" Ì­”# Ì­”& Ì­’” Ìª” Ìª	’” ÌÁ” ÌÁ	˜” ÌÁ” ÌÁ	” ÌÆ” ÌÆ” ÌÆ”( ÌÆ”) ÌÆ ”/ ÌÆ&˜” ÌÁ” ÌÁ	” ÌÇ” ÌÇ” ÌÇ”( ÌÇ”) ÌÇ ”/ ÌÇ&–” ÌÁ” ÌÁ	” ÌÈ” ÌÈ” ÌÈ” ÌÈ–” ÌÁ” ÌÁ	” ÌÉ” ÌÉ” ÌÉ” ÌÉ–” ÌÁ” ÌÁ	” ÌÊ” ÌÊ”  ÌÊ”5 ÌÊ,–” ÌÁ” ÌÁ	” ÌË” ÌË” ÌË” ÌËš” ÌÁ” ÌÁ	” ÌÌ” ÌÌ” ÌÌ” ÌÌ” ÌÌ”  ÌÌ”! ÌÌ”# ÌÌ™” ÌÁ” ÌÁ	” ÌÍ” ÌÍ” ÌÍ” ÌÍ” ÌÍ”* ÌÍ!”, ÌÍ#—” ÌÎ” ÌÎ”$ ÌÎ”( ÌÎ”) ÌÎ”5 ÌÎ"”ÌB ÌÎ"–” ÌÏ” ÌÏ” ÌÏ”$ ÌÏ”% ÌÏ”0 ÌÏ(–” ÌĞ” ÌĞ” ÌĞ”! ÌĞ”" ÌĞ”' ÌĞ”” ÌÑ” ÌÑ” ÌÑ”" ÌÑ‘” ÌÒ—” ÌÁ” ÌÁ	” ÌÓ” ÌÓ” ÌÓ” ÌÓ” ÌÓš” ÌÔ” ÌÔ” ÌÔ”  ÌÔ”# ÌÔ”$ ÌÔ”( ÌÔ ”) ÌÔ!”4 ÌÔ,”5 ÌÔ-’” ÌÕ” ÌÕ’” ÌÂ” ÌÂ–” ÌÂ” ÌÂ” ÌÃ”  ÌÃ”! ÌÃ”# ÌÃ–” ÌÂ” ÌÂ” ÌÄ”" ÌÄ”# ÌÄ”& ÌÄ’” ÌÁ” ÌÁ	’” Ì¢” Ì¢‘” ÌÙ’” ÌÜ” ÌÜ™” Ìİ” Ìİ” Ìİ	” Ìİ” Ìİ”! Ìİ”" Ìİ”( Ìİ ”* Ìİ"•” ÌŞ” ÌŞ
+” ÌŞ”" ÌŞ”/ ÌŞ‘” Ìß‘” Ìß•” Ìà” Ìà
+” Ìà”! Ìà”. Ìà‘” Ìá‘” Ìâ’” Ìå” Ìå’” Ìæ” Ìæ
+–” Ìæ” Ìæ
+” Ìî” Ìî” Ìî” Ìî–” Ìæ” Ìæ
+” Ìï” Ìï
+” Ìï” Ìï˜” Ìæ” Ìæ
+” Ìğ”! Ìğ”" Ìğ”+ Ìğ”, Ìğ”2 Ìğ$˜” Ìæ” Ìæ
+” Ìñ” Ìñ” Ìñ”- Ìñ”. Ìñ ”4 Ìñ&’” Ìç” Ìç”” Ìç” Ìç” Ìè	” Ìè”” Ìç” Ìç” Ìé	” Ìé’” Ìê” Ìê
+”” Ìê” Ìê
+” Ìë	” Ìë”” Ìê” Ìê
+” Ìì	” Ìì’” Ìê” Ìê
+’” Ìæ” Ìæ
+‘” Ìò’” Ìõ” Ìõ
+š” Ìö” Ìö” Ìö	” Ìö”# Ìö”% Ìö”2 Ìö#”3 Ìö$”9 Ìö*”; Ìö,–” Ìö” Ìö” Í7” Í7
+” Í7” Í7–” Ìö” Ìö” Í8” Í8” Í8” Í8š” Ìö” Ìö” Í9” Í9” Í9” Í9” Í9” Í9”  Í9”" Í9Ü ” Ì÷” Ì÷” Ì÷” Ì÷”! Ì÷”, Ì÷”1 Ì÷”< Ì÷(”ÌY Ì÷”Ì^ Ì÷”Ìi Ì÷(”Ìy Ì÷(”Ì{ Ì÷*”Ì† Ì÷5”Ìˆ Ì÷7”Ì Ì÷=”Í Ì÷Ì^”Í Ì÷Ì`–” Ì÷” Ì÷” Ìø	” Ìø” Ìø” Ìø–” Ì÷” Ì÷” Ìù	” Ìù” Ìù” Ìù–” Ì÷” Ì÷” Ìú	” Ìú” Ìú” Ìú–” Ì÷” Ì÷” Ìû	” Ìû”  Ìû”" Ìû–” Ì÷” Ì÷” Ìü	”# Ìü”$ Ìü”8 Ìü.•” Ì÷” Ì÷” Ìı	”" Ìı”# Ìı”” Ìş
+” Ìş” Ìş” Ìş”” Ìÿ
+” Ìÿ” Ìÿ” Ìÿ‘” Í 	š” Ì÷” Ì÷” Í	” Í” Í” Í”" Í”$ Í”& Í”( Í•” Ì÷” Ì÷” Í	” Í” Í”” Í
+” Í” Í” Í”” Í
+” Í” Í” Í”” Í
+” Í” Í” Í”” Í
+” Í” Í” Í‘” Í	™” Ì÷” Ì÷” Í	” Í” Í” Í”( Í&”* Í(”, Í*–” Í	
+” Í	” Í	”$ Í	”& Í	 ”( Í	"™” Í
+” Í
+” Í
+”$ Í
+”' Í
+”+ Í
+#”, Í
+$”; Í
+3”< Í
+4‘” Í’” Í” Í	™” Ì÷” Ì÷” Í	” Í” Í” Í”( Í&”* Í(”, Í*Ü ” Í
+” Í” Í”" Í”& Í ”' Í!”2 Í,”3 Í-”9 Í3”: Í4”; Í5”? Í9”ÌA Í;”ÌC Í=”ÌD Í>”ÌH ÍÌB”ÌI ÍÌC”ÌM ÍÌG”ÌR ÍÌL”Ì] ÍÌW”Ì^ ÍÌX”Ì_ ÍÌY˜” Í
+” Í” Í” Í”$ Í”' Í!”( Í"”* Í$—” Í” Í” Í”$ Í”' Í”0 Í(”1 Í)‘” Í‘” Í’” Í” Íš” Í” Í” Í”& Í”' Í”6 Í-”8 Í/”9 Í0”ÌB Í9”ÌC Í:“” Í”# Í”Ìš Í:–” Í”$ Í”& Í”5 Í)”6 Í*”ÌE Í9“” Í” Í” Í‘” Í”” Í” Í”  Í”" ÍÜ ” Í” Í” Í”# Í”$ Í”* Í ”, Í"”= Í3”? Í5”ÌS ÍÌI”ÌX ÍÌN”ÌY ÍÌO”Ì] ÍÌS”Ìj ÍÌ`”Ìo ÍÌe”Ìp ÍÌf”Ìw ÍÌm”Ìy ÍÌo”Ìz ÍÌp”Ì{ ÍÌq‘” Í‘” Í’” Í” Í	’” Ì÷” Ì÷’” Í” Í–” Í” Í” Í4” Í4” Í4” Í4–” Í” Í” Í5” Í5” Í5” Í5’” Í” Í˜” Í” Í” Í/	” Í/” Í/”# Í/”$ Í/”' Í/–” Í” Í” Í0	” Í0” Í0” Í0–” Í” Í” Í1	” Í1” Í1” Í1™” Í” Í” Í2	” Í2” Í2” Í2”  Í2”Ì— Í2:”Ì™ Í2<’” Í
+” Í’” Í”$ Í—” Í”  Í”! Í"”( Í"”) Í"”, Í"”. Í"œ” Í#”" Í#”- Í#”0 Í#"”? Í#1”Ì@ Í#2”ÌU Í#ÌG”ÌX Í#ÌJ”Ì\ Í#ÌN”Ì] Í#ÌO”Ìa Í#ÌS”Ìb Í#ÌT›” Í$”  Í$”! Í$”- Í$”/ Í$!”0 Í$"”9 Í$+”; Í$-”< Í$.”ÌC Í$5”ÌD Í$6””  Í%”# Í%”% Í%”> Í%.“”  Í&”& Í&”( Í&””$ Í'”' Í'”) Í'”4 Í'"‘”! Í(™” Í)” Í)” Í)”$ Í)”% Í)”& Í)”) Í)*”+ Í),”- Í).Ü ”  Í*”% Í*”& Í*”+ Í*”, Í*”2 Í*"”4 Í*$”ÌE Í*5”ÌG Í*7”Ìe Í*ÌU”Ìh Í*ÌX”Ìi Í*ÌY”Ìm Í*Ì]”Ìv Í*Ìf”Ìy Í*Ìi”Ìz Í*Ìj”Ì Í*Ìq”Ìƒ Í*Ìs”Ì„ Í*Ìt”Ì… Í*Ìu”” Í+” Í+” Í+” Í+’” Í,” Í,˜”< Í ”ÌK Í ”ÌR Í ”ÌT Í  ”Ì\ Í (”Ì^ Í *”Ìb Í .”Ìd Í 0””, Í  ”4 Í (”6 Í *”: Í .’” Í”  Í’” Í” ÍÜ ”/ Í”3 Í”4 Í”? Í"”ÌY Í-”ÌZ Í-”Ì^ Í- ”Ì` Í-"”Ìb Í-$”Ìc Í-%”Ìg Í-)”Ìh Í-*”Ìq Í-3”Ìr Í-4”Ìv Í-8”Ìw Í-9’” Í
+” Í’” Í” Í’” Í” Í’” Ìö” Ìö‘” Í:’” Í=” Í=’” Í>” Í>
+”” Í>” Í>
+” Íb” Íb
+”” Í>” Í>
+” Íc” Íc˜” Í>” Í>
+” Íd” Íd” Íd”- Íd”. Íd ”3 Íd%’” Í?” Í?
+”” Í?” Í?
+” Í@	” Í@•” Í?” Í?
+” ÍA	” ÍA” ÍA“” ÍB
+” ÍB”ÌŠ ÍB6“” ÍC
+” ÍC”Ì ÍC9“” ÍD
+” ÍD”Ì‹ ÍD3‘” ÍE	–” Í?” Í?
+” ÍF	” ÍF” ÍF” ÍF—” Í?” Í?
+” ÍG	” ÍG” ÍG” ÍG” ÍG›” ÍH
+” ÍH” ÍH”! ÍH”# ÍH”$ ÍH”- ÍH'”/ ÍH)”0 ÍH*”7 ÍH1”8 ÍH2”” ÍI” ÍI” ÍI”2 ÍI*™” ÍJ” ÍJ” ÍJ” ÍJ” ÍJ” ÍJ” ÍJ&” ÍJ(”! ÍJ*Ü ” ÍK” ÍK” ÍK” ÍK”  ÍK”& ÍK”( ÍK ”9 ÍK1”; ÍK3”ÌY ÍKÌQ”Ì\ ÍKÌT”Ì] ÍKÌU”Ìa ÍKÌY”Ìj ÍKÌb”Ìm ÍKÌe”Ìn ÍKÌf”Ìu ÍKÌm”Ìw ÍKÌo”Ìx ÍKÌp”Ìy ÍKÌq”” ÍL
+” ÍL” ÍL” ÍL’” ÍM” ÍM	’” Í?” Í?
+’” ÍN” ÍN”” ÍN” ÍN” ÍO	” ÍO”” ÍN” ÍN” ÍP	”# ÍP•” ÍN” ÍN” ÍQ	” ÍQ” ÍQ“” ÍR
+” ÍR”Ì‹ ÍR3“” ÍS
+” ÍS”ÌŒ ÍS4‘” ÍT	’” ÍU” ÍU
+–” ÍU” ÍU
+” ÍV	” ÍV” ÍV” ÍV”” ÍU” ÍU
+” ÍW	” ÍW•” ÍU” ÍU
+” ÍX	” ÍX” ÍX“” ÍY
+” ÍY”ÌŠ ÍY6“” ÍZ
+” ÍZ”Ì ÍZ9“” Í[
+” Í[”Ì‹ Í[3‘” Í\	—” ÍU” ÍU
+” Í]	” Í]” Í]” Í]” Í]š” Í^
+” Í^” Í^”  Í^”# Í^”$ Í^”( Í^"”) Í^#”4 Í^.”5 Í^/–” Í_
+” Í_” Í_”% Í_”' Í_!”( Í_"’” Í`” Í`	’” ÍU” ÍU
+’” Í>” Í>
+‘” ÍeÔrG–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜ‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
+ ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”    ‘”  ! ‘”  " ‘”  # ‘”  $ ‘”  % ‘”  & ‘”  ' ‘”  ( ‘”  ) ‘”  * ‘”  + ‘”  , ‘”  - ‘”  . ‘”  / ‘”  0 ‘”  1 ‘”  2 ‘”  3 ‘”  4 ‘”  5 ‘”  6 ‘”  7 ‘”  8 ‘”  9 ‘”  : ‘”  ; ‘”  < ‘”  = ‘”  > ‘”  ? ‘”  Ì@ ‘”  ÌA ‘”  ÌB ‘”  ÌC ‘”  ÌD ‘”  ÌE ‘”  ÌF ‘”  ÌG ‘”  ÌH ‘”  ÌI ‘”  ÌJ ‘”  ÌK ‘”  ÌL ‘”  ÌM ‘”  ÌN ‘”  ÌO ‘”  ÌP ‘”  ÌQ ‘”  ÌR ‘”  ÌS ‘”  ÌT ‘”  ÌU ‘”  ÌV ‘”  ÌW ‘”  ÌX ‘”  ÌY ‘”  ÌZ ‘”  Ì[ ‘”  Ì\ ‘”  Ì] ‘”  Ì^ ‘”  Ì_ ‘”  Ì` ‘”  Ìa ‘”  Ìb ‘”  Ìc ‘”  Ìd ‘”  Ìe ‘”  Ìf ‘”  Ìg ‘”  Ìh ‘”  Ìi ‘”  Ìj ‘”  Ìk ‘”  Ìl ‘”  Ìm ‘”  Ìn ‘”  Ìo ‘”  Ìp ‘”  Ìq ‘”  Ìr ‘”  Ìs ‘”  Ìt ‘”  Ìu ‘”  Ìv ‘”  Ìw ‘”  Ìx ‘”  Ìy ‘”  Ìz ‘”  Ì{ ‘”  Ì| ‘”  Ì} ‘”  Ì~ ‘”  Ì ‘”  Ì€ ‘”  Ì ‘”  Ì‚ ‘”  Ìƒ ‘”  Ì„ ‘”  Ì… ‘”  Ì† ‘”  Ì‡ ‘”  Ìˆ ‘”  Ì‰ ‘”  ÌŠ ‘”  Ì‹ ‘”  ÌŒ ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì‘ ‘”  Ì’ ‘”  Ì“ ‘”  Ì” ‘”  Ì• ‘”  Ì– ‘”  Ì— ‘”  Ì˜ ‘”  Ì™ ‘”  Ìš ‘”  Ì› ‘”  Ìœ ‘”  Ì ‘”  Ì ‘”  ÌŸ ‘”  Ì  ‘”  Ì¡ ‘”  Ì¢ ‘”  Ì£ ‘”  Ì¤ ‘”  Ì¥ ‘”  Ì¦ ‘”  Ì§ ‘”  Ì¨ ‘”  Ì© ‘”  Ìª ‘”  Ì« ‘”  Ì¬ ‘”  Ì­ ‘”  Ì® ‘”  Ì¯ ‘”  Ì° ‘”  Ì± ‘”  Ì² ‘”  Ì³ ‘”  Ì´ ‘”  Ìµ ‘”  Ì¶ ‘”  Ì· ‘”  Ì¸ ‘”  Ì¹ ‘”  Ìº ‘”  Ì» ‘”  Ì¼ ‘”  Ì½ ‘”  Ì¾ ‘”  Ì¿ ‘”  ÌÀ ‘”  ÌÁ ‘”  ÌÂ ‘”  ÌÃ ‘”  ÌÄ ‘”  ÌÅ ‘”  ÌÆ ‘”  ÌÇ ‘”  ÌÈ ‘”  ÌÉ ‘”  ÌÊ ‘”  ÌË ‘”  ÌÌ ‘”  ÌÍ ‘”  ÌÎ ‘”  ÌÏ ‘”  ÌĞ ‘”  ÌÑ ‘”  ÌÒ ‘”  ÌÓ ‘”  ÌÔ ‘”  ÌÕ ‘”  ÌÖ ‘”  Ì× ‘”  ÌØ ‘”  ÌÙ ‘”  ÌÚ ‘”  ÌÛ ‘”  ÌÜ ‘”  Ìİ ‘”  ÌŞ ‘”  Ìß ‘”  Ìà ‘”  Ìá ‘”  Ìâ ‘”  Ìã ‘”  Ìä ‘”  Ìå ‘”  Ìæ ‘”  Ìç ‘”  Ìè ‘”  Ìé ‘”  Ìê ‘”  Ìë ‘”  Ìì ‘”  Ìí ‘”  Ìî ‘”  Ìï ‘”  Ìğ ‘”  Ìñ ‘”  Ìò ‘”  Ìó ‘”  Ìô ‘”  Ìõ ‘”  Ìö ‘”  Ì÷ ‘”  Ìø ‘”  Ìù ‘”  Ìú ‘”  Ìû ‘”  Ìü ‘”  Ìı ‘”  Ìş ‘”  Ìÿ ‘”  Í  ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í	 ‘”  Í
+ ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í  ‘”  Í! ‘”  Í" ‘”  Í# ‘”  Í$ ‘”  Í% ‘”  Í& ‘”  Í' ‘”  Í( ‘”  Í) ‘”  Í* ‘”  Í+ ‘”  Í, ‘”  Í- ‘”  Í. ‘”  Í/ ‘”  Í0 ‘”  Í1 ‘”  Í2 ‘”  Í3 ‘”  Í4 ‘”  Í5 ‘”  Í6 ‘”  Í7 ‘”  Í8 ‘”  Í9 ‘”  Í: ‘”  Í; ‘”  Í< ‘”  Í= ‘”  Í> ‘”  Í? ‘”  Í@ ‘”  ÍA ‘”  ÍB ‘”  ÍC ‘”  ÍD ‘”  ÍE ‘”  ÍF ‘”  ÍG ‘”  ÍH ‘”  ÍI ‘”  ÍJ ‘”  ÍK ‘”  ÍL ‘”  ÍM ‘”  ÍN ‘”  ÍO ‘”  ÍP ‘”  ÍQ ‘”  ÍR ‘”  ÍS ‘”  ÍT ‘”  ÍU ‘”  ÍV ‘”  ÍW ‘”  ÍX ‘”  ÍY ‘”  ÍZ ‘”  Í[ ‘”  Í\ ‘”  Í] ‘”  Í^ ‘”  Í_ ‘”  Í` ‘”  Ía ‘”  Íb ‘”  Íc ‘”  Íd ‘”  Íe ‘”  Íf ‘”  Íg ‘”  Íh ‘”  Íi ‘”  Íj ‘”  Ík ‘”  Íl ‘”  Ím ‘”  Ín ‘”  Ío ‘”  Íp ‘”  Íq ‘”  Ír ‘”  Ís ‘”  Ít ‘”  Íu ‘”  Ív ‘”  Íw ‘”  Íx ‘”  Íy ‘”  Íz ‘”  Í{ ‘”  Í| ‘”  Í} ‘”  Í~ ‘”  Í ‘”  Í€ ‘”  Í ‘”  Í‚ ‘”  Íƒ ‘”  Í„ ‘”  Í… ‘”  Í† ‘”  Í‡ ‘”  Íˆ ‘”  Í‰ ‘”  ÍŠ ‘”  Í‹ ‘”  ÍŒ ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í‘ ‘”  Í’ ‘”  Í“ ‘”  Í” ‘”  Í• ‘”  Í– ‘”  Í— ‘”  Í˜ ‘”  Í™ ‘”  Íš ‘”  Í› ‘”  Íœ ‘”  Í ‘”  Í ‘”  ÍŸ ‘”  Í  ‘”  Í¡ ‘”  Í¢ ‘”  Í£ ‘”  Í¤ ‘”  Í¥ ‘”  Í¦ ‘”  Í§ ‘”  Í¨ ‘”  Í© ‘”  Íª ‘”  Í« ‘”  Í¬ ‘”  Í­ ‘”  Í® ‘”  Í¯ ‘”  Í° ‘”  Í± ‘”  Í² ‘”  Í³ ‘”  Í´ ‘”  Íµ ‘”  Í¶ ‘”  Í· ‘”  Í¸ ‘”  Í¹ ‘”  Íº ‘”  Í» ‘”  Í¼ ‘”  Í½ ‘”  Í¾ ‘”  Í¿ ‘”  ÍÀ ‘”  ÍÁ ‘”  ÍÂ ‘”  ÍÃ ‘”  ÍÄ ‘”  ÍÅ ‘”  ÍÆ ‘”  ÍÇ ‘”  ÍÈ ‘”  ÍÉ ‘”  ÍÊ ‘”  ÍË ‘”  ÍÌ ‘”  ÍÍ ‘”  ÍÎ ‘”  ÍÏ ‘”  ÍĞ ‘”  ÍÑ ‘”  ÍÒ ‘”  ÍÓ ‘”  ÍÔ ‘”  ÍÕ ‘”  ÍÖ ‘”  Í× ‘”  ÍØ ‘”  ÍÙ ‘”  ÍÚ ‘”  ÍÛ ‘”  ÍÜ ‘”  Íİ ‘”  ÍŞ ‘”  Íß ‘”  Íà ‘”  Íá ‘”  Íâ ‘”  Íã ‘”  Íä ‘”  Íå ‘”  Íæ ‘”  Íç ‘”  Íè ‘”  Íé ‘”  Íê ‘”  Íë ‘”  Íì ‘”  Íí ‘”  Íî ‘”  Íï ‘”  Íğ ‘”  Íñ ‘”  Íò ‘”  Íó ‘”  Íô ‘”  Íõ ‘”  Íö ‘”  Í÷ ‘”  Íø ‘”  Íù ‘”  Íú ‘”  Íû ‘”  Íü ‘”  Íı ‘”  Íş ‘”  Íÿ ‘”  Í  ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í	 ‘”  Í
+ ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ÔrH’§missing¦pluginÃ¦genAbcÂÔ  ÔrI”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCache–ÔrJ•¤type¥start£endªspecifiers¦source±ImportDeclarationÌ€Ì ‘ÔrK”¤type¥start£end¥local¶ImportDefaultSpecifierÌ‡ÌŒÔrL”¤type¥start£end¤nameªIdentifierÌ‡ÌŒ¥hilogÔrM•¤type¥start£end¥value£raw§LiteralÌ’ÌŸ«@ohos.hilog­"@ohos.hilog"J±ImportDeclarationÌ¢ÌÚ‘K¶ImportDefaultSpecifierÌ©Ì¸LªIdentifierÌ©Ì¸¯CommonConstantsM§LiteralÌ¾ÌÙ¹../common/CommonConstants»'../common/CommonConstants'J±ImportDeclarationÌÜÍ‘ÔrN•¤type¥start£end¨imported¥local¯ImportSpecifierÌåÌñLªIdentifierÌåÌñ¬ListItemDataLªIdentifierÌåÌñ¬ListItemDataM§LiteralÌùÍ½../viewmodel/ContactViewModel¿'../viewmodel/ContactViewModel'J±ImportDeclarationÍÍ[‘N¯ImportSpecifierÍ$Í3LªIdentifierÍ$Í3¯ContactListItemLªIdentifierÍ$Í3¯ContactListItemM§LiteralÍ;ÍZ½../components/ContactListItem¿'../components/ContactListItem'J±ImportDeclarationÍ]Í¢‘N¯ImportSpecifierÍfÍzLªIdentifierÍfÍz´ContactDeviceManagerLªIdentifierÍfÍz´ContactDeviceManagerM§LiteralÍ‚Í¡½../utils/ContactDeviceManager¿'../utils/ContactDeviceManager'J±ImportDeclarationÍ¤Íè‘K¶ImportDefaultSpecifierÍ«Í¾LªIdentifierÍ«Í¾³ContactDeviceDialogM§LiteralÍÄÍçÙ!../components/ContactDeviceDialogÙ#'../components/ContactDeviceDialog'

@@ -1,0 +1,440 @@
+Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚ:if (!("finalizeConstruction" in ViewPU.prototype)) {
+    Reflect.set(ViewPU.prototype, "finalizeConstruction", () => { });
+}
+import CommonConstants from '../common/CommonConstants';
+function __Text__ButtonTextStyle() {
+    Text.fontColor('#0A59F7');
+    Text.fontSize({ "id": 16777282, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+    Text.fontWeight(CommonConstants.FONT_WEIGHT_500);
+}
+export default class ContactDeviceDialog extends ViewPU {
+    constructor(parent, params, __localStorage, elmtId = -1, paramsLambda = undefined, extraInfo) {
+        super(parent, __localStorage, elmtId, extraInfo);
+        if (typeof paramsLambda === "function") {
+            this.paramsGenerator_ = paramsLambda;
+        }
+        this.controller = undefined;
+        this.__deviceList = new SynchedPropertyObjectTwoWayPU(params.deviceList, this, "deviceList");
+        this.__selectedDeviceIndex = new SynchedPropertySimpleTwoWayPU(params.selectedDeviceIndex, this, "selectedDeviceIndex");
+        this.onSelectedIndexChange = () => { };
+        this.setInitiallyProvidedValue(params);
+        this.finalizeConstruction();
+    }
+    setInitiallyProvidedValue(params) {
+        if (params.controller !== undefined) {
+            this.controller = params.controller;
+        }
+        if (params.onSelectedIndexChange !== undefined) {
+            this.onSelectedIndexChange = params.onSelectedIndexChange;
+        }
+    }
+    updateStateVars(params) {
+    }
+    purgeVariableDependenciesOnElmtId(rmElmtId) {
+        this.__deviceList.purgeDependencyOnElmtId(rmElmtId);
+        this.__selectedDeviceIndex.purgeDependencyOnElmtId(rmElmtId);
+    }
+    aboutToBeDeleted() {
+        this.__deviceList.aboutToBeDeleted();
+        this.__selectedDeviceIndex.aboutToBeDeleted();
+        SubscriberManager.Get().delete(this.id__());
+        this.aboutToBeDeletedInternal();
+    }
+    setController(ctr) {
+        this.controller = ctr;
+    }
+    get deviceList() {
+        return this.__deviceList.get();
+    }
+    set deviceList(newValue) {
+        this.__deviceList.set(newValue);
+    }
+    get selectedDeviceIndex() {
+        return this.__selectedDeviceIndex.get();
+    }
+    set selectedDeviceIndex(newValue) {
+        this.__selectedDeviceIndex.set(newValue);
+    }
+    initialRender() {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.height('100%');
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.padding({
+                left: { "id": 16777343, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                right: { "id": 16777343, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                top: { "id": 16777344, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+            });
+            Row.height({ "id": 16777342, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Row.justifyContent(FlexAlign.Center);
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777257, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontSize({ "id": 16777341, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.textAlign(TextAlign.Start);
+            Text.fontColor(Color.Black);
+            Text.fontWeight(FontWeight.Bold);
+        }, Text);
+        Text.pop();
+        Row.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            List.create();
+            List.scrollBar(BarState.On);
+            List.height('80%');
+        }, List);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            ForEach.create();
+            const forEachItemGenFunction = (_item, index) => {
+                const item = _item;
+                {
+                    const itemCreation = (elmtId, isInitialRender) => {
+                        ViewStackProcessor.StartGetAccessRecordingFor(elmtId);
+                        ListItem.create(deepRenderFunction, true);
+                        if (!isInitialRender) {
+                            ListItem.pop();
+                        }
+                        ViewStackProcessor.StopGetAccessRecording();
+                    };
+                    const itemCreation2 = (elmtId, isInitialRender) => {
+                        ListItem.create(deepRenderFunction, true);
+                    };
+                    const deepRenderFunction = (elmtId, isInitialRender) => {
+                        itemCreation(elmtId, isInitialRender);
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            Column.create();
+                        }, Column);
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            Row.create();
+                            Row.height({ "id": 16777329, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                            Row.onClick(() => {
+                                if (this.selectedDeviceIndex === index) {
+                                    return;
+                                }
+                                else {
+                                    this.selectedDeviceIndex = index;
+                                }
+                            });
+                            Row.padding({
+                                left: { "id": 16777330, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                                right: { "id": 16777330, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+                            });
+                            Row.width(CommonConstants.FULL_PERCENT);
+                            Row.justifyContent(FlexAlign.SpaceBetween);
+                        }, Row);
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            Row.create();
+                            Row.justifyContent(FlexAlign.Start);
+                        }, Row);
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            Row.create();
+                            Row.width({ "id": 16777324, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                            Row.aspectRatio(CommonConstants.NUMBER_ONE);
+                        }, Row);
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            Image.create(this.getDeviceTypeIcon());
+                            Image.opacity({ "id": 16777323, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                        }, Image);
+                        Row.pop();
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            Text.create(item.deviceName);
+                            Text.fontSize({ "id": 16777334, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                            Text.width(CommonConstants.DEVICE_NAME_WIDTH);
+                            Text.fontColor(Color.Black);
+                            Text.margin({ left: { "id": 16777335, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" } });
+                            Text.maxLines(CommonConstants.NUMBER_ONE);
+                            Text.textOverflow({ overflow: TextOverflow.Ellipsis });
+                            Text.textAlign(TextAlign.Start);
+                        }, Text);
+                        Text.pop();
+                        Row.pop();
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            Radio.create({
+                                value: item.deviceId, group: 'RadioGroup',
+                                indicatorType: RadioIndicatorType.DOT
+                            });
+                            Radio.width(20);
+                            Radio.height(20);
+                            Radio.checked(index === this.selectedDeviceIndex);
+                        }, Radio);
+                        Row.pop();
+                        this.observeComponentCreation2((elmtId, isInitialRender) => {
+                            If.create();
+                            if (index !== this.deviceList.length - 1) {
+                                this.ifElseBranchUpdateFunction(0, () => {
+                                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                                        Row.create();
+                                        Row.padding({
+                                            left: { "id": 16777327, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                                            right: { "id": 16777328, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+                                        });
+                                        Row.width(CommonConstants.FULL_PERCENT);
+                                    }, Row);
+                                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                                        Divider.create();
+                                        Divider.width(CommonConstants.FULL_PERCENT);
+                                        Divider.height({ "id": 16777325, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                                        Divider.opacity({ "id": 16777326, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                                    }, Divider);
+                                    Row.pop();
+                                });
+                            }
+                            else {
+                                this.ifElseBranchUpdateFunction(1, () => {
+                                });
+                            }
+                        }, If);
+                        If.pop();
+                        Column.pop();
+                        ListItem.pop();
+                    };
+                    this.observeComponentCreation2(itemCreation2, ListItem);
+                    ListItem.pop();
+                }
+            };
+            this.forEachUpdateFunction(elmtId, this.deviceList, forEachItemGenFunction, (item) => JSON.stringify(item), true, false);
+        }, ForEach);
+        ForEach.pop();
+        List.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Blank.create();
+        }, Blank);
+        Blank.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.border({
+                color: Color.White,
+                radius: { "id": 16777288, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+            });
+            Row.padding({ "id": 16777287, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Row.margin({ top: { "id": 16777286, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" } });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.layoutWeight(CommonConstants.NUMBER_ONE);
+            Column.justifyContent(FlexAlign.Center);
+            Column.height({ "id": 16777285, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Column.onClick(() => {
+                if (this.controller !== undefined) {
+                    this.controller.close();
+                }
+            });
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777258, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            __Text__ButtonTextStyle();
+        }, Text);
+        Text.pop();
+        Column.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Divider.create();
+            Divider.vertical(true);
+            Divider.height({ "id": 16777283, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Divider.color({ "id": 16777262, "type": 10001, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Divider.width({ "id": 16777284, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+        }, Divider);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.layoutWeight(CommonConstants.NUMBER_ONE);
+            Column.justifyContent(FlexAlign.Center);
+            Column.height({ "id": 16777285, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Column.onClick(() => {
+                this.onSelectedIndexChange(this.selectedDeviceIndex);
+            });
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777225, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            __Text__ButtonTextStyle();
+        }, Text);
+        Text.pop();
+        Column.pop();
+        Row.pop();
+        Column.pop();
+    }
+    getDeviceTypeIcon() {
+        return { "id": 16777412, "type": 20000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" };
+    }
+    rerender() {
+        this.updateDirtyElements();
+    }
+}
+//# sourceMappingURL=ContactDeviceDialog.js.mapÂ‘Ù]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeviceDialog.etsÔrBœªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo¯hostModulesInfo°belongModulePath§checker¬shouldEmitJs¥entryÃÂÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÙ/C:\Users\86182\Desktop\2026Spring-25307211-Lab1¥entry¥1.0.0Ô  ‘ÔrC’²hostDependencyName®hostModuleNameÙ!../components/ContactDeviceDialog¥entryÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÔrDÜ ®¬getNodeCount²getIdentifierCount®getSymbolCount¬getTypeCountµgetInstantiationCountµgetRelationCacheSizes±isUndefinedSymbol±isArgumentsSymbol¯isUnknownSymbol¯getMergedSymbol®getDiagnostics´getGlobalDiagnostics´getRecursionIdentity¶getUnmatchedProperties¹getTypeOfSymbolAtLocation¯getTypeOfSymbolÙ(getSymbolsOfParameterPropertyDeclaration·getDeclaredTypeOfSymbol³getPropertiesOfType±getPropertyOfTypeÙ"getPrivateIdentifierPropertyOfType·getTypeOfPropertyOfType²getIndexInfoOfType³getIndexInfosOfTypeºgetIndexInfosOfIndexSymbol³getSignaturesOfType²getIndexTypeOfType¬getIndexType¬getBaseTypes¸getBaseTypeOfLiteralType®getWidenedType³getTypeFromTypeNode°getParameterTypeÙ$getParameterIdentifierNameAtPosition¸getPromisedTypeOfPromise®getAwaitedType¸getReturnTypeOfSignature®isNullableType¯getNullableType²getNonNullableType²getNonOptionalType°getTypeArguments®typeToTypeNodeÙ$indexInfoToIndexSignatureDeclaration¿signatureToSignatureDeclaration²symbolToEntityName²symbolToExpression¬symbolToNodeÙ!symbolToTypeParameterDeclarations¼symbolToParameterDeclarationºtypeParameterToDeclaration±getSymbolsInScope³getSymbolAtLocation·getIndexInfosAtLocationÙ!getShorthandAssignmentValueSymbolÙ#getExportSpecifierLocalTargetSymbol·getExportSymbolOfSymbol±getTypeAtLocationºgetTypeAtLocationForLinterÙ tryGetTypeAtLocationWithoutCheckºgetTypeOfAssignmentPatternÙ*getPropertySymbolOfDestructuringAssignment±signatureToString¬typeToString®symbolToStringµtypePredicateToString®writeSignature©writeType«writeSymbol²writeTypePredicate¼getAugmentedPropertiesOfType®getRootSymbols²getSymbolOfExpando±getContextualTypeÙ(getContextualTypeForObjectLiteralElementÙ#getContextualTypeForArgumentAtIndexÙ getContextualTypeForJsxAttribute²isContextSensitiveÙ!getTypeOfPropertyOfContextualTypeµgetFullyQualifiedNameÙ#tryGetResolvedSignatureWithoutCheck´getResolvedSignatureÙ/getResolvedSignatureForStringLiteralCompletionsÙ$getResolvedSignatureForSignatureHelpµgetExpandedParameters¹hasEffectiveRestParameterºcontainsArgumentsReference°getConstantValueµisValidPropertyAccessÙ#isValidPropertyAccessForCompletions»getSignatureFromDeclarationºisImplementationOfOverload¹getImmediateAliasedSymbol°getAliasedSymbol¯getEmitResolver²getExportsOfModule¿getExportsAndPropertiesOfModuleÙ forEachExportAndPropertyOfModule¯getSymbolWalker±getAmbientModules¹getJsxIntrinsicTagNamesAt³isOptionalParameter»tryGetMemberInModuleExportsÙ(tryGetMemberInModuleExportsAndProperties´tryFindAmbientModuleÙ(tryFindAmbientModuleWithoutAugmentations¯getApparentType¬getUnionType²isTypeAssignableTo³createAnonymousType¯createSignature¬createSymbol¯createIndexInfoªgetAnyType­getStringType­getNumberType±createPromiseType¯createArrayType¹getElementTypeOfArrayType®getBooleanType¬getFalseType«getTrueType«getVoidType°getUndefinedType«getNullType¯getESSymbolType¬getNeverType¯getOptionalType®getPromiseType²getPromiseLikeType´getAsyncIterableType²isSymbolAccessible«isArrayType«isTupleType¯isArrayLikeTypeÙ#isTypeInvalidDueToUnionDiscriminantºgetExactOptionalProperties¿getAllPossiblePropertiesOfTypesÙ(getSuggestedSymbolForNonexistentPropertyÙ#getSuggestionForNonexistentPropertyÙ,getSuggestedSymbolForNonexistentJSXAttributeÙ&getSuggestedSymbolForNonexistentSymbolÙ!getSuggestionForNonexistentSymbolÙ&getSuggestedSymbolForNonexistentModuleÙ!getSuggestionForNonexistentExportÙ+getSuggestedSymbolForNonexistentClassMember·getBaseConstraintOfType»getDefaultFromTypeParameter«resolveName¯getJsxNamespaceµgetJsxFragmentFactory¸getAccessibleSymbolChain»getTypePredicateOfSignature¹resolveExternalModuleName»resolveExternalModuleSymbol°tryGetThisTypeAt¹getTypeArgumentConstraint¸getSuggestionDiagnostics¸runWithCancellationTokenÙ3getLocalTypeParametersOfClassOrInterfaceOrTypeAlias´isDeclarationVisible´isPropertyAccessible»getTypeOnlyAliasDeclaration¿getMemberOverrideModifierStatusÙ!isTypeParameterPossiblyReferenced²getConstEnumRelate´clearConstEnumRelateµdeleteConstEnumRelateÙ$getTypeArgumentsForResolvedSignatureµgetCheckedSourceFilesÙ"collectHaveTsNoCheckFilesForLinter·clearQualifiedNameCache®isStaticRecord²isStaticSourceFileÔ  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  ÃÃÚL/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { distributedDeviceManager } from '@kit.DistributedServiceKit';
+import CommonConstants from '../common/CommonConstants';
+
+@Extend(Text)
+function ButtonTextStyle() {
+  .fontColor('#0A59F7')
+  .fontSize($r('app.float.button_font_size'))
+  .fontWeight(CommonConstants.FONT_WEIGHT_500);
+}
+
+@CustomDialog
+export default struct ContactDeviceDialog {
+  controller?: CustomDialogController;
+  @Link deviceList: Array<distributedDeviceManager.DeviceBasicInfo>;
+  @Link selectedDeviceIndex: number;
+  onSelectedIndexChange: (index: number) => void = () => {};
+
+  build() {
+    Column() {
+      Row() {
+        Text($r('app.string.select_device'))
+          .fontSize($r('app.float.dialog_title_font_size'))
+          .textAlign(TextAlign.Start)
+          .fontColor(Color.Black)
+          .fontWeight(FontWeight.Bold)
+      }
+      .padding({
+        left: $r('app.float.dialog_title_padding_left'),
+        right: $r('app.float.dialog_title_padding_left'),
+        top: $r('app.float.dialog_title_padding_top')
+      })
+      .height($r('app.float.dialog_title_height'))
+      .justifyContent(FlexAlign.Center)
+
+      List() {
+        ForEach(this.deviceList, (item: distributedDeviceManager.DeviceBasicInfo, index: number) => {
+          ListItem() {
+            Column() {
+              Row() {
+                Row() {
+                  Row() {
+                    Image(this.getDeviceTypeIcon())
+                      .opacity($r('app.float.device_icon_opacity'))
+                  }
+                  .width($r('app.float.device_icon_width'))
+                  .aspectRatio(CommonConstants.NUMBER_ONE)
+
+                  Text(item.deviceName)
+                    .fontSize($r('app.float.device_name_font_size'))
+                    .width(CommonConstants.DEVICE_NAME_WIDTH)
+                    .fontColor(Color.Black)
+                    .margin({ left: $r('app.float.device_name_margin_left') })
+                    .maxLines(CommonConstants.NUMBER_ONE)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .textAlign(TextAlign.Start)
+                }
+                .justifyContent(FlexAlign.Start)
+
+                Radio({
+                  value: item.deviceId, group: 'RadioGroup',
+                  indicatorType: RadioIndicatorType.DOT
+                })
+                  .width(20)
+                  .height(20)
+                  .checked(index === this.selectedDeviceIndex)
+              }
+              .height($r('app.float.device_info_height'))
+              .onClick(() => {
+                if (this.selectedDeviceIndex === index) {
+                  return;
+                } else {
+                  this.selectedDeviceIndex = index;
+                }
+              })
+              .padding({
+                left: $r('app.float.device_info_padding'),
+                right: $r('app.float.device_info_padding')
+              })
+              .width(CommonConstants.FULL_PERCENT)
+              .justifyContent(FlexAlign.SpaceBetween)
+
+              if (index !== this.deviceList.length - 1) {
+                Row() {
+                  Divider()
+                    .width(CommonConstants.FULL_PERCENT)
+                    .height($r('app.float.device_info_divider_height'))
+                    .opacity($r('app.float.device_info_divider_opacity'))
+                }
+                .padding({
+                  left: $r('app.float.device_info_divider_padding_left'),
+                  right: $r('app.float.device_info_divider_padding_right')
+                })
+                .width(CommonConstants.FULL_PERCENT)
+              }
+            }
+          }
+        }, (item: distributedDeviceManager.DeviceBasicInfo) => JSON.stringify(item))
+      }
+      .scrollBar(BarState.On)
+      .height('80%')
+
+      Blank()
+      Row() {
+        Column() {
+          Text($r('app.string.select_device_cancel'))
+            .ButtonTextStyle()
+        }
+        .layoutWeight(CommonConstants.NUMBER_ONE)
+        .justifyContent(FlexAlign.Center)
+        .height($r('app.float.button_line_height'))
+        .onClick(() => {
+          if (this.controller !== undefined) {
+            this.controller.close();
+          }
+        })
+
+        Divider()
+          .vertical(true)
+          .height($r('app.float.button_line_divider_height'))
+          .color($r('app.color.button_line_divider_color'))
+          .width($r('app.float.button_line_divider_width'))
+
+        Column() {
+          Text($r('app.string.confirm'))
+            .ButtonTextStyle()
+        }
+        .layoutWeight(CommonConstants.NUMBER_ONE)
+        .justifyContent(FlexAlign.Center)
+        .height($r('app.float.button_line_height'))
+        .onClick(() => {
+          this.onSelectedIndexChange(this.selectedDeviceIndex);
+        })
+      }
+      .border({
+        color: Color.White,
+        radius: $r('app.float.button_line_radius')
+      })
+      .padding($r('app.float.button_line_padding'))
+      .margin({ top: $r('app.float.button_line_margin_top') })
+    }
+    .height('100%')
+  }
+
+  getDeviceTypeIcon(): Resource {
+    return $r('app.media.ic_public_devices_phone');
+  }
+}ÀÔrE‘¹../common/CommonConstantsÔrF—ªassertions¨external¢id¤meta±moduleSideEffectsªresolvedByµsyntheticNamedExportsAÂÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsAÃªoh-resolveÂ“ÔrG–§version¤fileªsourceRoot§sources¥names¨mappings¶ContactDeviceDialog.js ‘·ContactDeviceDialog.etsÜ–”   ” ” ” ”7 7”8 8‘”   ””	 ” ” ” ’”	 ” –”	 ” ” ”# ”$ ”3 -‘” –”   ” ” ” ” ”( )‘”  •”% 3”( 6”* 8”- :”. ;‘” ’” ” ’” ” ’” ” ’” ” ’” ” ‘”  ’” !” !
+–” !” !
+” Ì›” Ì›” Ì›”  Ì›’” "” "	•” "” "	” )” )” )“” *” *”Ì‹ *7“” +” +”ÌŒ +8“” ,” ,”ÌŠ ,5‘” -”” "” "	” .” .˜” "” "	” /” /” /”( /”) / ”/ /&’” #” #”” #” #” $” $˜” #” #” %” %” %”$ %”% %”* %$˜” #” #” &” &” &”  &”! &”& & ˜” #” #” '” '” '”& ' ”' '!”+ '%’” #” #’” "” "	’” 1” 1
+˜” 1” 1
+” Ìq” Ìq” Ìq”# Ìq”$ Ìq”& Ìq–” 1” 1
+” Ìr” Ìr” Ìr” Ìr’” 2” 2’”3 2ÌR”8 2Ì_’” 3
+”$ 3’” 4”" 4’” 5” 5”” 5” 5”  ÌQ”& ÌQ—” 5” 5”  ÌR”' ÌR”( ÌR”+ ÌR”- ÌR˜”  ÌS”$ ÌS”( ÌS”) ÌS”< ÌS,”ÌA ÌS1”ÌF ÌS6”ÌH ÌS8’”$ ÌT”+ ÌT‘”! ÌU‘”% ÌU—”$ ÌV”( ÌV”) ÌV”< ÌV*”? ÌV-”ÌD ÌV2”ÌE ÌV3‘”! ÌW’” ÌX” ÌX•” 5” 5”  ÌY”' ÌY”( ÌY“”  ÌZ”$ ÌZ”Ì› ÌZ9“”  Ì[”% Ì[”Ìœ Ì[:‘” Ì\˜” 5” 5”  Ì]”% Ì]”& Ì]”5 Ì]$”6 Ì]%”ÌB Ì]1˜” 5” 5”  Ì^”. Ì^”/ Ì^”8 Ì^'”9 Ì^(”ÌE Ì^4’” 6” 6˜” 6” 6”  ÌG”. ÌG”/ ÌG ”8 ÌG)”9 ÌG*”> ÌG/’” 7” 7”” 7” 7”  ;”% ;˜” 7” 7”  <”+ <”, <”; <.”< </”ÌF <9—” 8”! 8”) 8”- 8”. 8”? 80”ÌA 82”” 8”! 8”" 9”) 9’” 7” 7–” >”  >”( >”, >”- >”7 >&”” >”  >”! ?”) ?˜” >”  >”! Ì@”& Ì@”' Ì@”6 Ì@*”7 Ì@+”ÌH Ì@<˜” >”  >”! ÌA”* ÌA”+ ÌA”0 ÌA$”1 ÌA%”6 ÌA*™” >”  >”! ÌB”' ÌB”( ÌB”* ÌB”. ÌB"”Ì¥ ÌBÌK”Ì§ ÌBÌM˜” >”  >”! ÌC”) ÌC”* ÌC”9 ÌC-”: ÌC.”ÌD ÌC8œ” >”  >”! ÌD”- ÌD!”. ÌD"”0 ÌD$”8 ÌD,”: ÌD.”ÌF ÌD:”ÌG ÌD;”ÌO ÌDÌC”ÌQ ÌDÌE˜” >”  >”! ÌE”* ÌE”+ ÌE”4 ÌE(”5 ÌE)”: ÌE.’” >” >’” 6” 6“” ÌI”! ÌI”) ÌIš”  ÌJ”% ÌJ”' ÌJ”+ ÌJ”, ÌJ”4 ÌJ&”6 ÌJ(”; ÌJ-”= ÌJ/”ÌI ÌJ;–”  ÌK”- ÌK”/ ÌK!”ÌA ÌK3”ÌB ÌK4”ÌE ÌK7‘” ÌL–” ÌI”! ÌI”" ÌM”' ÌM”( ÌM”* ÌM–” ÌI”! ÌI”" ÌN”( ÌN”) ÌN”+ ÌNš” ÌI”! ÌI”" ÌO”) ÌO”* ÌO”/ ÌO ”4 ÌO%”8 ÌO)”9 ÌO*”ÌL ÌO=’” 5” 5œ” Ì`”  Ì`”% Ì`”* Ì`”. Ì` ”/ Ì`!”9 Ì`+”: Ì`,”Ì@ Ì`2”ÌC Ì`5”ÌD Ì`6”ÌF Ì`8’”( Ìa”+ Ìa•”( Ìa”+ Ìa”, Ìg”3 Ìg”4 Ìg“”, Ìh”0 Ìh”Ì§ ÌhÌH“”, Ìi”1 Ìi”Ì¨ ÌiÌJ‘”) Ìj˜”( Ìa”+ Ìa”, Ìk”1 Ìk”2 Ìk”ÌA Ìk&”ÌB Ìk'”ÌN Ìk3’”( Ìb”/ Ìb˜”( Ìb”/ Ìb”0 Ìc”5 Ìc”6 Ìc”ÌE Ìc*”ÌF Ìc+”ÌR Ìc7””( Ìb”/ Ìb”0 Ìd”6 Ìd””( Ìb”/ Ìb”0 Ìe”7 Ìe’”$ Ìa”' Ìa‘” Ìl‘” Ìl’” 4” 4’” 3
+”  3’” 3
+” 3Ü ”/ 2”3 2”4 2”> 2”ÌX Ìo”ÌY Ìo”Ì] Ìo:”Ì_ Ìo<”Ìa Ìo>”Ìb Ìo?”Ìf ÌoÌC”Ìg ÌoÌD”Ìp ÌoÌM”Ìq ÌoÌN”Ìu ÌoÌR”Ìv ÌoÌS’” 2” 2’” 1” 1
+’” Ìt” Ìt’” Ìt” Ìt’” Ìu” Ìu	•” Ìu” Ìu	” Ì”” Ì”” Ì”–” Ì•” Ì•” Ì•” Ì•” Ì•”" Ì•“” Ì–” Ì–”Ì Ì–2‘” Ì—”” Ìu” Ìu	” Ì˜” Ì˜™” Ìu” Ìu	” Ì™” Ì™” Ì™” Ì™” Ì™”Ì“ Ì™;”Ì• Ì™=’” Ìv” Ìv˜” Ìv” Ìv” Ìz	” Ìz”  Ìz”/ Ìz%”0 Ìz&”: Ìz0˜” Ìv” Ìv” Ì{	”! Ì{”" Ì{”+ Ì{!”, Ì{"”2 Ì{(”” Ìv” Ìv” Ì|	” Ì|—” Ìv” Ìv” Ì}	” Ì}” Ì}” Ì}”  Ì}˜” Ì~
+” Ì~” Ì~” Ì~”# Ì~”( Ì~"”1 Ì~+”3 Ì~-˜” Ì” Ì” Ì”# Ì”$ Ì”) Ì!”+ Ì#”, Ì$‘” Ì€’” Ì” Ì	’” Ìw
+” Ìw’” Ìw
+” Ìw’” Ìv” Ìv’” Ìƒ” Ìƒ–” Ìƒ” Ìƒ” Ì„” Ì„” Ì„”! Ì„”” Ìƒ” Ìƒ” Ì…” Ì…”” Ìƒ” Ìƒ” Ì†” Ì†”” Ìƒ” Ìƒ” Ì‡” Ì‡’” Ì‰” Ì‰˜” Ì‰” Ì‰” Ì	” Ì”  Ì”/ Ì%”0 Ì&”: Ì0˜” Ì‰” Ì‰” Ì	”! Ì”" Ì”+ Ì!”, Ì"”2 Ì(”” Ì‰” Ì‰” Ì	” Ì—” Ì‰” Ì‰” Ì	” Ì” Ì” Ì”  Ìš” Ì‘
+” Ì‘” Ì‘”* Ì‘$”+ Ì‘%”/ Ì‘)”0 Ì‘*”ÌC Ì‘=”ÌD Ì‘>”ÌE Ì‘?’” Ì’” Ì’	’” ÌŠ
+” ÌŠ’” ÌŠ
+” ÌŠ’” Ì‰” Ì‰’” Ìu” Ìu	’” !” !
+‘” Ìœ’” Ì” Ì’” ÌŸ”Ì… ÌŸ3’” Ì ” Ì ÔrH–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜ‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
+ ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”    ‘”  ! ‘”  " ‘”  # ‘”  $ ‘”  % ‘”  & ‘”  ' ‘”  ( ‘”  ) ‘”  * ‘”  + ‘”  , ‘”  - ‘”  . ‘”  / ‘”  0 ‘”  1 ‘”  2 ‘”  3 ‘”  4 ‘”  5 ‘”  6 ‘”  7 ‘”  8 ‘”  9 ‘”  : ‘”  ; ‘”  < ‘”  = ‘”  > ‘”  ? ‘”  Ì@ ‘”  ÌA ‘”  ÌB ‘”  ÌC ‘”  ÌD ‘”  ÌE ‘”  ÌF ‘”  ÌG ‘”  ÌH ‘”  ÌI ‘”  ÌJ ‘”  ÌK ‘”  ÌL ‘”  ÌM ‘”  ÌN ‘”  ÌO ‘”  ÌP ‘”  ÌQ ‘”  ÌR ‘”  ÌS ‘”  ÌT ‘”  ÌU ‘”  ÌV ‘”  ÌW ‘”  ÌX ‘”  ÌY ‘”  ÌZ ‘”  Ì[ ‘”  Ì\ ‘”  Ì] ‘”  Ì^ ‘”  Ì_ ‘”  Ì` ‘”  Ìa ‘”  Ìb ‘”  Ìc ‘”  Ìd ‘”  Ìe ‘”  Ìf ‘”  Ìg ‘”  Ìh ‘”  Ìi ‘”  Ìj ‘”  Ìk ‘”  Ìl ‘”  Ìm ‘”  Ìn ‘”  Ìo ‘”  Ìp ‘”  Ìq ‘”  Ìr ‘”  Ìs ‘”  Ìt ‘”  Ìu ‘”  Ìv ‘”  Ìw ‘”  Ìx ‘”  Ìy ‘”  Ìz ‘”  Ì{ ‘”  Ì| ‘”  Ì} ‘”  Ì~ ‘”  Ì ‘”  Ì€ ‘”  Ì ‘”  Ì‚ ‘”  Ìƒ ‘”  Ì„ ‘”  Ì… ‘”  Ì† ‘”  Ì‡ ‘”  Ìˆ ‘”  Ì‰ ‘”  ÌŠ ‘”  Ì‹ ‘”  ÌŒ ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì‘ ‘”  Ì’ ‘”  Ì“ ‘”  Ì” ‘”  Ì• ‘”  Ì– ‘”  Ì— ‘”  Ì˜ ‘”  Ì™ ‘”  Ìš ‘”  Ì› ‘”  Ìœ ‘”  Ì ‘”  Ì ‘”  ÌŸ ‘”  Ì  ‘”  Ì¡ ‘”  Ì¢ ‘”  Ì£ ‘”  Ì¤ ‘”  Ì¥ ‘”  Ì¦ ‘”  Ì§ ‘”  Ì¨ ‘”  Ì© ‘”  Ìª ‘”  Ì« ‘”  Ì¬ ‘”  Ì­ ‘”  Ì® ‘”  Ì¯ ‘”  Ì° ‘”  Ì± ‘”  Ì² ‘”  Ì³ ‘”  Ì´ ‘”  Ìµ ‘”  Ì¶ ‘”  Ì· ‘”  Ì¸ ‘”  Ì¹ ‘”  Ìº ‘”  Ì» ‘”  Ì¼ ‘”  Ì½ ‘”  Ì¾ ‘”  Ì¿ ‘”  ÌÀ ‘”  ÌÁ ‘”  ÌÂ ‘”  ÌÃ ‘”  ÌÄ ‘”  ÌÅ ‘”  ÌÆ ‘”  ÌÇ ‘”  ÌÈ ‘”  ÌÉ ‘”  ÌÊ ‘”  ÌË ‘”  ÌÌ ‘”  ÌÍ ‘”  ÌÎ ‘”  ÌÏ ‘”  ÌĞ ‘”  ÌÑ ‘”  ÌÒ ‘”  ÌÓ ‘”  ÌÔ ‘”  ÌÕ ‘”  ÌÖ ‘”  Ì× ‘”  ÌØ ‘”  ÌÙ ‘”  ÌÚ ‘”  ÌÛ ‘”  ÌÜ ‘”  Ìİ ‘”  ÌŞ ‘”  Ìß ‘”  Ìà ‘”  Ìá ‘”  Ìâ ‘”  Ìã ‘”  Ìä ‘”  Ìå ‘”  Ìæ ‘”  Ìç ‘”  Ìè ‘”  Ìé ‘”  Ìê ‘”  Ìë ‘”  Ìì ‘”  Ìí ‘”  Ìî ‘”  Ìï ‘”  Ìğ ‘”  Ìñ ‘”  Ìò ‘”  Ìó ‘”  Ìô ‘”  Ìõ ‘”  Ìö ‘”  Ì÷ ‘”  Ìø ‘”  Ìù ‘”  Ìú ‘”  Ìû ‘”  Ìü ‘”  Ìı ‘”  Ìş ‘”  Ìÿ ‘”  Í  ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ÔrI’§missing¦pluginÃ¦genAbcÂÔ  ÔrJ”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCache‘ÔrK•¤type¥start£endªspecifiers¦source±ImportDeclarationÌ€Ì¸‘ÔrL”¤type¥start£end¥local¶ImportDefaultSpecifierÌ‡Ì–ÔrM”¤type¥start£end¤nameªIdentifierÌ‡Ì–¯CommonConstantsÔrN•¤type¥start£end¥value£raw§LiteralÌœÌ·¹../common/CommonConstants»'../common/CommonConstants'

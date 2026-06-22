@@ -1,0 +1,552 @@
+Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚ!$/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import distributedDeviceManager from "@ohos.distributedDeviceManager";
+import hilog from "@ohos.hilog";
+import JSON from "@ohos.util.json";
+import CommonConstants from '../common/CommonConstants';
+const TAG = 'ContactDeviceManager';
+// Address book device management.
+export class ContactDeviceManager {
+    constructor(context) {
+        this.callback = () => {
+        };
+        this.deviceList = [];
+        this.discoverList = [];
+        this.authCallback = () => {
+        };
+        /**
+         * The registered device status callback returns the device status and information.
+         */
+        this.deviceStateChange = (data) => {
+            if (data) {
+                switch (data.action) {
+                    // Physical devices go online.
+                    case distributedDeviceManager.DeviceStateChange.AVAILABLE:
+                        this.changeState(data.device);
+                        break;
+                    // Device availability status.
+                    case distributedDeviceManager.DeviceStateChange.UNKNOWN:
+                        this.changeStateOnline(data.device);
+                        break;
+                    // Physical offline of the device.
+                    case distributedDeviceManager.DeviceStateChange.UNAVAILABLE:
+                        this.changeStateOffline(data.device);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+        /**
+         * Discovering callback methods for devices
+         */
+        this.discoverSuccess = (data) => {
+            if (data) {
+                this.deviceFound(data.device);
+            }
+        };
+        this.context = context;
+        this.deviceManager = distributedDeviceManager.createDeviceManager(CommonConstants.BUNDLE_NAME);
+    }
+    /**
+     * Register device list callback function
+     * @param callback
+     */
+    registerDeviceListCallback(callback) {
+        try {
+            this.callback = callback;
+            if (!this.deviceManager) {
+                this.callback();
+            }
+            else {
+                this.deviceList = this.deviceManager.getAvailableDeviceListSync();
+                this.callback();
+                // Register device status callback.
+                this.deviceManager.on('deviceStateChange', this.deviceStateChange);
+                // This interface is used to call back the listener when the device is successfully registered and discovered.
+                this.deviceManager.on('discoverSuccess', this.discoverSuccess);
+                this.startDeviceDiscovery();
+            }
+        }
+        catch (err) {
+            hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${err.code},message: ${err.message}`);
+        }
+    }
+    /**
+     * Cancel registration of device list
+     */
+    unregisterDeviceListCallback() {
+        if (this.deviceManager) {
+            try {
+                this.deviceList = [];
+                this.discoverList = [];
+                this.deviceManager.stopDiscovering();
+                // Device status cancellation callback.
+                this.deviceManager.off('deviceStateChange', this.deviceStateChange);
+                // Callback for successful deregistration of device discovery.
+                this.deviceManager.off('discoverSuccess', this.discoverSuccess);
+            }
+            catch (error) {
+                hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${error.code},message: ${error.message}`);
+            }
+        }
+    }
+    changeStateOnline(device) {
+        this.deviceList[this.deviceList.length] = device;
+        hilog.info(0x0000, 'hilog', TAG, `online, device list= ${JSON.stringify(this.deviceList)}`);
+        this.callback();
+        this.authCallback();
+        this.authCallback = () => {
+        };
+    }
+    changeStateOffline(device) {
+        let list = [];
+        for (let j = 0; j < this.deviceList.length; j++) {
+            if (this.deviceList[j].deviceId !== device.deviceId) {
+                list[j] = device;
+            }
+        }
+        this.deviceList = list;
+        hilog.info(0x0000, 'hilog', TAG, `offline, updated device list=${JSON.stringify(device)}`);
+        this.callback();
+    }
+    changeState(device) {
+        try {
+            let list = new Array();
+            for (let i = 0; i < this.deviceList.length; i++) {
+                if (this.deviceList[i].deviceId !== device.deviceId) {
+                    list[i] = device;
+                }
+            }
+            this.deviceList = list;
+        }
+        catch (error) {
+            hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${error.code},message: ${error.message}`);
+        }
+        this.callback();
+    }
+    deviceFound(data) {
+        for (let i = 0; i < this.discoverList.length; i++) {
+            if (this.discoverList[i].deviceId === data.deviceId) {
+                hilog.info(0x0000, 'hilog', TAG, 'device founded ignored');
+                return;
+            }
+        }
+        this.discoverList.push(data);
+        hilog.info(0x0000, 'hilog', TAG, `deviceFound self.discoverList= ${this.discoverList}`);
+        this.callback();
+    }
+    /**
+     * Searching for Devices on a Distributed Network by SUBSCRIBE_ID.
+     */
+    startDeviceDiscovery() {
+        let discoverParam = {
+            'discoverTargetType': 1
+        };
+        let filterOptions = {
+            'availableStatus': 0
+        };
+        try {
+            // Discover peripheral devices. The discovery status lasts for two minutes.
+            // If the discovery status exceeds two minutes, the discovery stops. A maximum of 99 nodes can be discovered.
+            this.deviceManager.startDiscovering(discoverParam, filterOptions);
+        }
+        catch (error) {
+            hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${error.code},message: ${error.message}`);
+        }
+    }
+    startAbility(deviceId) {
+        hilog.info(0x0000, 'hilog', TAG, `startAbility deviceId: ${deviceId}`);
+        let want = {
+            bundleName: CommonConstants.BUNDLE_NAME,
+            abilityName: CommonConstants.ENTRY_ABILITY,
+            deviceId: deviceId
+        };
+        this.context.startAbility(want).then((data) => {
+            hilog.info(0x0000, 'hilog', TAG, `start ability finished: ${data}`);
+        }).catch((err) => {
+            hilog.error(0x0000, 'ContactDeviceManager', `startAbility error .Code:${err.code},message: ${err.message}`);
+        });
+    }
+    authenticateDevice(device, callBack) {
+        hilog.info(0x0000, 'hilog', TAG, `authenticateDevice ${JSON.stringify(device)}`);
+        for (let i = 0; i < this.discoverList.length; i++) {
+            if (this.discoverList[i].deviceId === device.deviceId) {
+                this.deviceManager.bindTarget(device.deviceId, {
+                    bindType: 1,
+                    targetPkgName: CommonConstants.BUNDLE_NAME,
+                    appName: CommonConstants.APP_NAME
+                }, (err) => {
+                    this.authCallback = err ? () => {
+                    } : callBack;
+                });
+            }
+        }
+    }
+}
+class DeviceBasicInfo {
+    constructor() {
+        this.device = {
+            deviceId: "",
+            deviceName: "",
+            deviceType: "",
+            networkId: ""
+        };
+    }
+}
+class DeviceManagerData {
+    constructor() {
+        this.action = 0;
+        this.device = {
+            deviceId: "",
+            deviceName: "",
+            deviceType: "",
+            networkId: ""
+        };
+    }
+}
+//# sourceMappingURL=ContactDeviceManager.js.mapÂ”Ùx hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.distributedDeviceManager.d.tsÙe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsÙi hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.util.json.d.tsÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\utils\ContactDeviceManager.etsÔrBœªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo¯hostModulesInfo°belongModulePath§checker¬shouldEmitJs¥entryÃÂÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÙ/C:\Users\86182\Desktop\2026Spring-25307211-Lab1¥entry¥1.0.0Ô  ‘ÔrC’²hostDependencyName®hostModuleName½../utils/ContactDeviceManager¥entryÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÔrDÜ ®¬getNodeCount²getIdentifierCount®getSymbolCount¬getTypeCountµgetInstantiationCountµgetRelationCacheSizes±isUndefinedSymbol±isArgumentsSymbol¯isUnknownSymbol¯getMergedSymbol®getDiagnostics´getGlobalDiagnostics´getRecursionIdentity¶getUnmatchedProperties¹getTypeOfSymbolAtLocation¯getTypeOfSymbolÙ(getSymbolsOfParameterPropertyDeclaration·getDeclaredTypeOfSymbol³getPropertiesOfType±getPropertyOfTypeÙ"getPrivateIdentifierPropertyOfType·getTypeOfPropertyOfType²getIndexInfoOfType³getIndexInfosOfTypeºgetIndexInfosOfIndexSymbol³getSignaturesOfType²getIndexTypeOfType¬getIndexType¬getBaseTypes¸getBaseTypeOfLiteralType®getWidenedType³getTypeFromTypeNode°getParameterTypeÙ$getParameterIdentifierNameAtPosition¸getPromisedTypeOfPromise®getAwaitedType¸getReturnTypeOfSignature®isNullableType¯getNullableType²getNonNullableType²getNonOptionalType°getTypeArguments®typeToTypeNodeÙ$indexInfoToIndexSignatureDeclaration¿signatureToSignatureDeclaration²symbolToEntityName²symbolToExpression¬symbolToNodeÙ!symbolToTypeParameterDeclarations¼symbolToParameterDeclarationºtypeParameterToDeclaration±getSymbolsInScope³getSymbolAtLocation·getIndexInfosAtLocationÙ!getShorthandAssignmentValueSymbolÙ#getExportSpecifierLocalTargetSymbol·getExportSymbolOfSymbol±getTypeAtLocationºgetTypeAtLocationForLinterÙ tryGetTypeAtLocationWithoutCheckºgetTypeOfAssignmentPatternÙ*getPropertySymbolOfDestructuringAssignment±signatureToString¬typeToString®symbolToStringµtypePredicateToString®writeSignature©writeType«writeSymbol²writeTypePredicate¼getAugmentedPropertiesOfType®getRootSymbols²getSymbolOfExpando±getContextualTypeÙ(getContextualTypeForObjectLiteralElementÙ#getContextualTypeForArgumentAtIndexÙ getContextualTypeForJsxAttribute²isContextSensitiveÙ!getTypeOfPropertyOfContextualTypeµgetFullyQualifiedNameÙ#tryGetResolvedSignatureWithoutCheck´getResolvedSignatureÙ/getResolvedSignatureForStringLiteralCompletionsÙ$getResolvedSignatureForSignatureHelpµgetExpandedParameters¹hasEffectiveRestParameterºcontainsArgumentsReference°getConstantValueµisValidPropertyAccessÙ#isValidPropertyAccessForCompletions»getSignatureFromDeclarationºisImplementationOfOverload¹getImmediateAliasedSymbol°getAliasedSymbol¯getEmitResolver²getExportsOfModule¿getExportsAndPropertiesOfModuleÙ forEachExportAndPropertyOfModule¯getSymbolWalker±getAmbientModules¹getJsxIntrinsicTagNamesAt³isOptionalParameter»tryGetMemberInModuleExportsÙ(tryGetMemberInModuleExportsAndProperties´tryFindAmbientModuleÙ(tryFindAmbientModuleWithoutAugmentations¯getApparentType¬getUnionType²isTypeAssignableTo³createAnonymousType¯createSignature¬createSymbol¯createIndexInfoªgetAnyType­getStringType­getNumberType±createPromiseType¯createArrayType¹getElementTypeOfArrayType®getBooleanType¬getFalseType«getTrueType«getVoidType°getUndefinedType«getNullType¯getESSymbolType¬getNeverType¯getOptionalType®getPromiseType²getPromiseLikeType´getAsyncIterableType²isSymbolAccessible«isArrayType«isTupleType¯isArrayLikeTypeÙ#isTypeInvalidDueToUnionDiscriminantºgetExactOptionalProperties¿getAllPossiblePropertiesOfTypesÙ(getSuggestedSymbolForNonexistentPropertyÙ#getSuggestionForNonexistentPropertyÙ,getSuggestedSymbolForNonexistentJSXAttributeÙ&getSuggestedSymbolForNonexistentSymbolÙ!getSuggestionForNonexistentSymbolÙ&getSuggestedSymbolForNonexistentModuleÙ!getSuggestionForNonexistentExportÙ+getSuggestedSymbolForNonexistentClassMember·getBaseConstraintOfType»getDefaultFromTypeParameter«resolveName¯getJsxNamespaceµgetJsxFragmentFactory¸getAccessibleSymbolChain»getTypePredicateOfSignature¹resolveExternalModuleName»resolveExternalModuleSymbol°tryGetThisTypeAt¹getTypeArgumentConstraint¸getSuggestionDiagnostics¸runWithCancellationTokenÙ3getLocalTypeParametersOfClassOrInterfaceOrTypeAlias´isDeclarationVisible´isPropertyAccessible»getTypeOnlyAliasDeclaration¿getMemberOverrideModifierStatusÙ!isTypeParameterPossiblyReferenced²getConstEnumRelate´clearConstEnumRelateµdeleteConstEnumRelateÙ$getTypeArgumentsForResolvedSignatureµgetCheckedSourceFilesÙ"collectHaveTsNoCheckFilesForLinter·clearQualifiedNameCache®isStaticRecord²isStaticSourceFileÔ  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  ÃÃÚ³/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { distributedDeviceManager } from '@kit.DistributedServiceKit';
+import { Callback } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { JSON } from '@kit.ArkTS';
+import { common, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import CommonConstants from '../common/CommonConstants';
+
+const TAG: string = 'ContactDeviceManager';
+
+// Address book device management.
+export class ContactDeviceManager {
+  private context: common.UIAbilityContext;
+  private deviceManager: distributedDeviceManager.DeviceManager;
+  callback: () => void = () => {
+  };
+  deviceList: Array<distributedDeviceManager.DeviceBasicInfo> = [];
+  discoverList: Array<distributedDeviceManager.DeviceBasicInfo> = [];
+  authCallback: () => void = () => {
+  };
+
+  constructor(context: common.UIAbilityContext) {
+    this.context = context;
+    this.deviceManager = distributedDeviceManager.createDeviceManager(CommonConstants.BUNDLE_NAME);
+  }
+
+  /**
+   * The registered device status callback returns the device status and information.
+   */
+  private deviceStateChange: (data: DeviceManagerData) => void = (data: DeviceManagerData): void => {
+    if (data) {
+      switch (data.action) {
+        // Physical devices go online.
+        case distributedDeviceManager.DeviceStateChange.AVAILABLE:
+          this.changeState(data.device);
+          break;
+        // Device availability status.
+        case distributedDeviceManager.DeviceStateChange.UNKNOWN:
+          this.changeStateOnline(data.device);
+          break;
+        // Physical offline of the device.
+        case distributedDeviceManager.DeviceStateChange.UNAVAILABLE:
+          this.changeStateOffline(data.device);
+          break;
+        default:
+          break;
+      }
+    }
+  };
+  /**
+   * Discovering callback methods for devices
+   */
+  private discoverSuccess: (data: DeviceBasicInfo) => void = (data: DeviceBasicInfo): void => {
+    if (data) {
+      this.deviceFound(data.device);
+    }
+  };
+
+  /**
+   * Register device list callback function
+   * @param callback
+   */
+  registerDeviceListCallback(callback: Callback<void>) {
+    try {
+      this.callback = callback;
+      if (!this.deviceManager) {
+        this.callback();
+      } else {
+        this.deviceList = this.deviceManager.getAvailableDeviceListSync();
+        this.callback();
+        // Register device status callback.
+        this.deviceManager.on('deviceStateChange', this.deviceStateChange);
+        // This interface is used to call back the listener when the device is successfully registered and discovered.
+        this.deviceManager.on('discoverSuccess', this.discoverSuccess);
+        this.startDeviceDiscovery();
+      }
+    } catch (err) {
+      hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${err.code},message: ${err.message}`);
+    }
+  }
+
+  /**
+   * Cancel registration of device list
+   */
+  unregisterDeviceListCallback() {
+    if (this.deviceManager) {
+      try {
+        this.deviceList = [];
+        this.discoverList = [];
+        this.deviceManager.stopDiscovering();
+        // Device status cancellation callback.
+        this.deviceManager.off('deviceStateChange', this.deviceStateChange);
+        // Callback for successful deregistration of device discovery.
+        this.deviceManager.off('discoverSuccess', this.discoverSuccess);
+      } catch (error) {
+        hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${error.code},message: ${error.message}`);
+      }
+    }
+
+  }
+
+  changeStateOnline(device: distributedDeviceManager.DeviceBasicInfo) {
+    this.deviceList[this.deviceList.length] = device;
+    hilog.info(0x0000, 'hilog', TAG, `online, device list= ${JSON.stringify(this.deviceList)}`);
+    this.callback();
+    this.authCallback();
+    this.authCallback = () => {
+    };
+  }
+
+  changeStateOffline(device: distributedDeviceManager.DeviceBasicInfo) {
+    let list: Array<distributedDeviceManager.DeviceBasicInfo> = [];
+    for (let j = 0; j < this.deviceList!.length; j++) {
+      if (this.deviceList![j].deviceId !== device.deviceId) {
+        list[j] = device;
+      }
+    }
+    this.deviceList = list;
+    hilog.info(0x0000, 'hilog', TAG, `offline, updated device list=${JSON.stringify(device)}`);
+    this.callback();
+  }
+
+  changeState(device: distributedDeviceManager.DeviceBasicInfo) {
+    try {
+      let list: Array<distributedDeviceManager.DeviceBasicInfo> = new Array();
+      for (let i = 0; i < this.deviceList!.length; i++) {
+        if (this.deviceList![i].deviceId !== device.deviceId) {
+          list[i] = device;
+        }
+      }
+      this.deviceList = list;
+    } catch (error) {
+      hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${error.code},message: ${error.message}`);
+    }
+    this.callback();
+  }
+
+  deviceFound(data: distributedDeviceManager.DeviceBasicInfo) {
+    for (let i = 0; i < this.discoverList.length; i++) {
+      if (this.discoverList[i].deviceId === data.deviceId) {
+        hilog.info(0x0000, 'hilog', TAG, 'device founded ignored');
+        return;
+      }
+    }
+    this.discoverList.push(data);
+    hilog.info(0x0000, 'hilog', TAG, `deviceFound self.discoverList= ${this.discoverList}`);
+    this.callback();
+  }
+
+  /**
+   * Searching for Devices on a Distributed Network by SUBSCRIBE_ID.
+   */
+  startDeviceDiscovery() {
+    let discoverParam: Record<string, number> = {
+      'discoverTargetType': 1
+    };
+    let filterOptions: Record<string, number> = {
+      'availableStatus': 0
+    };
+    try {
+      // Discover peripheral devices. The discovery status lasts for two minutes.
+      // If the discovery status exceeds two minutes, the discovery stops. A maximum of 99 nodes can be discovered.
+      this.deviceManager.startDiscovering(discoverParam, filterOptions);
+    } catch (error) {
+      hilog.error(0x0000, 'ContactDeviceManager', `have error .Code:${error.code},message: ${error.message}`);
+    }
+  }
+
+  startAbility(deviceId: string | undefined) {
+    hilog.info(0x0000, 'hilog', TAG, `startAbility deviceId: ${deviceId}`);
+    let want: Want = {
+      bundleName: CommonConstants.BUNDLE_NAME,
+      abilityName: CommonConstants.ENTRY_ABILITY,
+      deviceId: deviceId
+    };
+    this.context.startAbility(want).then((data) => {
+      hilog.info(0x0000, 'hilog', TAG, `start ability finished: ${data}`);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'ContactDeviceManager', `startAbility error .Code:${err.code},message: ${err.message}`);
+    });
+  }
+
+  authenticateDevice(device: distributedDeviceManager.DeviceBasicInfo, callBack: Callback<void>) {
+    hilog.info(0x0000, 'hilog', TAG, `authenticateDevice ${JSON.stringify(device)}`);
+    for (let i = 0; i < this.discoverList.length; i++) {
+      if (this.discoverList[i].deviceId === device.deviceId) {
+        this.deviceManager.bindTarget(device.deviceId, {
+          bindType: 1,
+          targetPkgName: CommonConstants.BUNDLE_NAME,
+          appName: CommonConstants.APP_NAME
+        }, (err) => {
+          this.authCallback = err ? () => {
+          } : callBack;
+        });
+      }
+    }
+  }
+}
+
+class DeviceBasicInfo {
+  device: distributedDeviceManager.DeviceBasicInfo = {
+    deviceId: "",
+    deviceName: "",
+    deviceType: "",
+    networkId: ""
+  };
+}
+
+class DeviceManagerData {
+  action: distributedDeviceManager.DeviceStateChange = 0;
+  device: distributedDeviceManager.DeviceBasicInfo = {
+    deviceId: "",
+    deviceName: "",
+    deviceType: "",
+    networkId: ""
+  };
+}ÀÔrE”¾@ohos.distributedDeviceManager«@ohos.hilog¯@ohos.util.json¹../common/CommonConstantsÔrF—ªassertions¨external¢id¤meta±moduleSideEffectsªresolvedByµsyntheticNamedExportsAÃÙx hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.distributedDeviceManager.d.tsAÃªoh-resolveÂFAÃÙe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsAÃªoh-resolveÂFAÃÙi hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.util.json.d.tsÔrG‘¯hostModulesInfo‘C¯@ohos.util.json¥entryÃªoh-resolveÂFAÂÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsAÃªoh-resolveÂ“ÔrH–§version¤fileªsourceRoot§sources¥names¨mappings·ContactDeviceManager.js ‘¸ContactDeviceManager.etsÜ Û‘”    ‘” –”   ” 	” !”% )”ÌE ÌE”ÌF ÌF–”   ” 	” ” ” 3”  4–”   ” 	” ” ”" !”# "–”   ” ” ” ”7 7”8 8–”   ” ”	 	” ”" *”# +’”   ”" "””   ” ” ”! !“” $” $” $.•” ” 
+” ” ” “” ”	 ”
+ •” ” ” Ì@” ÌB” ÌC•”  ”  ”  ÌB”  ÌD”  ÌE•” !” !” !” ! ”! !"“” "”	 "”
+ "‘” )‘” +—” ,
+” ,”! ,ÌA”" ,ÌB”& ,ÌY”( ,Ìa”* ,Ìc”” -” -” -” -–” .” .” .” .”# .”% .’” /”2 /&—” 0” 0”1 0%”2 0&”ÌC 07”ÌD 08”ÌM 0ÌAš” 1
+” 1” 1”( 1”) 1”- 1”. 1 ”4 1&”5 1'”6 1(’” 2
+” 2’” 3”2 3&—” 4” 4”1 4%”2 4&”ÌC 47”ÌD 48”ÌK 4?š” 5
+” 5” 5”. 5 ”/ 5!”3 5%”4 5&”: 5,”; 5-”< 5.’” 6
+” 6’” 7”6 7*—” 8” 8”1 8%”2 8&”ÌC 87”ÌD 88”ÌO 8ÌCš” 9
+” 9” 9”/ 9!”0 9"”4 9&”5 9'”; 9-”< 9.”= 9/’” :
+” :‘” ;’” <
+” <‘” =‘” >“” ?”	 ?”
+ ?‘” Ì@‘” ÌB—” ÌC
+” ÌC” ÌC=”  ÌC>”$ ÌCÌS”& ÌCÌ[”( ÌCÌ]”” ÌD” ÌD” ÌD” ÌDš” ÌE” ÌE
+” ÌE”  ÌE”! ÌE”% ÌE”& ÌE”, ÌE"”- ÌE#”. ÌE$‘” ÌF“” ÌG”	 ÌG”
+ ÌG—” %” %” %	” %” %” %” %” &” &” &	” &” &”5 &1”6 &2”ÌI &ÌE”ÌJ &ÌF”ÌY &ÌU”ÌZ &ÌV”Ìe &Ìa”Ìf &Ìb”Ìg &Ìc’” '” '‘” ÌI‘” ÌL”” ÌM” ÌM” ÌM”' ÌM5’” ÌN” ÌN—” ÌO” ÌO
+” ÌO” ÌO” ÌO”$ ÌO”% ÌO—” ÌP” ÌP
+” ÌP” ÌP” ÌP”# ÌP”% ÌP–” ÌQ” ÌQ” ÌQ” ÌQ” ÌQ”  ÌQ‘” ÌR‘” ÌRœ” ÌS” ÌS” ÌS” ÌS”" ÌS”& ÌS”' ÌS”4 ÌS,”5 ÌS-”ÌO ÌSÌG”ÌQ ÌSÌI”ÌR ÌSÌJ–” ÌT” ÌT” ÌT” ÌT” ÌT”  ÌT’” ÌU”3 ÌU+” ÌV” ÌV” ÌV”" ÌV”# ÌV”% ÌV”& ÌV”9 ÌV1”; ÌV3”? ÌV7”Ì@ ÌV8”ÌQ ÌVÌI”ÌR ÌVÌJ”ÌS ÌVÌK’” ÌW”Ì~ ÌWÌv” ÌX” ÌX” ÌX”" ÌX”# ÌX”% ÌX”& ÌX”7 ÌX/”9 ÌX1”= ÌX5”> ÌX6”ÌM ÌXÌE”ÌN ÌXÌF”ÌO ÌXÌG–” ÌY” ÌY” ÌY”) ÌY!”+ ÌY#”, ÌY$‘” ÌZ‘”	 Ì[”” Ì[” Ì[” Ì[” Ì[Ü ” Ì\” Ì\” Ì\” Ì\” Ì\” Ì\”  Ì\”6 Ì\0”8 Ì\2”ÌL Ì\ÌF”ÌO Ì\ÌI”ÌP Ì\ÌJ”ÌT Ì\ÌN”Ìa Ì\Ì[”Ìd Ì\Ì^”Ìe Ì\Ì_”Ìl Ì\Ìf”Ìn Ì\Ìh”Ìo Ì\Ìi”Ìp Ì\Ìj‘”	 Ì]’” Ì^” Ì^‘” Ì`‘” Ìb’” Ìc”  Ìc–” Ìd” Ìd” Ìd” Ìd” Ìd”  Ìd’” Ìe” Ìe
+—” Ìf” Ìf” Ìf” Ìf”" Ìf”$ Ìf”% Ìf—” Ìg” Ìg” Ìg”! Ìg”$ Ìg”& Ìg”' Ìg˜” Ìh” Ìh” Ìh”" Ìh”# Ìh”2 Ìh*”4 Ìh,”5 Ìh-’” Ìi”7 Ìi/” Ìj” Ìj” Ìj”" Ìj”# Ìj”& Ìj”' Ìj”: Ìj2”< Ìj4”Ì@ Ìj8”ÌA Ìj9”ÌR ÌjÌJ”ÌS ÌjÌK”ÌT ÌjÌL’” Ìk”ÌN ÌkÌF” Ìl” Ìl” Ìl”" Ìl”# Ìl”& Ìl”' Ìl”8 Ìl0”: Ìl2”> Ìl6”? Ìl7”ÌN ÌlÌF”ÌO ÌlÌG”ÌP ÌlÌH‘” Ìm”” Ìm” Ìm” Ìm” ÌmÜ ” Ìn” Ìn” Ìn” Ìn” Ìn”" Ìn”$ Ìn”: Ìn2”< Ìn4”ÌP ÌnÌH”ÌU ÌnÌM”ÌV ÌnÌN”ÌZ ÌnÌR”Ìg ÌnÌ_”Ìl ÌnÌd”Ìm ÌnÌe”Ìt ÌnÌl”Ìv ÌnÌn”Ìw ÌnÌo”Ìx ÌnÌp‘” Ìo‘”	 Ìp’” Ìr” Ìr”” Ìt” Ìt” Ìt” ÌtÌD” Ìu” Ìu” Ìu	” Ìu” Ìu” Ìu” Ìu”' Ìu#”( Ìu$”. Ìu*”/ Ìu+”2 Ìu.”8 Ìu4”9 Ìu5Ü ” Ìv” Ìv	” Ìv
+” Ìv” Ìv” Ìv” Ìv”" Ìv”$ Ìv ”' Ìv#”) Ìv%”ÌA Ìv=”ÌE ÌvÌA”ÌF ÌvÌB”ÌO ÌvÌK”ÌP ÌvÌL”ÌT ÌvÌP”ÌU ÌvÌQ”Ì_ ÌvÌ[”Ì` ÌvÌ\”Ìb ÌvÌ^”Ìc ÌvÌ_”Ìd ÌvÌ`–” Ìw” Ìw” Ìw	” Ìw” Ìw” Ìw–” Ìx” Ìx” Ìx	” Ìx” Ìx” Ìx—” Ìy” Ìy” Ìy	” Ìy” Ìy” Ìy”! Ìy“” Ìz”	 Ìz”
+ Ìz’” Ì{” Ì{”” Ì}” Ì}” Ì}” Ì}ÌE–” Ì~” Ì~” Ì~” Ì~Ì@” Ì~ÌB” Ì~ÌCÜ ” Ì” Ì	” Ì” Ì” Ì” Ì” Ì” Ì” Ì”  Ì”! Ì”+ Ì(”, Ì)”2 Ì/”4 Ì1”5 Ì2”7 Ì4”9 Ì6Ÿ” Ì€” Ì€
+” Ì€” Ì€” Ì€”  Ì€”! Ì€”" Ì€”# Ì€”+ Ì€&”0 Ì€+”6 Ì€1”7 Ì€2”? Ì€:”ÌA Ì€<˜” Ì” Ì” Ì” Ì” Ì” Ì”  Ì”! Ì‘” Ì‚‘”	 Ìƒ—” Ì„” Ì„” Ì„	” Ì„” Ì„” Ì„” Ì„Ü ” Ì…” Ì…	” Ì…
+” Ì…” Ì…” Ì…” Ì…”" Ì…”$ Ì… ”' Ì…#”) Ì…%”ÌI Ì…ÌE”ÌM Ì…ÌI”ÌN Ì…ÌJ”ÌW Ì…ÌS”ÌX Ì…ÌT”Ì^ Ì…ÌZ”Ì_ Ì…Ì[”Ìa Ì…Ì]”Ìb Ì…Ì^”Ìc Ì…Ì_–” Ì†” Ì†” Ì†	” Ì†” Ì†” Ì†’” Ì‡” Ì‡”” Ì‰” Ì‰” Ì‰” Ì‰>’” ÌŠ” ÌŠ˜” Ì‹” Ì‹
+” Ì‹” Ì‹ÌB” Ì‹ÌF”  Ì‹ÌK”" Ì‹ÌM”# Ì‹ÌNÜ ” ÌŒ” ÌŒ” ÌŒ” ÌŒ” ÌŒ” ÌŒ” ÌŒ” ÌŒ”  ÌŒ”$ ÌŒ”% ÌŒ”/ ÌŒ*”0 ÌŒ+”6 ÌŒ1”8 ÌŒ3”9 ÌŒ4”; ÌŒ6”= ÌŒ8Ÿ” Ì” Ì” Ì” Ì”# Ì”$ Ì”% Ì”& Ì”' Ì ”/ Ì(”4 Ì-”: Ì3”; Ì4”ÌC Ì<”ÌE Ì>˜” Ì
+” Ì” Ì” Ì” Ì” Ì”$ Ì”% Ì‘” Ì	‘” Ì—” Ì‘” Ì‘
+” Ì‘” Ì‘” Ì‘”" Ì‘”# Ì‘‘”	 Ì’”” Ì’” Ì’” Ì’” Ì’Ü ” Ì“” Ì“” Ì“” Ì“” Ì“” Ì“”  Ì“”6 Ì“0”8 Ì“2”ÌL Ì“ÌF”ÌQ Ì“ÌK”ÌR Ì“ÌL”ÌV Ì“ÌP”Ìc Ì“Ì]”Ìh Ì“Ìb”Ìi Ì“Ìc”Ìp Ì“Ìj”Ìr Ì“Ìl”Ìs Ì“Ìm”Ìt Ì“Ìn‘”	 Ì”–” Ì•” Ì•” Ì•	” Ì•” Ì•” Ì•’” Ì–” Ì–”” Ì˜” Ì˜” Ì˜” Ì˜<Ü ” Ì™” Ì™	” Ì™” Ì™” Ì™” Ì™” Ì™” Ì™” Ì™”  Ì™”! Ì™”- Ì™)”. Ì™*”4 Ì™0”6 Ì™2”7 Ì™3”9 Ì™5”; Ì™7Ÿ” Ìš” Ìš
+” Ìš” Ìš”! Ìš”" Ìš”# Ìš”$ Ìš”% Ìš”- Ìš'”2 Ìš,”6 Ìš0”7 Ìš1”? Ìš9”ÌA Ìš;” Ì›” Ì›” Ì›” Ì›” Ì›”! Ì›”# Ì›”* Ì›"”, Ì›$”/ Ì›'”1 Ì›)”ÌI Ì›ÌA”ÌJ Ì›ÌB”ÌK Ì›ÌC’” Ìœ” Ìœ‘” Ì‘”	 Ìš” ÌŸ” ÌŸ” ÌŸ	” ÌŸ” ÌŸ” ÌŸ” ÌŸ”# ÌŸ”$ ÌŸ ”% ÌŸ!Ü ” Ì ” Ì 	” Ì 
+” Ì ” Ì ” Ì ” Ì ”" Ì ”$ Ì  ”' Ì #”) Ì %”ÌK Ì ÌG”ÌO Ì ÌK”ÌP Ì ÌL”Ì\ Ì ÌX”Ì^ Ì ÌZ”Ì_ Ì Ì[”Ì` Ì Ì\–” Ì¡” Ì¡” Ì¡	” Ì¡” Ì¡” Ì¡’” Ì¢” Ì¢‘” Ì¤‘” Ì¦’” Ì§” Ì§”” Ì¨” Ì¨” Ì¨” Ì¨0”” Ì©”  Ì©”" Ì©”# Ì©’”	 Ìª”
+ Ìª”” Ì«” Ì«” Ì«” Ì«0”” Ì¬” Ì¬” Ì¬”  Ì¬’”	 Ì­”
+ Ì­’” Ì®” Ì®’” Ì¯”ÌW Ì¯ÌQ’” Ì°”Ìy Ì°Ìsœ” Ì±” Ì±
+” Ì±” Ì±” Ì±”/ Ì±)”0 Ì±*”= Ì±7”? Ì±9”ÌL Ì±ÌF”ÌM Ì±ÌG”ÌN Ì±ÌH‘”	 Ì²”” Ì²” Ì²” Ì²” Ì²Ü ” Ì³” Ì³” Ì³” Ì³” Ì³” Ì³”  Ì³”6 Ì³0”8 Ì³2”ÌL Ì³ÌF”ÌQ Ì³ÌK”ÌR Ì³ÌL”ÌV Ì³ÌP”Ìc Ì³Ì]”Ìh Ì³Ìb”Ìi Ì³Ìc”Ìp Ì³Ìj”Ìr Ì³Ìl”Ìs Ì³Ìm”Ìt Ì³Ìn‘”	 Ì´’” Ìµ” Ìµ”” Ì·” Ì·” Ì·” Ì·+Ü ” Ì¸” Ì¸	” Ì¸
+” Ì¸” Ì¸” Ì¸” Ì¸”" Ì¸”$ Ì¸ ”' Ì¸#”) Ì¸%”ÌC Ì¸?”ÌK Ì¸ÌG”ÌM Ì¸ÌI”ÌN Ì¸ÌJ”ÌO Ì¸ÌK”” Ì¹” Ì¹” Ì¹” Ì¹–” Ìº” Ìº” Ìº”' Ìº!”( Ìº"”3 Ìº-–” Ì»” Ì»” Ì»”( Ì»"”) Ì»#”6 Ì»0”” Ì¼” Ì¼” Ì¼” Ì¼’”	 Ì½”
+ Ì½Ü ” Ì¾” Ì¾” Ì¾	” Ì¾” Ì¾”! Ì¾”" Ì¾”& Ì¾"”' Ì¾#”( Ì¾$”, Ì¾(”- Ì¾)”. Ì¾*”2 Ì¾.”4 Ì¾0”6 Ì¾2Ü ” Ì¿” Ì¿” Ì¿” Ì¿” Ì¿” Ì¿” Ì¿”& Ì¿ ”( Ì¿"”+ Ì¿%”- Ì¿'”ÌH Ì¿ÌB”ÌL Ì¿ÌF”ÌN Ì¿ÌH”ÌO Ì¿ÌI”ÌP Ì¿ÌJš” ÌÀ”	 ÌÀ”
+ ÌÀ” ÌÀ” ÌÀ” ÌÀ” ÌÀ” ÌÀ ” ÌÀ"” ÌÀ$Ü ” ÌÁ” ÌÁ” ÌÁ” ÌÁ” ÌÁ” ÌÁ”  ÌÁ”6 ÌÁ0”8 ÌÁ2”ÌT ÌÁÌN”ÌW ÌÁÌQ”ÌX ÌÁÌR”Ì\ ÌÁÌV”Ìi ÌÁÌc”Ìl ÌÁÌf”Ìm ÌÁÌg”Ìt ÌÁÌn”Ìv ÌÁÌp”Ìw ÌÁÌq”Ìx ÌÁÌr”” ÌÂ”	 ÌÂ”
+ ÌÂ” ÌÂ’” ÌÃ” ÌÃ–” ÌÅ” ÌÅ” ÌÅ” ÌÅÌE” ÌÅÌG”' ÌÅÌ_Ü ” ÌÆ” ÌÆ	” ÌÆ
+” ÌÆ” ÌÆ” ÌÆ” ÌÆ”" ÌÆ”$ ÌÆ ”' ÌÆ#”) ÌÆ%”? ÌÆ;”ÌC ÌÆ?”ÌD ÌÆÌ@”ÌM ÌÆÌI”ÌN ÌÆÌJ”ÌT ÌÆÌP”ÌU ÌÆÌQ”ÌW ÌÆÌS”ÌX ÌÆÌT”ÌY ÌÆÌUÜ ” ÌÇ” ÌÇ	” ÌÇ” ÌÇ” ÌÇ” ÌÇ” ÌÇ” ÌÇ” ÌÇ”  ÌÇ”! ÌÇ”- ÌÇ)”. ÌÇ*”4 ÌÇ0”6 ÌÇ2”7 ÌÇ3”9 ÌÇ5”; ÌÇ7Ÿ” ÌÈ” ÌÈ
+” ÌÈ” ÌÈ”! ÌÈ”" ÌÈ”# ÌÈ”$ ÌÈ”% ÌÈ”- ÌÈ'”2 ÌÈ,”8 ÌÈ2”9 ÌÈ3”ÌA ÌÈ;”ÌC ÌÈ=›” ÌÉ” ÌÉ” ÌÉ”" ÌÉ”# ÌÉ”- ÌÉ%”. ÌÉ&”4 ÌÉ,”5 ÌÉ-”= ÌÉ5”? ÌÉ7”” ÌÊ
+” ÌÊ” ÌÊ” ÌÊ–” ÌË
+”! ÌË”# ÌË”2 ÌË(”3 ÌË)”> ÌË4–” ÌÌ
+” ÌÌ” ÌÌ”, ÌÌ"”- ÌÌ#”5 ÌÌ+–” ÌÍ	” ÌÍ” ÌÍ” ÌÍ” ÌÍ” ÌÍ›” ÌÎ
+” ÌÎ” ÌÎ”% ÌÎ”( ÌÎ”+ ÌÎ!”, ÌÎ"”- ÌÎ#”. ÌÎ$”1 ÌÎ'”3 ÌÎ)—” ÌÏ
+” ÌÏ” ÌÏ” ÌÏ” ÌÏ”  ÌÏ”! ÌÏ”” ÌĞ” ÌĞ	” ÌĞ
+” ÌĞ‘” ÌÑ‘”	 ÌÒ’” ÌÓ” ÌÓ‘” ÌÔ“”  ÌÖ ” ÌÖ” ÌÖ‘” ÌÖ “” Ì×” Ì×” Ì×5”” ÌØ” ÌØ” ÌØ” ÌØ”” ÌÙ” ÌÙ” ÌÙ” ÌÙ”” ÌÚ” ÌÚ” ÌÚ” ÌÚ”” ÌÛ” ÌÛ” ÌÛ” ÌÛ’”	 ÌÜ”
+ ÌÜ’” Ìİ ” Ìİ‘” Ìİ“”  Ìß ” Ìß” Ìß‘” Ìß •” Ìà” Ìà” Ìà7” Ìà8” Ìà9“” Ìá” Ìá” Ìá5”” Ìâ” Ìâ” Ìâ” Ìâ”” Ìã” Ìã” Ìã” Ìã”” Ìä” Ìä” Ìä” Ìä”” Ìå” Ìå” Ìå” Ìå’”	 Ìæ”
+ Ìæ’” Ìç ” Ìç‘” ÌçÔrI–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜ Ü‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
+ ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”    ‘”  ! ‘”  " ‘”  # ‘”  $ ‘”  % ‘”  & ‘”  ' ‘”  ( ‘”  ) ‘”  * ‘”  + ‘”  , ‘”  - ‘”  . ‘”  / ‘”  0 ‘”  1 ‘”  2 ‘”  3 ‘”  4 ‘”  5 ‘”  6 ‘”  7 ‘”  8 ‘”  9 ‘”  : ‘”  ; ‘”  < ‘”  = ‘”  > ‘”  ? ‘”  Ì@ ‘”  ÌA ‘”  ÌB ‘”  ÌC ‘”  ÌD ‘”  ÌE ‘”  ÌF ‘”  ÌG ‘”  ÌH ‘”  ÌI ‘”  ÌJ ‘”  ÌK ‘”  ÌL ‘”  ÌM ‘”  ÌN ‘”  ÌO ‘”  ÌP ‘”  ÌQ ‘”  ÌR ‘”  ÌS ‘”  ÌT ‘”  ÌU ‘”  ÌV ‘”  ÌW ‘”  ÌX ‘”  ÌY ‘”  ÌZ ‘”  Ì[ ‘”  Ì\ ‘”  Ì] ‘”  Ì^ ‘”  Ì_ ‘”  Ì` ‘”  Ìa ‘”  Ìb ‘”  Ìc ‘”  Ìd ‘”  Ìe ‘”  Ìf ‘”  Ìg ‘”  Ìh ‘”  Ìi ‘”  Ìj ‘”  Ìk ‘”  Ìl ‘”  Ìm ‘”  Ìn ‘”  Ìo ‘”  Ìp ‘”  Ìq ‘”  Ìr ‘”  Ìs ‘”  Ìt ‘”  Ìu ‘”  Ìv ‘”  Ìw ‘”  Ìx ‘”  Ìy ‘”  Ìz ‘”  Ì{ ‘”  Ì| ‘”  Ì} ‘”  Ì~ ‘”  Ì ‘”  Ì€ ‘”  Ì ‘”  Ì‚ ‘”  Ìƒ ‘”  Ì„ ‘”  Ì… ‘”  Ì† ‘”  Ì‡ ‘”  Ìˆ ‘”  Ì‰ ‘”  ÌŠ ‘”  Ì‹ ‘”  ÌŒ ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì‘ ‘”  Ì’ ‘”  Ì“ ‘”  Ì” ‘”  Ì• ‘”  Ì– ‘”  Ì— ‘”  Ì˜ ‘”  Ì™ ‘”  Ìš ‘”  Ì› ‘”  Ìœ ‘”  Ì ‘”  Ì ‘”  ÌŸ ‘”  Ì  ‘”  Ì¡ ‘”  Ì¢ ‘”  Ì£ ‘”  Ì¤ ‘”  Ì¥ ‘”  Ì¦ ‘”  Ì§ ‘”  Ì¨ ‘”  Ì© ‘”  Ìª ‘”  Ì« ‘”  Ì¬ ‘”  Ì­ ‘”  Ì® ‘”  Ì¯ ‘”  Ì° ‘”  Ì± ‘”  Ì² ‘”  Ì³ ‘”  Ì´ ‘”  Ìµ ‘”  Ì¶ ‘”  Ì· ‘”  Ì¸ ‘”  Ì¹ ‘”  Ìº ‘”  Ì» ‘”  Ì¼ ‘”  Ì½ ‘”  Ì¾ ‘”  Ì¿ ‘”  ÌÀ ‘”  ÌÁ ‘”  ÌÂ ‘”  ÌÃ ‘”  ÌÄ ‘”  ÌÅ ‘”  ÌÆ ‘”  ÌÇ ‘”  ÌÈ ‘”  ÌÉ ‘”  ÌÊ ‘”  ÌË ‘”  ÌÌ ‘”  ÌÍ ‘”  ÌÎ ‘”  ÌÏ ‘”  ÌĞ ‘”  ÌÑ ‘”  ÌÒ ‘”  ÌÓ ‘”  ÌÔ ‘”  ÌÕ ‘”  ÌÖ ‘”  Ì× ‘”  ÌØ ‘”  ÌÙ ‘”  ÌÚ ‘”  ÌÛ ÔrJ’§missing¦pluginÃ¦genAbcÂÔ  ÔrK”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCache‘ÔrL–¤type¥start£end«declarationªspecifiers¦source¶ExportNamedDeclarationÍ€Í<ÔrM–¤type¥start£end¢idªsuperClass¤body°ClassDeclarationÍ‡Í<ÔrN”¤type¥start£end¤nameªIdentifierÍÍ¡´ContactDeviceManagerÀÔrO”¤type¥start£end¤body©ClassBodyÍ¢Í<šÔrP˜¤type¥start£end¦static¨computed£key¤kind¥value°MethodDefinitionÍ©Í	ÄÂÂNªIdentifierÍ©Í´«constructor«constructorÔrQ™¤type¥start£end¢idªexpression©generator¥async¦params¤body²FunctionExpressionÍ´Í	ÄÀÂÂÂ‘NªIdentifierÍµÍ¼§contextO®BlockStatementÍ¾Í	Ä˜ÔrR”¤type¥start£endªexpression³ExpressionStatementÍÉÍìÔrS–¤type¥start£end¨operator¤left¥right´AssignmentExpressionÍÉÍë¡=ÔrT—¤type¥start£end¦object¨property¨computed¨optional°MemberExpressionÍÉÍÖÔrU“¤type¥start£end®ThisExpressionÍÉÍÍNªIdentifierÍÎÍÖ¨callbackÂÂQ·ArrowFunctionExpressionÍÙÍëÀÂÂÂO®BlockStatementÍßÍëR³ExpressionStatementÍöÍS´AssignmentExpressionÍöÍ
+¡=T°MemberExpressionÍöÍU®ThisExpressionÍöÍúNªIdentifierÍûÍªdeviceListÂÂÔrV”¤type¥start£end¨elements¯ArrayExpressionÍÍ
+R³ExpressionStatementÍÍ,S´AssignmentExpressionÍÍ+¡=T°MemberExpressionÍÍ&U®ThisExpressionÍÍNªIdentifierÍÍ&¬discoverListÂÂV¯ArrayExpressionÍ)Í+R³ExpressionStatementÍ6Í]S´AssignmentExpressionÍ6Í\¡=T°MemberExpressionÍ6ÍGU®ThisExpressionÍ6Í:NªIdentifierÍ;ÍG¬authCallbackÂÂQ·ArrowFunctionExpressionÍJÍ\ÀÂÂÂO®BlockStatementÍPÍ\R³ExpressionStatementÍŞÍTS´AssignmentExpressionÍŞÍS¡=T°MemberExpressionÍŞÍôU®ThisExpressionÍŞÍâNªIdentifierÍãÍô±deviceStateChangeÂÂQ·ArrowFunctionExpressionÍ÷ÍSÀÂÂÂ‘NªIdentifierÍøÍü¤dataO®BlockStatementÍÍS‘ÔrW–¤type¥start£end¤testªconsequent©alternate«IfStatementÍÍHNªIdentifierÍÍ¤dataO®BlockStatementÍÍH‘ÔrX•¤type¥start£end¬discriminant¥cases¯SwitchStatementÍ-Í9T°MemberExpressionÍ5Í@NªIdentifierÍ5Í9¤dataNªIdentifierÍ:Í@¦actionÂÂ”ÔrY•¤type¥start£endªconsequent¤testªSwitchCaseÍÍ’R³ExpressionStatementÍáÍÿÔrZ–¤type¥start£end¦callee©arguments¨optional®CallExpressionÍáÍşT°MemberExpressionÍáÍñU®ThisExpressionÍáÍåNªIdentifierÍæÍñ«changeStateÂÂ‘T°MemberExpressionÍòÍıNªIdentifierÍòÍö¤dataNªIdentifierÍ÷Íı¦deviceÂÂÂÔr[”¤type¥start£end¥label®BreakStatementÍÍÀT°MemberExpressionÍ’ÍÆT°MemberExpressionÍ’Í¼NªIdentifierÍ’Íª¸distributedDeviceManagerNªIdentifierÍ«Í¼±DeviceStateChangeÂÂNªIdentifierÍ½ÍÆ©AVAILABLEÂÂYªSwitchCaseÍiÍÿ’R³ExpressionStatementÍ»ÍßZ®CallExpressionÍ»ÍŞT°MemberExpressionÍ»ÍÑU®ThisExpressionÍ»Í¿NªIdentifierÍÀÍÑ±changeStateOnlineÂÂ‘T°MemberExpressionÍÒÍİNªIdentifierÍÒÍÖ¤dataNªIdentifierÍ×Íİ¦deviceÂÂÂ[®BreakStatementÍùÍÿÀT°MemberExpressionÍnÍ T°MemberExpressionÍnÍ˜NªIdentifierÍnÍ†¸distributedDeviceManagerNªIdentifierÍ‡Í˜±DeviceStateChangeÂÂNªIdentifierÍ™Í §UNKNOWNÂÂYªSwitchCaseÍMÍè’R³ExpressionStatementÍ£ÍÈZ®CallExpressionÍ£ÍÇT°MemberExpressionÍ£ÍºU®ThisExpressionÍ£Í§NªIdentifierÍ¨Íº²changeStateOfflineÂÂ‘T°MemberExpressionÍ»ÍÆNªIdentifierÍ»Í¿¤dataNªIdentifierÍÀÍÆ¦deviceÂÂÂ[®BreakStatementÍâÍèÀT°MemberExpressionÍRÍˆT°MemberExpressionÍRÍ|NªIdentifierÍRÍj¸distributedDeviceManagerNªIdentifierÍkÍ|±DeviceStateChangeÂÂNªIdentifierÍ}Íˆ«UNAVAILABLEÂÂYªSwitchCaseÍşÍ&‘[®BreakStatementÍ Í&ÀÀÀR³ExpressionStatementÍ­Í	3S´AssignmentExpressionÍ­Í	2¡=T°MemberExpressionÍ­ÍÁU®ThisExpressionÍ­Í±NªIdentifierÍ²ÍÁ¯discoverSuccessÂÂQ·ArrowFunctionExpressionÍÄÍ	2ÀÂÂÂ‘NªIdentifierÍÅÍÉ¤dataO®BlockStatementÍÎÍ	2‘W«IfStatementÍİÍ	'NªIdentifierÍáÍå¤dataO®BlockStatementÍçÍ	'‘R³ExpressionStatementÍúÍ	Z®CallExpressionÍúÍ	T°MemberExpressionÍúÍ	
+U®ThisExpressionÍúÍşNªIdentifierÍÿÍ	
+«deviceFoundÂÂ‘T°MemberExpressionÍ	Í	NªIdentifierÍ	Í	¤dataNªIdentifierÍ	Í	¦deviceÂÂÂÀR³ExpressionStatementÍ	=Í	TS´AssignmentExpressionÍ	=Í	S¡=T°MemberExpressionÍ	=Í	IU®ThisExpressionÍ	=Í	ANªIdentifierÍ	BÍ	I§contextÂÂNªIdentifierÍ	LÍ	S§contextR³ExpressionStatementÍ	^Í	½S´AssignmentExpressionÍ	^Í	¼¡=T°MemberExpressionÍ	^Í	pU®ThisExpressionÍ	^Í	bNªIdentifierÍ	cÍ	p­deviceManagerÂÂZ®CallExpressionÍ	sÍ	¼T°MemberExpressionÍ	sÍ	ŸNªIdentifierÍ	sÍ	‹¸distributedDeviceManagerNªIdentifierÍ	ŒÍ	Ÿ³createDeviceManagerÂÂ‘T°MemberExpressionÍ	 Í	»NªIdentifierÍ	 Í	¯¯CommonConstantsNªIdentifierÍ	°Í	»«BUNDLE_NAMEÂÂÂP°MethodDefinitionÍ
+#Í ÂÂNªIdentifierÍ
+#Í
+=ºregisterDeviceListCallback¦methodQ²FunctionExpressionÍ
+=Í ÀÂÂÂ‘NªIdentifierÍ
+>Í
+F¨callbackO®BlockStatementÍ
+HÍ ‘Ôr\–¤type¥start£end¥block§handler©finalizer¬TryStatementÍ
+SÍ™O®BlockStatementÍ
+WÍ’R³ExpressionStatementÍ
+fÍ
+S´AssignmentExpressionÍ
+fÍ
+~¡=T°MemberExpressionÍ
+fÍ
+sU®ThisExpressionÍ
+fÍ
+jNªIdentifierÍ
+kÍ
+s¨callbackÂÂNªIdentifierÍ
+vÍ
+~¨callbackW«IfStatementÍ
+ÍúÔr]–¤type¥start£end¨operator¦prefix¨argument¯UnaryExpressionÍ
+‘Í
+¤¡!ÃT°MemberExpressionÍ
+’Í
+¤U®ThisExpressionÍ
+’Í
+–NªIdentifierÍ
+—Í
+¤­deviceManagerÂÂO®BlockStatementÍ
+¦Í
+Ø‘R³ExpressionStatementÍ
+¹Í
+ÉZ®CallExpressionÍ
+¹Í
+ÈT°MemberExpressionÍ
+¹Í
+ÆU®ThisExpressionÍ
+¹Í
+½NªIdentifierÍ
+¾Í
+Æ¨callbackÂÂÂO®BlockStatementÍ
+ëÍú•R³ExpressionStatementÍ
+şÍ@S´AssignmentExpressionÍ
+şÍ?¡=T°MemberExpressionÍ
+şÍU®ThisExpressionÍ
+şÍNªIdentifierÍÍªdeviceListÂÂZ®CallExpressionÍÍ?T°MemberExpressionÍÍ=T°MemberExpressionÍÍ"U®ThisExpressionÍÍNªIdentifierÍÍ"­deviceManagerÂÂNªIdentifierÍ#Í=ºgetAvailableDeviceListSyncÂÂÂR³ExpressionStatementÍRÍbZ®CallExpressionÍRÍaT°MemberExpressionÍRÍ_U®ThisExpressionÍRÍVNªIdentifierÍWÍ_¨callbackÂÂÂR³ExpressionStatementÍ©ÍìZ®CallExpressionÍ©ÍëT°MemberExpressionÍ©Í¾T°MemberExpressionÍ©Í»U®ThisExpressionÍ©Í­NªIdentifierÍ®Í»­deviceManagerÂÂNªIdentifierÍ¼Í¾¢onÂÂ’Ôr^•¤type¥start£end¥value£raw§LiteralÍ¿ÍÒ±deviceStateChange³'deviceStateChange'T°MemberExpressionÍÔÍêU®ThisExpressionÍÔÍØNªIdentifierÍÙÍê±deviceStateChangeÂÂÂR³ExpressionStatementÍ~Í½Z®CallExpressionÍ~Í¼T°MemberExpressionÍ~Í“T°MemberExpressionÍ~ÍU®ThisExpressionÍ~Í‚NªIdentifierÍƒÍ­deviceManagerÂÂNªIdentifierÍ‘Í“¢onÂÂ’^§LiteralÍ”Í¥¯discoverSuccess±'discoverSuccess'T°MemberExpressionÍ§Í»U®ThisExpressionÍ§Í«NªIdentifierÍ¬Í»¯discoverSuccessÂÂÂR³ExpressionStatementÍÏÍëZ®CallExpressionÍÏÍêT°MemberExpressionÍÏÍèU®ThisExpressionÍÏÍÓNªIdentifierÍÔÍè´startDeviceDiscoveryÂÂÂÔr_•¤type¥start£end¥param¤body«CatchClauseÍÍ™NªIdentifierÍÍ£errO®BlockStatementÍÍ™‘R³ExpressionStatementÍ*ÍZ®CallExpressionÍ*ÍT°MemberExpressionÍ*Í5NªIdentifierÍ*Í/¥hilogNªIdentifierÍ0Í5¥errorÂÂ“^§LiteralÍ6Í< ¦0x0000^§LiteralÍ>ÍT´ContactDeviceManager¶'ContactDeviceManager'Ôr`•¤type¥start£end«expressions¦quasis¯TemplateLiteralÍVÍŒ’T°MemberExpressionÍjÍrNªIdentifierÍjÍm£errNªIdentifierÍnÍr¤codeÂÂT°MemberExpressionÍÍŠNªIdentifierÍÍ‚£errNªIdentifierÍƒÍŠ§messageÂÂ“Ôra•¤type¥start£end¥value¤tail¯TemplateElementÍWÍhÔrb’£raw¦cooked±have error .Code:±have error .Code:Âa¯TemplateElementÍsÍ}bª,message: ª,message: Âa¯TemplateElementÍ‹Í‹b  ÃÂÀP°MethodDefinitionÍãÍ¸ÂÂNªIdentifierÍãÍÿ¼unregisterDeviceListCallback¦methodQ²FunctionExpressionÍÿÍ¸ÀÂÂÂO®BlockStatementÍÍ¸‘W«IfStatementÍÍ±T°MemberExpressionÍÍ#U®ThisExpressionÍÍNªIdentifierÍÍ#­deviceManagerÂÂO®BlockStatementÍ%Í±‘\¬TryStatementÍ4Í¦O®BlockStatementÍ8Í •R³ExpressionStatementÍKÍ`S´AssignmentExpressionÍKÍ_¡=T°MemberExpressionÍKÍZU®ThisExpressionÍKÍONªIdentifierÍPÍZªdeviceListÂÂV¯ArrayExpressionÍ]Í_R³ExpressionStatementÍrÍ‰S´AssignmentExpressionÍrÍˆ¡=T°MemberExpressionÍrÍƒU®ThisExpressionÍrÍvNªIdentifierÍwÍƒ¬discoverListÂÂV¯ArrayExpressionÍ†ÍˆR³ExpressionStatementÍ›ÍÀZ®CallExpressionÍ›Í¿T°MemberExpressionÍ›Í½T°MemberExpressionÍ›Í­U®ThisExpressionÍ›ÍŸNªIdentifierÍ Í­­deviceManagerÂÂNªIdentifierÍ®Í½¯stopDiscoveringÂÂÂR³ExpressionStatementÍÍOZ®CallExpressionÍÍNT°MemberExpressionÍÍ!T°MemberExpressionÍÍU®ThisExpressionÍÍNªIdentifierÍÍ­deviceManagerÂÂNªIdentifierÍÍ!£offÂÂ’^§LiteralÍ"Í5±deviceStateChange³'deviceStateChange'T°MemberExpressionÍ7ÍMU®ThisExpressionÍ7Í;NªIdentifierÍ<ÍM±deviceStateChangeÂÂÂR³ExpressionStatementÍ±ÍñZ®CallExpressionÍ±ÍğT°MemberExpressionÍ±ÍÇT°MemberExpressionÍ±ÍÃU®ThisExpressionÍ±ÍµNªIdentifierÍ¶ÍÃ­deviceManagerÂÂNªIdentifierÍÄÍÇ£offÂÂ’^§LiteralÍÈÍÙ¯discoverSuccess±'discoverSuccess'T°MemberExpressionÍÛÍïU®ThisExpressionÍÛÍßNªIdentifierÍàÍï¯discoverSuccessÂÂÂ_«CatchClauseÍÍ¦NªIdentifierÍÍ¥errorO®BlockStatementÍÍ¦‘R³ExpressionStatementÍ/Í—Z®CallExpressionÍ/Í–T°MemberExpressionÍ/Í:NªIdentifierÍ/Í4¥hilogNªIdentifierÍ5Í:¥errorÂÂ“^§LiteralÍ;ÍA ¦0x0000^§LiteralÍCÍY´ContactDeviceManager¶'ContactDeviceManager'`¯TemplateLiteralÍ[Í•’T°MemberExpressionÍoÍyNªIdentifierÍoÍt¥errorNªIdentifierÍuÍy¤codeÂÂT°MemberExpressionÍ†Í“NªIdentifierÍ†Í‹¥errorNªIdentifierÍŒÍ“§messageÂÂ“a¯TemplateElementÍ\Ímb±have error .Code:±have error .Code:Âa¯TemplateElementÍzÍ„bª,message: ª,message: Âa¯TemplateElementÍ”Í”b  ÃÂÀÀP°MethodDefinitionÍ¾ÍêÂÂNªIdentifierÍ¾ÍÏ±changeStateOnline¦methodQ²FunctionExpressionÍÏÍêÀÂÂÂ‘NªIdentifierÍĞÍÖ¦deviceO®BlockStatementÍØÍê•R³ExpressionStatementÍãÍS´AssignmentExpressionÍãÍ¡=T°MemberExpressionÍãÍ
+T°MemberExpressionÍãÍòU®ThisExpressionÍãÍçNªIdentifierÍèÍòªdeviceListÂÂT°MemberExpressionÍóÍ	T°MemberExpressionÍóÍU®ThisExpressionÍóÍ÷NªIdentifierÍøÍªdeviceListÂÂNªIdentifierÍÍ	¦lengthÂÂÃÂNªIdentifierÍÍ¦deviceR³ExpressionStatementÍÍzZ®CallExpressionÍÍyT°MemberExpressionÍÍ(NªIdentifierÍÍ#¥hilogNªIdentifierÍ$Í(¤infoÂÂ”^§LiteralÍ)Í/ ¦0x0000^§LiteralÍ1Í8¥hilog§'hilog'NªIdentifierÍ:Í=£TAG`¯TemplateLiteralÍ?Íx‘Z®CallExpressionÍWÍvT°MemberExpressionÍWÍeNªIdentifierÍWÍ[¤JSONNªIdentifierÍ\Íe©stringifyÂÂ‘T°MemberExpressionÍfÍuU®ThisExpressionÍfÍjNªIdentifierÍkÍuªdeviceListÂÂÂ’a¯TemplateElementÍ@ÍUbµonline, device list= µonline, device list= Âa¯TemplateElementÍwÍwb  ÃÂR³ExpressionStatementÍ„Í”Z®CallExpressionÍ„Í“T°MemberExpressionÍ„Í‘U®ThisExpressionÍ„ÍˆNªIdentifierÍ‰Í‘¨callbackÂÂÂR³ExpressionStatementÍÍ²Z®CallExpressionÍÍ±T°MemberExpressionÍÍ¯U®ThisExpressionÍÍ¢NªIdentifierÍ£Í¯¬authCallbackÂÂÂR³ExpressionStatementÍ¼ÍãS´AssignmentExpressionÍ¼Íâ¡=T°MemberExpressionÍ¼ÍÍU®ThisExpressionÍ¼ÍÀNªIdentifierÍÁÍÍ¬authCallbackÂÂQ·ArrowFunctionExpressionÍĞÍâÀÂÂÂO®BlockStatementÍÖÍâP°MethodDefinitionÍğÍˆÂÂNªIdentifierÍğÍ²changeStateOffline¦methodQ²FunctionExpressionÍÍˆÀÂÂÂ‘NªIdentifierÍÍ	¦deviceO®BlockStatementÍÍˆ•Ôrc•¤type¥start£end¬declarations¤kind³VariableDeclarationÍÍ$‘Ôrd•¤type¥start£end¢id¤init²VariableDeclaratorÍÍ#NªIdentifierÍÍ¤listV¯ArrayExpressionÍ!Í#£letÔre—¤type¥start£end¤init¤test¦update¤body¬ForStatementÍ.Íác³VariableDeclarationÍ3Í<‘d²VariableDeclaratorÍ7Í<NªIdentifierÍ7Í8¡j^§LiteralÍ;Í< ¡0£letÔrf–¤type¥start£end¤left¨operator¥right°BinaryExpressionÍ>ÍXNªIdentifierÍ>Í?¡j¡<T°MemberExpressionÍBÍXT°MemberExpressionÍBÍQU®ThisExpressionÍBÍFNªIdentifierÍGÍQªdeviceListÂÂNªIdentifierÍRÍX¦lengthÂÂ]°UpdateExpressionÍZÍ]¢++ÂNªIdentifierÍZÍ[¡jO®BlockStatementÍ_Íá‘W«IfStatementÍnÍÖf°BinaryExpressionÍrÍ¡T°MemberExpressionÍrÍT°MemberExpressionÍrÍ„T°MemberExpressionÍrÍU®ThisExpressionÍrÍvNªIdentifierÍwÍªdeviceListÂÂNªIdentifierÍ‚Íƒ¡jÃÂNªIdentifierÍ…Í¨deviceIdÂÂ£!==T°MemberExpressionÍ’Í¡NªIdentifierÍ’Í˜¦deviceNªIdentifierÍ™Í¡¨deviceIdÂÂO®BlockStatementÍ£ÍÖ‘R³ExpressionStatementÍ¶ÍÇS´AssignmentExpressionÍ¶ÍÆ¡=T°MemberExpressionÍ¶Í½NªIdentifierÍ¶Íº¤listNªIdentifierÍ»Í¼¡jÃÂNªIdentifierÍÀÍÆ¦deviceÀR³ExpressionStatementÍëÍS´AssignmentExpressionÍëÍ¡=T°MemberExpressionÍëÍúU®ThisExpressionÍëÍïNªIdentifierÍğÍúªdeviceListÂÂNªIdentifierÍıÍ¤listR³ExpressionStatementÍÍgZ®CallExpressionÍÍfT°MemberExpressionÍÍNªIdentifierÍÍ¥hilogNªIdentifierÍÍ¤infoÂÂ”^§LiteralÍÍ ¦0x0000^§LiteralÍÍ&¥hilog§'hilog'NªIdentifierÍ(Í+£TAG`¯TemplateLiteralÍ-Íe‘Z®CallExpressionÍMÍcT°MemberExpressionÍMÍ[NªIdentifierÍMÍQ¤JSONNªIdentifierÍRÍ[©stringifyÂÂ‘NªIdentifierÍ\Íb¦deviceÂ’a¯TemplateElementÍ.ÍKb½offline, updated device list=½offline, updated device list=Âa¯TemplateElementÍdÍdb  ÃÂR³ExpressionStatementÍqÍZ®CallExpressionÍqÍ€T°MemberExpressionÍqÍ~U®ThisExpressionÍqÍuNªIdentifierÍvÍ~¨callbackÂÂÂP°MethodDefinitionÍÍ“ÂÂNªIdentifierÍÍ™«changeState¦methodQ²FunctionExpressionÍ™Í“ÀÂÂÂ‘NªIdentifierÍšÍ ¦deviceO®BlockStatementÍ¢Í“’\¬TryStatementÍ­ÍrO®BlockStatementÍ±ÍØ“c³VariableDeclarationÍÀÍ×‘d²VariableDeclaratorÍÄÍÖNªIdentifierÍÄÍÈ¤listÔrg•¤type¥start£end¦callee©arguments­NewExpressionÍËÍÖNªIdentifierÍÏÍÔ¥Array£lete¬ForStatementÍåÍ¨c³VariableDeclarationÍêÍó‘d²VariableDeclaratorÍîÍóNªIdentifierÍîÍï¡i^§LiteralÍòÍó ¡0£letf°BinaryExpressionÍõÍNªIdentifierÍõÍö¡i¡<T°MemberExpressionÍùÍT°MemberExpressionÍùÍU®ThisExpressionÍùÍıNªIdentifierÍşÍªdeviceListÂÂNªIdentifierÍ	Í¦lengthÂÂ]°UpdateExpressionÍÍ¢++ÂNªIdentifierÍÍ¡iO®BlockStatementÍÍ¨‘W«IfStatementÍ)Í™f°BinaryExpressionÍ-Í\T°MemberExpressionÍ-ÍHT°MemberExpressionÍ-Í?T°MemberExpressionÍ-Í<U®ThisExpressionÍ-Í1NªIdentifierÍ2Í<ªdeviceListÂÂNªIdentifierÍ=Í>¡iÃÂNªIdentifierÍ@ÍH¨deviceIdÂÂ£!==T°MemberExpressionÍMÍ\NªIdentifierÍMÍS¦deviceNªIdentifierÍTÍ\¨deviceIdÂÂO®BlockStatementÍ^Í™‘R³ExpressionStatementÍuÍ†S´AssignmentExpressionÍuÍ…¡=T°MemberExpressionÍuÍ|NªIdentifierÍuÍy¤listNªIdentifierÍzÍ{¡iÃÂNªIdentifierÍÍ…¦deviceÀR³ExpressionStatementÍ¶ÍÍS´AssignmentExpressionÍ¶ÍÌ¡=T°MemberExpressionÍ¶ÍÅU®ThisExpressionÍ¶ÍºNªIdentifierÍ»ÍÅªdeviceListÂÂNªIdentifierÍÈÍÌ¤list_«CatchClauseÍâÍrNªIdentifierÍéÍî¥errorO®BlockStatementÍğÍr‘R³ExpressionStatementÍÿÍgZ®CallExpressionÍÿÍfT°MemberExpressionÍÿÍ
+NªIdentifierÍÿÍ¥hilogNªIdentifierÍÍ
+¥errorÂÂ“^§LiteralÍÍ ¦0x0000^§LiteralÍÍ)´ContactDeviceManager¶'ContactDeviceManager'`¯TemplateLiteralÍ+Íe’T°MemberExpressionÍ?ÍINªIdentifierÍ?ÍD¥errorNªIdentifierÍEÍI¤codeÂÂT°MemberExpressionÍVÍcNªIdentifierÍVÍ[¥errorNªIdentifierÍ\Íc§messageÂÂ“a¯TemplateElementÍ,Í=b±have error .Code:±have error .Code:Âa¯TemplateElementÍJÍTbª,message: ª,message: Âa¯TemplateElementÍdÍdb  ÃÂÀR³ExpressionStatementÍ|ÍŒZ®CallExpressionÍ|Í‹T°MemberExpressionÍ|Í‰U®ThisExpressionÍ|Í€NªIdentifierÍÍ‰¨callbackÂÂÂP°MethodDefinitionÍ™ÍXÂÂNªIdentifierÍ™Í¤«deviceFound¦methodQ²FunctionExpressionÍ¤ÍXÀÂÂÂ‘NªIdentifierÍ¥Í©¤dataO®BlockStatementÍ«ÍX”e¬ForStatementÍ¶Í®c³VariableDeclarationÍ»ÍÄ‘d²VariableDeclaratorÍ¿ÍÄNªIdentifierÍ¿ÍÀ¡i^§LiteralÍÃÍÄ ¡0£letf°BinaryExpressionÍÆÍâNªIdentifierÍÆÍÇ¡i¡<T°MemberExpressionÍÊÍâT°MemberExpressionÍÊÍÛU®ThisExpressionÍÊÍÎNªIdentifierÍÏÍÛ¬discoverListÂÂNªIdentifierÍÜÍâ¦lengthÂÂ]°UpdateExpressionÍäÍç¢++ÂNªIdentifierÍäÍå¡iO®BlockStatementÍéÍ®‘W«IfStatementÍøÍ£f°BinaryExpressionÍüÍ+T°MemberExpressionÍüÍT°MemberExpressionÍüÍT°MemberExpressionÍüÍU®ThisExpressionÍüÍ NªIdentifierÍÍ¬discoverListÂÂNªIdentifierÍÍ¡iÃÂNªIdentifierÍÍ¨deviceIdÂÂ£===T°MemberExpressionÍÍ+NªIdentifierÍÍ"¤dataNªIdentifierÍ#Í+¨deviceIdÂÂO®BlockStatementÍ-Í£’R³ExpressionStatementÍ@Í{Z®CallExpressionÍ@ÍzT°MemberExpressionÍ@ÍJNªIdentifierÍ@ÍE¥hilogNªIdentifierÍFÍJ¤infoÂÂ”^§LiteralÍKÍQ ¦0x0000^§LiteralÍSÍZ¥hilog§'hilog'NªIdentifierÍ\Í_£TAG^§LiteralÍaÍy¶device founded ignored¸'device founded ignored'ÂÔrh”¤type¥start£end¨argument¯ReturnStatementÍÍ”ÀÀR³ExpressionStatementÍ¸ÍÕZ®CallExpressionÍ¸ÍÔT°MemberExpressionÍ¸ÍÎT°MemberExpressionÍ¸ÍÉU®ThisExpressionÍ¸Í¼NªIdentifierÍ½ÍÉ¬discoverListÂÂNªIdentifierÍÊÍÎ¤pushÂÂ‘NªIdentifierÍÏÍÓ¤dataÂR³ExpressionStatementÍßÍ7Z®CallExpressionÍßÍ6T°MemberExpressionÍßÍéNªIdentifierÍßÍä¥hilogNªIdentifierÍåÍé¤infoÂÂ”^§LiteralÍêÍğ ¦0x0000^§LiteralÍòÍù¥hilog§'hilog'NªIdentifierÍûÍş£TAG`¯TemplateLiteralÍ Í5‘T°MemberExpressionÍ"Í3U®ThisExpressionÍ"Í&NªIdentifierÍ'Í3¬discoverListÂÂ’a¯TemplateElementÍÍ b¿deviceFound self.discoverList= ¿deviceFound self.discoverList= Âa¯TemplateElementÍ4Í4b  ÃÂR³ExpressionStatementÍAÍQZ®CallExpressionÍAÍPT°MemberExpressionÍAÍNU®ThisExpressionÍAÍENªIdentifierÍFÍN¨callbackÂÂÂP°MethodDefinitionÍ¸ÍLÂÂNªIdentifierÍ¸ÍÌ´startDeviceDiscovery¦methodQ²FunctionExpressionÍÌÍLÀÂÂÂO®BlockStatementÍÏÍL“c³VariableDeclarationÍÚÍ ‘d²VariableDeclaratorÍŞÍNªIdentifierÍŞÍë­discoverParamÔri”¤type¥start£endªproperties°ObjectExpressionÍîÍ‘Ôrj™¤type¥start£end¦method©shorthand¨computed£key¥value¤kind¨PropertyÍıÍÂÂÂ^§LiteralÍıÍ²discoverTargetType´'discoverTargetType'^§LiteralÍÍ¡1¤init£letc³VariableDeclarationÍ*Ím‘d²VariableDeclaratorÍ.ÍlNªIdentifierÍ.Í;­filterOptionsi°ObjectExpressionÍ>Íl‘j¨PropertyÍMÍaÂÂÂ^§LiteralÍMÍ^¯availableStatus±'availableStatus'^§LiteralÍ`Ía ¡0¤init£let\¬TryStatementÍwÍEO®BlockStatementÍ{Í«‘R³ExpressionStatementÍ^Í Z®CallExpressionÍ^ÍŸT°MemberExpressionÍ^ÍT°MemberExpressionÍ^ÍpU®ThisExpressionÍ^ÍbNªIdentifierÍcÍp­deviceManagerÂÂNªIdentifierÍqÍ°startDiscoveringÂÂ’NªIdentifierÍ‚Í­discoverParamNªIdentifierÍ‘Í­filterOptionsÂ_«CatchClauseÍµÍENªIdentifierÍ¼ÍÁ¥errorO®BlockStatementÍÃÍE‘R³ExpressionStatementÍÒÍ:Z®CallExpressionÍÒÍ9T°MemberExpressionÍÒÍİNªIdentifierÍÒÍ×¥hilogNªIdentifierÍØÍİ¥errorÂÂ“^§LiteralÍŞÍä ¦0x0000^§LiteralÍæÍü´ContactDeviceManager¶'ContactDeviceManager'`¯TemplateLiteralÍşÍ8’T°MemberExpressionÍÍNªIdentifierÍÍ¥errorNªIdentifierÍÍ¤codeÂÂT°MemberExpressionÍ)Í6NªIdentifierÍ)Í.¥errorNªIdentifierÍ/Í6§messageÂÂ“a¯TemplateElementÍÿÍb±have error .Code:±have error .Code:Âa¯TemplateElementÍÍ'bª,message: ª,message: Âa¯TemplateElementÍ7Í7b  ÃÂÀP°MethodDefinitionÍRÍ£ÂÂNªIdentifierÍRÍ^¬startAbility¦methodQ²FunctionExpressionÍ^Í£ÀÂÂÂ‘NªIdentifierÍ_Íg¨deviceIdO®BlockStatementÍiÍ£“R³ExpressionStatementÍtÍ»Z®CallExpressionÍtÍºT°MemberExpressionÍtÍ~NªIdentifierÍtÍy¥hilogNªIdentifierÍzÍ~¤infoÂÂ”^§LiteralÍÍ… ¦0x0000^§LiteralÍ‡Í¥hilog§'hilog'NªIdentifierÍÍ“£TAG`¯TemplateLiteralÍ•Í¹‘NªIdentifierÍ¯Í·¨deviceId’a¯TemplateElementÍ–Í­b·startAbility deviceId: ·startAbility deviceId: Âa¯TemplateElementÍ¸Í¸b  ÃÂc³VariableDeclarationÍÅÍl‘d²VariableDeclaratorÍÉÍkNªIdentifierÍÉÍÍ¤wanti°ObjectExpressionÍĞÍk“j¨PropertyÍßÍÂÂÂNªIdentifierÍßÍéªbundleNameT°MemberExpressionÍëÍNªIdentifierÍëÍú¯CommonConstantsNªIdentifierÍûÍ«BUNDLE_NAMEÂÂ¤initj¨PropertyÍÍ?ÂÂÂNªIdentifierÍÍ «abilityNameT°MemberExpressionÍ"Í?NªIdentifierÍ"Í1¯CommonConstantsNªIdentifierÍ2Í?­ENTRY_ABILITYÂÂ¤initj¨PropertyÍNÍ`ÂÂÂNªIdentifierÍNÍV¨deviceIdNªIdentifierÍXÍ`¨deviceId¤init£letR³ExpressionStatementÍvÍœZ®CallExpressionÍvÍ›T°MemberExpressionÍvÍ
+Z®CallExpressionÍvÍT°MemberExpressionÍvÍšZ®CallExpressionÍvÍ•T°MemberExpressionÍvÍT°MemberExpressionÍvÍ‚U®ThisExpressionÍvÍzNªIdentifierÍ{Í‚§contextÂÂNªIdentifierÍƒÍ¬startAbilityÂÂ‘NªIdentifierÍÍ”¤wantÂNªIdentifierÍ–Íš¤thenÂÂ‘Q·ArrowFunctionExpressionÍ›ÍÀÂÂÂ‘NªIdentifierÍœÍ ¤dataO®BlockStatementÍ¥Í‘R³ExpressionStatementÍ´ÍøZ®CallExpressionÍ´Í÷T°MemberExpressionÍ´Í¾NªIdentifierÍ´Í¹¥hilogNªIdentifierÍºÍ¾¤infoÂÂ”^§LiteralÍ¿ÍÅ ¦0x0000^§LiteralÍÇÍÎ¥hilog§'hilog'NªIdentifierÍĞÍÓ£TAG`¯TemplateLiteralÍÕÍö‘NªIdentifierÍğÍô¤data’a¯TemplateElementÍÖÍîb¸start ability finished: ¸start ability finished: Âa¯TemplateElementÍõÍõb  ÃÂÂNªIdentifierÍÍ
+¥catchÂÂ‘Q·ArrowFunctionExpressionÍÍšÀÂÂÂ‘NªIdentifierÍÍ£errO®BlockStatementÍÍš‘R³ExpressionStatementÍ#ÍZ®CallExpressionÍ#ÍT°MemberExpressionÍ#Í.NªIdentifierÍ#Í(¥hilogNªIdentifierÍ)Í.¥errorÂÂ“^§LiteralÍ/Í5 ¦0x0000^§LiteralÍ7ÍM´ContactDeviceManager¶'ContactDeviceManager'`¯TemplateLiteralÍOÍ’T°MemberExpressionÍkÍsNªIdentifierÍkÍn£errNªIdentifierÍoÍs¤codeÂÂT°MemberExpressionÍ€Í‹NªIdentifierÍ€Íƒ£errNªIdentifierÍ„Í‹§messageÂÂ“a¯TemplateElementÍPÍib¹startAbility error .Code:¹startAbility error .Code:Âa¯TemplateElementÍtÍ~bª,message: ª,message: Âa¯TemplateElementÍŒÍŒb  ÃÂÂP°MethodDefinitionÍ©Í9ÂÂNªIdentifierÍ©Í»²authenticateDevice¦methodQ²FunctionExpressionÍ»Í9ÀÂÂÂ’NªIdentifierÍ¼ÍÂ¦deviceNªIdentifierÍÄÍÌ¨callBackO®BlockStatementÍÎÍ9’R³ExpressionStatementÍÙÍ*Z®CallExpressionÍÙÍ)T°MemberExpressionÍÙÍãNªIdentifierÍÙÍŞ¥hilogNªIdentifierÍßÍã¤infoÂÂ”^§LiteralÍäÍê ¦0x0000^§LiteralÍìÍó¥hilog§'hilog'NªIdentifierÍõÍø£TAG`¯TemplateLiteralÍúÍ(‘Z®CallExpressionÍÍ&T°MemberExpressionÍÍNªIdentifierÍÍ¤JSONNªIdentifierÍÍ©stringifyÂÂ‘NªIdentifierÍÍ%¦deviceÂ’a¯TemplateElementÍûÍb³authenticateDevice ³authenticateDevice Âa¯TemplateElementÍ'Í'b  ÃÂe¬ForStatementÍ4Í2c³VariableDeclarationÍ9ÍB‘d²VariableDeclaratorÍ=ÍBNªIdentifierÍ=Í>¡i^§LiteralÍAÍB ¡0£letf°BinaryExpressionÍDÍ`NªIdentifierÍDÍE¡i¡<T°MemberExpressionÍHÍ`T°MemberExpressionÍHÍYU®ThisExpressionÍHÍLNªIdentifierÍMÍY¬discoverListÂÂNªIdentifierÍZÍ`¦lengthÂÂ]°UpdateExpressionÍbÍe¢++ÂNªIdentifierÍbÍc¡iO®BlockStatementÍgÍ2‘W«IfStatementÍvÍ'f°BinaryExpressionÍzÍ«T°MemberExpressionÍzÍ—T°MemberExpressionÍzÍT°MemberExpressionÍzÍ‹U®ThisExpressionÍzÍ~NªIdentifierÍÍ‹¬discoverListÂÂNªIdentifierÍŒÍ¡iÃÂNªIdentifierÍÍ—¨deviceIdÂÂ£===T°MemberExpressionÍœÍ«NªIdentifierÍœÍ¢¦deviceNªIdentifierÍ£Í«¨deviceIdÂÂO®BlockStatementÍ­Í'‘R³ExpressionStatementÍÀÍZ®CallExpressionÍÀÍT°MemberExpressionÍÀÍİT°MemberExpressionÍÀÍÒU®ThisExpressionÍÀÍÄNªIdentifierÍÅÍÒ­deviceManagerÂÂNªIdentifierÍÓÍİªbindTargetÂÂ“T°MemberExpressionÍŞÍíNªIdentifierÍŞÍä¦deviceNªIdentifierÍåÍí¨deviceIdÂÂi°ObjectExpressionÍïÍ“j¨PropertyÍÍÂÂÂNªIdentifierÍÍ¨bindType^§LiteralÍÍ¡1¤initj¨PropertyÍ(ÍRÂÂÂNªIdentifierÍ(Í5­targetPkgNameT°MemberExpressionÍ7ÍRNªIdentifierÍ7ÍF¯CommonConstantsNªIdentifierÍGÍR«BUNDLE_NAMEÂÂ¤initj¨PropertyÍiÍŠÂÂÂNªIdentifierÍiÍp§appNameT°MemberExpressionÍrÍŠNªIdentifierÍrÍ¯CommonConstantsNªIdentifierÍ‚ÍŠ¨APP_NAMEÂÂ¤initQ·ArrowFunctionExpressionÍŸÍÀÂÂÂ‘NªIdentifierÍ Í££errO®BlockStatementÍ¨Í‘R³ExpressionStatementÍ¿ÍS´AssignmentExpressionÍ¿Í¡=T°MemberExpressionÍ¿ÍĞU®ThisExpressionÍ¿ÍÃNªIdentifierÍÄÍĞ¬authCallbackÂÂWµConditionalExpressionÍÓÍNªIdentifierÍÓÍÖ£errQ·ArrowFunctionExpressionÍÙÍ÷ÀÂÂÂO®BlockStatementÍßÍ÷NªIdentifierÍúÍ¨callBackÂÀÀ”Ôrk•¤type¥start£endªspecifiers¦source±ImportDeclarationÍnÍ´‘Ôrl”¤type¥start£end¥local¶ImportDefaultSpecifierÍuÍNªIdentifierÍuÍ¸distributedDeviceManager^§LiteralÍ“Í³¾@ohos.distributedDeviceManagerÙ "@ohos.distributedDeviceManager"k±ImportDeclarationÍ¶ÍÖ‘l¶ImportDefaultSpecifierÍ½ÍÂNªIdentifierÍ½ÍÂ¥hilog^§LiteralÍÈÍÕ«@ohos.hilog­"@ohos.hilog"k±ImportDeclarationÍØÍû‘l¶ImportDefaultSpecifierÍßÍãNªIdentifierÍßÍã¤JSON^§LiteralÍéÍú¯@ohos.util.json±"@ohos.util.json"k±ImportDeclarationÍıÍ5‘l¶ImportDefaultSpecifierÍÍNªIdentifierÍÍ¯CommonConstants^§LiteralÍÍ4¹../common/CommonConstants»'../common/CommonConstants'

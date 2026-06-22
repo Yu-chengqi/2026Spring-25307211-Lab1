@@ -1,0 +1,675 @@
+Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚHÊif (!("finalizeConstruction" in ViewPU.prototype)) {
+    Reflect.set(ViewPU.prototype, "finalizeConstruction", () => { });
+}
+import hilog from "@ohos.hilog";
+import CommonConstants from '../common/CommonConstants';
+import ContactBottomBar from '../components/ContactBottomBar';
+import { ContactListItem } from '../components/ContactListItem';
+import { ListItemData } from '../viewmodel/ContactViewModel';
+import { ContactDeleteDialog } from '../components/ContactDeleteDialog';
+const TAG = 'DeletePage';
+class ContactDeletePage extends ViewPU {
+    constructor(parent, params, __localStorage, elmtId = -1, paramsLambda = undefined, extraInfo) {
+        super(parent, __localStorage, elmtId, extraInfo);
+        if (typeof paramsLambda === "function") {
+            this.paramsGenerator_ = paramsLambda;
+        }
+        this.__isSelectAll = new ObservedPropertySimplePU(false, this, "isSelectAll");
+        this.__checkList = new ObservedPropertyObjectPU([], this, "checkList");
+        this.__count = new ObservedPropertySimplePU(0, this, "count");
+        this.kvManager = AppStorage.get('kvManager');
+        this.dialogController = new CustomDialogController({
+            builder: () => {
+                let jsDialog = new ContactDeleteDialog(this, {
+                    cancel: () => {
+                        this.onCancel();
+                    },
+                    confirm: () => {
+                        this.onConfirm();
+                    },
+                    promptMessage: { "id": 16777222, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactDeletePage.ets", line: 36, col: 14 });
+                jsDialog.setController(this.dialogController);
+                ViewPU.create(jsDialog);
+                let paramsLambda = () => {
+                    return {
+                        cancel: () => {
+                            this.onCancel();
+                        },
+                        confirm: () => {
+                            this.onConfirm();
+                        },
+                        promptMessage: { "id": 16777222, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
+                    };
+                };
+                jsDialog.paramsGenerator_ = paramsLambda;
+            },
+            autoCancel: true,
+            alignment: DialogAlignment.Center,
+            customStyle: true
+        }, this);
+        this.setInitiallyProvidedValue(params);
+        this.finalizeConstruction();
+    }
+    setInitiallyProvidedValue(params) {
+        if (params.isSelectAll !== undefined) {
+            this.isSelectAll = params.isSelectAll;
+        }
+        if (params.checkList !== undefined) {
+            this.checkList = params.checkList;
+        }
+        if (params.count !== undefined) {
+            this.count = params.count;
+        }
+        if (params.kvManager !== undefined) {
+            this.kvManager = params.kvManager;
+        }
+        if (params.dialogController !== undefined) {
+            this.dialogController = params.dialogController;
+        }
+    }
+    updateStateVars(params) {
+    }
+    purgeVariableDependenciesOnElmtId(rmElmtId) {
+        this.__isSelectAll.purgeDependencyOnElmtId(rmElmtId);
+        this.__checkList.purgeDependencyOnElmtId(rmElmtId);
+        this.__count.purgeDependencyOnElmtId(rmElmtId);
+    }
+    aboutToBeDeleted() {
+        this.__isSelectAll.aboutToBeDeleted();
+        this.__checkList.aboutToBeDeleted();
+        this.__count.aboutToBeDeleted();
+        SubscriberManager.Get().delete(this.id__());
+        this.aboutToBeDeletedInternal();
+    }
+    get isSelectAll() {
+        return this.__isSelectAll.get();
+    }
+    set isSelectAll(newValue) {
+        this.__isSelectAll.set(newValue);
+    }
+    get checkList() {
+        return this.__checkList.get();
+    }
+    set checkList(newValue) {
+        this.__checkList.set(newValue);
+    }
+    get count() {
+        return this.__count.get();
+    }
+    set count(newValue) {
+        this.__count.set(newValue);
+    }
+    // Close the pop-up window.
+    onCancel() {
+        try {
+            this.getUIContext().getPromptAction().showToast({
+                message: { "id": 16777232, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                duration: CommonConstants.PROMPT_DURATION
+            });
+        }
+        catch (error) {
+            hilog.error(0x0000, 'ContactDeletePage', `delete_cancel_text error: ${error.code}  msg:${error.message}`);
+        }
+        this.dialogController.close();
+    }
+    // Confirm the cancellation of transcoding.
+    onConfirm() {
+        this.batchDeleteButton();
+        this.dialogController.close();
+    }
+    aboutToAppear() {
+        this.initializeData();
+    }
+    /**
+     * Initialize edit page data.
+     */
+    initializeData() {
+        this.kvManager.getEntries(CommonConstants.CONTACTS_DATABASE_KEY, (err, entries) => {
+            hilog.info(0x0000, 'ContactDeletePage', TAG, `initializeData entries: ${JSON.stringify(entries)}`);
+            if (err) {
+                hilog.error(0x0000, 'ContactDeletePage', `Fail to get Entries, code is ${err.code}, message is ${err.message}`);
+                return;
+            }
+            let listItems = [];
+            entries.forEach((item, index) => {
+                let itemInfo = new ListItemData();
+                itemInfo.name = JSON.parse(item.value.value).name;
+                itemInfo.id = index;
+                listItems.push(itemInfo);
+            });
+            this.checkList = listItems;
+        });
+    }
+    /**
+     * Deleting selected contacts in batches.
+     */
+    batchDeleteButton() {
+        let keys = [];
+        this.checkList.forEach((item) => {
+            if (item.checked) {
+                let contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + item.name;
+                keys.push(contactsKey);
+            }
+        });
+        hilog.info(0x0000, 'ContactDeletePage', TAG, `batchDeleteButton keys: ${JSON.stringify(keys)}`);
+        // Batch delete.
+        this.kvManager.deleteBatch(keys, (err) => {
+            if (err) {
+                hilog.error(0x0000, 'ContactDeletePage', `Fail to delete Batch, code is ${err.code}, message is ${err.message}`);
+                return;
+            }
+            try {
+                this.getUIContext().getPromptAction().showToast({
+                    message: { "id": 16777255, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                    duration: CommonConstants.PROMPT_DURATION
+                });
+            }
+            catch (err) {
+                hilog.error(0x0000, 'ContactDeletePage', `showToast failed, code is ${err.code}, message is ${err.message}`);
+            }
+            this.getUIContext().getRouter().pushUrl({
+                url: CommonConstants.LIST_PAGE_URL
+            }).catch((err) => {
+                hilog.error(0x0000, 'ContactDeletePage', `pushUrl failed, code is ${err.code}, message is ${err.message}`);
+            });
+        });
+    }
+    initialRender() {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('100%');
+            Column.height('100%');
+            Column.padding({ left: 16, right: 16 });
+            Column.backgroundColor(Color.White);
+            Column.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM]);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Flex.create({ direction: FlexDirection.Column });
+        }, Flex);
+        this.NavigationTitle.bind(this)();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.flexGrow(1);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            List.create();
+            List.scrollBar(BarState.Off);
+            List.width('100%');
+            List.height(CommonConstants.PERCENTAGE_MAX);
+        }, List);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            ForEach.create();
+            const forEachItemGenFunction = _item => {
+                const item = _item;
+                {
+                    const itemCreation = (elmtId, isInitialRender) => {
+                        ViewStackProcessor.StartGetAccessRecordingFor(elmtId);
+                        ListItem.create(deepRenderFunction, true);
+                        if (!isInitialRender) {
+                            ListItem.pop();
+                        }
+                        ViewStackProcessor.StopGetAccessRecording();
+                    };
+                    const itemCreation2 = (elmtId, isInitialRender) => {
+                        ListItem.create(deepRenderFunction, true);
+                    };
+                    const deepRenderFunction = (elmtId, isInitialRender) => {
+                        itemCreation(elmtId, isInitialRender);
+                        {
+                            this.observeComponentCreation2((elmtId, isInitialRender) => {
+                                if (isInitialRender) {
+                                    let componentCall = new ContactListItem(this, {
+                                        itemInfo: item,
+                                        isCanCheck: true,
+                                        onCheck: () => {
+                                            item.checked = !item.checked;
+                                            item.checked ? this.count++ : this.count--;
+                                        }
+                                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDeletePage.ets", line: 139, col: 17 });
+                                    ViewPU.create(componentCall);
+                                    let paramsLambda = () => {
+                                        return {
+                                            itemInfo: item,
+                                            isCanCheck: true,
+                                            onCheck: () => {
+                                                item.checked = !item.checked;
+                                                item.checked ? this.count++ : this.count--;
+                                            }
+                                        };
+                                    };
+                                    componentCall.paramsGenerator_ = paramsLambda;
+                                }
+                                else {
+                                    this.updateStateVarsOfChildByElmtId(elmtId, {});
+                                }
+                            }, { name: "ContactListItem" });
+                        }
+                        ListItem.pop();
+                    };
+                    this.observeComponentCreation2(itemCreation2, ListItem);
+                    ListItem.pop();
+                }
+            };
+            this.forEachUpdateFunction(elmtId, this.checkList, forEachItemGenFunction, (item) => JSON.stringify(item), false, false);
+        }, ForEach);
+        ForEach.pop();
+        List.pop();
+        Column.pop();
+        {
+            this.observeComponentCreation2((elmtId, isInitialRender) => {
+                if (isInitialRender) {
+                    let componentCall = new ContactBottomBar(this, {
+                        leftClickEvent: (isAll) => {
+                            this.checkList = this.checkList.map((item) => {
+                                item.checked = isAll ? true : false;
+                                return item;
+                            });
+                            let result = this.checkList.filter((item) => item.checked);
+                            this.count = this.checkList.length === 0 ? 0 : result.length;
+                        },
+                        rightClickEvent: () => {
+                            if (this.count === 0) {
+                                try {
+                                    this.getUIContext().getPromptAction().showToast({
+                                        message: { "id": 16777254, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                                        duration: CommonConstants.PROMPT_DURATION,
+                                    });
+                                }
+                                catch (err) {
+                                    hilog.error(0x0000, 'ContactDeletePage', `showToast failed, code is ${err.code}, message is ${err.message}`);
+                                }
+                            }
+                            else {
+                                this.dialogController.open();
+                            }
+                        },
+                        pageId: CommonConstants.DELETE_PAGE_ID,
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDeletePage.ets", line: 156, col: 9 });
+                    ViewPU.create(componentCall);
+                    let paramsLambda = () => {
+                        return {
+                            leftClickEvent: (isAll) => {
+                                this.checkList = this.checkList.map((item) => {
+                                    item.checked = isAll ? true : false;
+                                    return item;
+                                });
+                                let result = this.checkList.filter((item) => item.checked);
+                                this.count = this.checkList.length === 0 ? 0 : result.length;
+                            },
+                            rightClickEvent: () => {
+                                if (this.count === 0) {
+                                    try {
+                                        this.getUIContext().getPromptAction().showToast({
+                                            message: { "id": 16777254, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
+                                            duration: CommonConstants.PROMPT_DURATION,
+                                        });
+                                    }
+                                    catch (err) {
+                                        hilog.error(0x0000, 'ContactDeletePage', `showToast failed, code is ${err.code}, message is ${err.message}`);
+                                    }
+                                }
+                                else {
+                                    this.dialogController.open();
+                                }
+                            },
+                            pageId: CommonConstants.DELETE_PAGE_ID
+                        };
+                    };
+                    componentCall.paramsGenerator_ = paramsLambda;
+                }
+                else {
+                    this.updateStateVarsOfChildByElmtId(elmtId, {});
+                }
+            }, { name: "ContactBottomBar" });
+        }
+        Flex.pop();
+        Column.pop();
+    }
+    NavigationTitle(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Flex.create({ alignItems: ItemAlign.Center });
+            Flex.height(56);
+        }, Flex);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.alignItems(VerticalAlign.Center);
+            Row.justifyContent(FlexAlign.Center);
+            Row.width(40);
+            Row.height(40);
+            Row.backgroundColor('rgba(0, 0, 0, 0.05)');
+            Row.borderRadius(40);
+            Row.margin({ right: 8 });
+            Row.onClick(() => {
+                this.getUIContext().getRouter().back();
+            });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            SymbolGlyph.create({ "id": 125831487, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            SymbolGlyph.fontSize(24);
+            SymbolGlyph.fontWeight(400);
+        }, SymbolGlyph);
+        Row.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.flexGrow(1);
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create({ "id": 16777243, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontSize(26);
+            Text.fontWeight(700);
+            Text.lineHeight(27);
+            Text.fontColor('rgba(0, 0, 0, 0.9)');
+        }, Text);
+        Text.pop();
+        Row.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.alignItems(VerticalAlign.Center);
+            Row.justifyContent(FlexAlign.Center);
+            Row.width(40);
+            Row.height(40);
+            Row.backgroundColor('rgba(0, 0, 0, 0.05)');
+            Row.borderRadius(40);
+            Row.onClick(() => {
+                this.getUIContext().getRouter().back();
+            });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            SymbolGlyph.create({ "id": 125831490, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            SymbolGlyph.fontColor(['rgba(0,0,0,0.9)']);
+            SymbolGlyph.fontSize(24);
+        }, SymbolGlyph);
+        Row.pop();
+        Flex.pop();
+    }
+    rerender() {
+        this.updateDirtyElements();
+    }
+    static getEntryName() {
+        return "ContactDeletePage";
+    }
+}
+registerNamedRoute(() => new ContactDeletePage(undefined, {}), "", { bundleName: "com.example.distributedcontacts", moduleName: "entry", pagePath: "pages/ContactDeletePage", pageFullPath: "entry/src/main/ets/pages/ContactDeletePage", integratedHsp: "false", moduleType: "followWithHap" });
+//# sourceMappingURL=ContactDeletePage.js.mapÂ–Ùe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsÙbC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactBottomBar.etsÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactListItem.etsÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\viewmodel\ContactViewModel.etsÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeleteDialog.etsÙ^C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\pages\ContactDeletePage.etsÔrB›ªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo°belongModulePath§checker¬shouldEmitJs¥entryÃÂÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÙ/C:\Users\86182\Desktop\2026Spring-25307211-Lab1¥entry¥1.0.0Ô  Ù5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÔrCÜ ®¬getNodeCount²getIdentifierCount®getSymbolCount¬getTypeCountµgetInstantiationCountµgetRelationCacheSizes±isUndefinedSymbol±isArgumentsSymbol¯isUnknownSymbol¯getMergedSymbol®getDiagnostics´getGlobalDiagnostics´getRecursionIdentity¶getUnmatchedProperties¹getTypeOfSymbolAtLocation¯getTypeOfSymbolÙ(getSymbolsOfParameterPropertyDeclaration·getDeclaredTypeOfSymbol³getPropertiesOfType±getPropertyOfTypeÙ"getPrivateIdentifierPropertyOfType·getTypeOfPropertyOfType²getIndexInfoOfType³getIndexInfosOfTypeºgetIndexInfosOfIndexSymbol³getSignaturesOfType²getIndexTypeOfType¬getIndexType¬getBaseTypes¸getBaseTypeOfLiteralType®getWidenedType³getTypeFromTypeNode°getParameterTypeÙ$getParameterIdentifierNameAtPosition¸getPromisedTypeOfPromise®getAwaitedType¸getReturnTypeOfSignature®isNullableType¯getNullableType²getNonNullableType²getNonOptionalType°getTypeArguments®typeToTypeNodeÙ$indexInfoToIndexSignatureDeclaration¿signatureToSignatureDeclaration²symbolToEntityName²symbolToExpression¬symbolToNodeÙ!symbolToTypeParameterDeclarations¼symbolToParameterDeclarationºtypeParameterToDeclaration±getSymbolsInScope³getSymbolAtLocation·getIndexInfosAtLocationÙ!getShorthandAssignmentValueSymbolÙ#getExportSpecifierLocalTargetSymbol·getExportSymbolOfSymbol±getTypeAtLocationºgetTypeAtLocationForLinterÙ tryGetTypeAtLocationWithoutCheckºgetTypeOfAssignmentPatternÙ*getPropertySymbolOfDestructuringAssignment±signatureToString¬typeToString®symbolToStringµtypePredicateToString®writeSignature©writeType«writeSymbol²writeTypePredicate¼getAugmentedPropertiesOfType®getRootSymbols²getSymbolOfExpando±getContextualTypeÙ(getContextualTypeForObjectLiteralElementÙ#getContextualTypeForArgumentAtIndexÙ getContextualTypeForJsxAttribute²isContextSensitiveÙ!getTypeOfPropertyOfContextualTypeµgetFullyQualifiedNameÙ#tryGetResolvedSignatureWithoutCheck´getResolvedSignatureÙ/getResolvedSignatureForStringLiteralCompletionsÙ$getResolvedSignatureForSignatureHelpµgetExpandedParameters¹hasEffectiveRestParameterºcontainsArgumentsReference°getConstantValueµisValidPropertyAccessÙ#isValidPropertyAccessForCompletions»getSignatureFromDeclarationºisImplementationOfOverload¹getImmediateAliasedSymbol°getAliasedSymbol¯getEmitResolver²getExportsOfModule¿getExportsAndPropertiesOfModuleÙ forEachExportAndPropertyOfModule¯getSymbolWalker±getAmbientModules¹getJsxIntrinsicTagNamesAt³isOptionalParameter»tryGetMemberInModuleExportsÙ(tryGetMemberInModuleExportsAndProperties´tryFindAmbientModuleÙ(tryFindAmbientModuleWithoutAugmentations¯getApparentType¬getUnionType²isTypeAssignableTo³createAnonymousType¯createSignature¬createSymbol¯createIndexInfoªgetAnyType­getStringType­getNumberType±createPromiseType¯createArrayType¹getElementTypeOfArrayType®getBooleanType¬getFalseType«getTrueType«getVoidType°getUndefinedType«getNullType¯getESSymbolType¬getNeverType¯getOptionalType®getPromiseType²getPromiseLikeType´getAsyncIterableType²isSymbolAccessible«isArrayType«isTupleType¯isArrayLikeTypeÙ#isTypeInvalidDueToUnionDiscriminantºgetExactOptionalProperties¿getAllPossiblePropertiesOfTypesÙ(getSuggestedSymbolForNonexistentPropertyÙ#getSuggestionForNonexistentPropertyÙ,getSuggestedSymbolForNonexistentJSXAttributeÙ&getSuggestedSymbolForNonexistentSymbolÙ!getSuggestionForNonexistentSymbolÙ&getSuggestedSymbolForNonexistentModuleÙ!getSuggestionForNonexistentExportÙ+getSuggestedSymbolForNonexistentClassMember·getBaseConstraintOfType»getDefaultFromTypeParameter«resolveName¯getJsxNamespaceµgetJsxFragmentFactory¸getAccessibleSymbolChain»getTypePredicateOfSignature¹resolveExternalModuleName»resolveExternalModuleSymbol°tryGetThisTypeAt¹getTypeArgumentConstraint¸getSuggestionDiagnostics¸runWithCancellationTokenÙ3getLocalTypeParametersOfClassOrInterfaceOrTypeAlias´isDeclarationVisible´isPropertyAccessible»getTypeOnlyAliasDeclaration¿getMemberOverrideModifierStatusÙ!isTypeParameterPossiblyReferenced²getConstEnumRelate´clearConstEnumRelateµdeleteConstEnumRelateÙ$getTypeArgumentsForResolvedSignatureµgetCheckedSourceFilesÙ"collectHaveTsNoCheckFilesForLinter·clearQualifiedNameCache®isStaticRecord²isStaticSourceFileÔ  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  ÃÃÚ¸/*
+ *  Copyright (c) 2025 Huawei Device Co., Ltd.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+import { distributedKVStore } from '@kit.ArkData';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import CommonConstants from '../common/CommonConstants';
+import ContactBottomBar from '../components/ContactBottomBar';
+import { KvManager } from '../utils/KvManager';
+import { ContactListItem } from '../components/ContactListItem';
+import { ListItemData } from '../viewmodel/ContactViewModel';
+import { ContactDeleteDialog } from '../components/ContactDeleteDialog';
+
+const TAG: string = 'DeletePage';
+
+@Entry
+@Component
+struct ContactDeletePage {
+  @State isSelectAll: boolean = false;
+  @State checkList: Array<ListItemData> = [];
+  @State count: number = 0;
+  kvManager = AppStorage.get('kvManager') as KvManager;
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: ContactDeleteDialog({
+      cancel: () => {
+        this.onCancel();
+      },
+      confirm: () => {
+        this.onConfirm();
+      },
+      promptMessage: $r('app.string.batch_delete_text'),
+    }),
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    customStyle: true
+  });
+
+  // Close the pop-up window.
+  onCancel() {
+    try {
+      this.getUIContext().getPromptAction().showToast({
+        message: $r('app.string.delete_cancel_text'),
+        duration: CommonConstants.PROMPT_DURATION
+      });
+    } catch (error) {
+      hilog.error(0x0000, 'ContactDeletePage', `delete_cancel_text error: ${error.code}  msg:${error.message}`);
+    }
+    this.dialogController.close();
+  }
+
+  // Confirm the cancellation of transcoding.
+  onConfirm() {
+    this.batchDeleteButton();
+    this.dialogController.close();
+  }
+
+  aboutToAppear() {
+    this.initializeData();
+  }
+
+  /**
+   * Initialize edit page data.
+   */
+  initializeData(): void {
+    this.kvManager.getEntries(
+      CommonConstants.CONTACTS_DATABASE_KEY,
+      (err: BusinessError, entries: distributedKVStore.Entry[]) => {
+        hilog.info(0x0000, 'ContactDeletePage', TAG, `initializeData entries: ${JSON.stringify(entries)}`);
+        if (err) {
+          hilog.error(0x0000, 'ContactDeletePage', `Fail to get Entries, code is ${err.code}, message is ${err.message}`);
+          return;
+        }
+        let listItems: Array<ListItemData> = [];
+        entries.forEach((item, index) => {
+          let itemInfo: ListItemData = new ListItemData();
+          itemInfo.name = JSON.parse(item.value.value as string).name;
+          itemInfo.id = index;
+          listItems.push(itemInfo);
+        });
+        this.checkList = listItems;
+      });
+  }
+
+  /**
+   * Deleting selected contacts in batches.
+   */
+  batchDeleteButton(): void {
+    let keys: string[] = [];
+    this.checkList.forEach((item: ListItemData) => {
+      if (item.checked) {
+        let contactsKey: string = CommonConstants.CONTACTS_DATABASE_KEY + item.name;
+        keys.push(contactsKey);
+      }
+    });
+    hilog.info(0x0000, 'ContactDeletePage', TAG, `batchDeleteButton keys: ${JSON.stringify(keys)}`);
+    // Batch delete.
+    this.kvManager.deleteBatch(keys, (err: BusinessError) => {
+      if (err) {
+        hilog.error(0x0000, 'ContactDeletePage', `Fail to delete Batch, code is ${err.code}, message is ${err.message}`);
+        return;
+      }
+      try {
+        this.getUIContext().getPromptAction().showToast({
+          message: $r('app.string.prompt_message_deleted'),
+          duration: CommonConstants.PROMPT_DURATION
+        });
+      } catch (err) {
+        hilog.error(0x0000, 'ContactDeletePage', `showToast failed, code is ${err.code}, message is ${err.message}`);
+      }
+      this.getUIContext().getRouter().pushUrl({
+        url: CommonConstants.LIST_PAGE_URL
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, 'ContactDeletePage', `pushUrl failed, code is ${err.code}, message is ${err.message}`);
+      });
+    });
+  }
+
+  build() {
+    Column() {
+      Flex({ direction: FlexDirection.Column }) {
+        this.NavigationTitle();
+
+        Column() {
+          List() {
+            ForEach(this.checkList, (item: ListItemData) => {
+              ListItem() {
+                ContactListItem({
+                  itemInfo: item,
+                  isCanCheck: true,
+                  onCheck: () => {
+                    item.checked = !item.checked;
+                    item.checked ? this.count++ : this.count--;
+                  }
+                })
+              }
+            }, (item: ListItemData) => JSON.stringify(item))
+          }
+          .scrollBar(BarState.Off)
+          .width('100%')
+          .height(CommonConstants.PERCENTAGE_MAX)
+        }
+        .flexGrow(1)
+
+        ContactBottomBar({
+          leftClickEvent: (isAll) => {
+            this.checkList = this.checkList.map((item: ListItemData) => {
+              item.checked = isAll ? true : false;
+              return item;
+            });
+            let result = this.checkList.filter((item) => item.checked);
+            this.count = this.checkList.length === 0 ? 0 : result.length;
+          },
+          rightClickEvent: () => {
+            if (this.count === 0) {
+              try {
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.prompt_delete'),
+                  duration: CommonConstants.PROMPT_DURATION,
+                });
+              } catch (err) {
+                hilog.error(0x0000, 'ContactDeletePage', `showToast failed, code is ${err.code}, message is ${err.message}`);
+              }
+            } else {
+              this.dialogController.open();
+            }
+          },
+          pageId: CommonConstants.DELETE_PAGE_ID,
+        })
+      }
+    }
+    .width('100%')
+    .height('100%')
+    .padding({ left: 16, right: 16 })
+    .backgroundColor(Color.White)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder
+  NavigationTitle() {
+    Flex({ alignItems: ItemAlign.Center }) {
+      Row() {
+        SymbolGlyph($r('sys.symbol.xmark'))
+          .fontSize(24)
+          .fontWeight(400)
+      }
+      .alignItems(VerticalAlign.Center)
+      .justifyContent(FlexAlign.Center)
+      .width(40)
+      .height(40)
+      .backgroundColor('rgba(0, 0, 0, 0.05)')
+      .borderRadius(40)
+      .margin({ right: 8 })
+      .onClick(() => {
+        this.getUIContext().getRouter().back();
+      })
+
+      Row() {
+        Text($r('app.string.edit_text'))
+          .fontSize(26)
+          .fontWeight(700)
+          .lineHeight(27)
+          .fontColor('rgba(0, 0, 0, 0.9)')
+      }
+      .flexGrow(1)
+
+      Row() {
+        SymbolGlyph($r('sys.symbol.checkmark'))
+          .fontColor(['rgba(0,0,0,0.9)'])
+          .fontSize(24)
+      }
+      .alignItems(VerticalAlign.Center)
+      .justifyContent(FlexAlign.Center)
+      .width(40)
+      .height(40)
+      .backgroundColor('rgba(0, 0, 0, 0.05)')
+      .borderRadius(40)
+      .onClick(() => {
+        this.getUIContext().getRouter().back();
+      })
+    }
+    .height(56)
+  }
+}ÀÔrD–«@ohos.hilog¹../common/CommonConstants½../components/ContactListItem½../viewmodel/ContactViewModelÙ!../components/ContactDeleteDialog¾../components/ContactBottomBarÔrE—ªassertions¨external¢id¤meta±moduleSideEffectsªresolvedByµsyntheticNamedExportsAÃÙe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsAÃªoh-resolveÂEAÂÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsAÃªoh-resolveÂEAÂÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactListItem.etsAÃªoh-resolveÂEAÂÙaC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\viewmodel\ContactViewModel.etsAÃªoh-resolveÂEAÂÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeleteDialog.etsAÃªoh-resolveÂEAÂÙbC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactBottomBar.etsAÃªoh-resolveÂ“ÔrF–§version¤fileªsourceRoot§sources¥names¨mappings´ContactDeletePage.js ‘µContactDeletePage.etsÜ–”   ” 	” ” ” 3”  4–”   ” ” ” ”7 7”8 8–”   ” ” ” ”= =”> >˜”   ” ”	 	” ” ”   ”? ?”Ì@ Ì@˜”   ” ”	 	” ” ” ”< <”= =˜”   ” ”	 	” ” ”$ $”ÌG ÌG”ÌH ÌH–”   ” ”	 	” ”  ” !’” ” ‘”  ’”:  ”? %’”8 *”: ,’”4  ”5  —” !”# !”$ !”' !”( !”3 !(”4 !6’”$ "1”: "ÌG’” #” #“”# #”6 # ”= #!•” $” $” $” $”! $–” %” %” %”% %”' %”( %’” &” &•” '” '” '”  '”" '–” (” (” (”& (”( (”) (’” )” )“” *”! *”Ì˜ *7‘” +’”, "”< "•” $” $”  $”# $”% $–” %”  %”! %”) %”+ %”, %’” &” &•” '” '”! '”$ '”& '–” (”  (”! (”* (”, (”- (’” )” )’” *”% *‘” +”” ,” ,” ,” ,–” -” -” -”& -”' -”- -%”” .” .” .” .‘” !’” 	” ’” 	” ’” 	” ’” 	” ’”  	”  ’”  	”  ’” 1” 1’” 2” 2
+’” 3” 3›” 4” 4
+” 4” 4” 4”  4”/ 4)”1 4+”2 4,”; 45”< 46“” 5” 5”Ì 54–” 6” 6” 6”) 6!”* 6"”9 61“” 7” 7” 7	‘”	 8”” 8” 8” 8” 8Ü ” 9” 9” 9” 9” 9” 9”  9”3 9-”5 9/”ÌR 9ÌL”ÌW 9ÌQ”ÌX 9ÌR”Ì\ 9ÌV”Ìe 9Ì_”Ìj 9Ìd”Ìk 9Ìe”Ìr 9Ìl”Ìt 9Ìn”Ìu 9Ìo”Ìv 9Ìp‘”	 :˜” ;” ;” ;	” ;” ;”# ;”% ;!”& ;"’” <” <’” >”/ >-’” ?” ?–” Ì@” Ì@” Ì@	” Ì@”  Ì@”! Ì@˜” ÌA” ÌA” ÌA	” ÌA” ÌA”# ÌA”% ÌA!”& ÌA"’” ÌB” ÌB’” ÌD” ÌD–” ÌE” ÌE” ÌE	” ÌE” ÌE” ÌE’” ÌF” ÌF‘” ÌH‘” ÌJ’” ÌK” ÌKÜ ” ÌL” ÌL” ÌL	” ÌL” ÌL”! ÌL”" ÌM”1 ÌM”2 ÌM”ÌG ÌM+”ÌI ÌN”ÌJ ÌN”ÌM ÌN”ÌO ÌN”ÌV ÌN>”ÌX ÌNÌ@”ÌZ ÌNÌBÜ ” ÌO” ÌO” ÌO” ÌO” ÌO” ÌO” ÌO”2 ÌO.”4 ÌO0”7 ÌO3”9 ÌO5”ÌT ÌOÌP”ÌX ÌOÌT”ÌY ÌOÌU”Ìb ÌOÌ^”Ìc ÌOÌ_”Ìj ÌOÌf”Ìk ÌOÌg”Ìm ÌOÌi”Ìn ÌOÌj”Ìo ÌOÌk”” ÌP” ÌP” ÌP” ÌPÜ ” ÌQ
+” ÌQ” ÌQ” ÌQ” ÌQ”" ÌQ”$ ÌQ”7 ÌQ1”9 ÌQ3”ÌY ÌQÌS”Ì\ ÌQÌV”Ì] ÌQÌW”Ìa ÌQÌ[”Ìq ÌQÌk”Ìt ÌQÌn”Ìu ÌQÌo”Ì| ÌQÌv”Ì~ ÌQÌx”Ì ÌQÌy”Ì€ ÌQÌz’” ÌR
+” ÌR‘” ÌS	–” ÌT” ÌT” ÌT” ÌT-” ÌT/” ÌT0›” ÌU” ÌU” ÌU” ÌU” ÌU” ÌU”! ÌU”# ÌU”( ÌU$”* ÌU&”, ÌU(˜” ÌV
+” ÌV” ÌV” ÌV'”# ÌV+”/ ÌV7”1 ÌV9”2 ÌV:Ü ” ÌW
+” ÌW” ÌW” ÌW”  ÌW”$ ÌW”% ÌW”* ÌW$”+ ÌW%”/ ÌW)”0 ÌW*”5 ÌW/”6 ÌW0”; ÌW?”< ÌWÌ@”= ÌWÌA”ÌA ÌWÌE”ÌB ÌWÌF—” ÌX
+” ÌX” ÌX” ÌX” ÌX”# ÌX”$ ÌX˜” ÌY
+” ÌY” ÌY” ÌY” ÌY”' ÌY!”( ÌY"”) ÌY#”” ÌZ” ÌZ	” ÌZ
+” ÌZ—” Ì[” Ì[” Ì[” Ì[” Ì[”& Ì["”' Ì[#”” Ì\”	 Ì\”
+ Ì\” Ì\	’” Ì]” Ì]‘” Ì_‘” Ìa’” Ìb” Ìb–” Ìc” Ìc” Ìc” Ìc” Ìc” Ìc›” Ìd” Ìd” Ìd	” Ìd” Ìd” Ìd” Ìd”  Ìd”$ Ìd.”& Ìd0”( Ìd2–” Ìe” Ìe
+” Ìe” Ìe” Ìe” Ìeœ” Ìf” Ìf” Ìf”" Ìf"”1 Ìf1”2 Ìf2”ÌG ÌfÌG”ÌJ ÌfÌJ”ÌN ÌfÌN”ÌO ÌfÌO”ÌS ÌfÌS”ÌT ÌfÌT˜” Ìg” Ìg” Ìg” Ìg” Ìg”% Ìg”& Ìg”' Ìg‘” Ìh”” Ìi”	 Ìi”
+ Ìi” ÌiÜ ” Ìj” Ìj	” Ìj
+” Ìj” Ìj” Ìj” Ìj”. Ìj*”0 Ìj,”3 Ìj/”5 Ìj1”ÌP ÌjÌL”ÌT ÌjÌP”ÌU ÌjÌQ”Ì^ ÌjÌZ”Ì_ ÌjÌ[”Ìc ÌjÌ_”Ìd ÌjÌ`”Ìf ÌjÌb”Ìg ÌjÌc”Ìh ÌjÌd’” Ìk” Ìk” Ìl” Ìl” Ìl	” Ìl” Ìl”" Ìl”# Ìl”' Ìl#”) Ìl%”* Ìl&”- Ìl8”/ Ìl:”1 Ìl<”” Ìm” Ìm
+” Ìm” ÌmÜ ” Ìn” Ìn” Ìn” Ìn” Ìn”" Ìn”$ Ìn”7 Ìn/”9 Ìn1”ÌZ ÌnÌR”Ì] ÌnÌU”Ì^ ÌnÌV”Ìb ÌnÌZ”Ìr ÌnÌj”Ìu ÌnÌm”Ìv ÌnÌn”Ì} ÌnÌu”Ì ÌnÌw”Ì€ ÌnÌx”Ì ÌnÌy’” Ìo” Ìo‘” Ìp’” Ìq” Ìq
+›” Ìr” Ìr” Ìr”! Ìr”# Ìr”$ Ìr”3 Ìr+”5 Ìr-”6 Ìr.”? Ìr7”Ì@ Ìr8“” Ìs
+” Ìs”Ì’ Ìs:–” Ìt
+” Ìt” Ìt”- Ìt#”. Ìt$”= Ìt3“” Ìu	” Ìu
+” Ìu‘” Ìv”” Ìv” Ìv” Ìv” ÌvÜ ” Ìw” Ìw” Ìw” Ìw” Ìw”" Ìw”$ Ìw”7 Ìw/”9 Ìw1”ÌV ÌwÌN”ÌY ÌwÌQ”ÌZ ÌwÌR”Ì^ ÌwÌV”Ìn ÌwÌf”Ìq ÌwÌi”Ìr ÌwÌj”Ìy ÌwÌq”Ì{ ÌwÌs”Ì| ÌwÌt”Ì} ÌwÌu‘” Ìx›” Ìy” Ìy
+” Ìy” Ìy” Ìy”  Ìy”) Ìy#”+ Ìy%”, Ìy&”3 Ìy-”4 Ìy.–” Ìz” Ìz” Ìz”$ Ìz”% Ìz”2 Ìz*™” Ì{” Ì{” Ì{	” Ì{” Ì{” Ì{” Ì{"” Ì{$” Ì{&Ü ” Ì|” Ì|” Ì|” Ì|” Ì|”" Ì|”$ Ì|”7 Ì|/”9 Ì|1”ÌT Ì|ÌL”ÌW Ì|ÌO”ÌX Ì|ÌP”Ì\ Ì|ÌT”Ìl Ì|Ìd”Ìo Ì|Ìg”Ìp Ì|Ìh”Ìw Ì|Ìo”Ìy Ì|Ìq”Ìz Ì|Ìr”Ì{ Ì|Ìs”” Ì}” Ì}” Ì}” Ì}	”” Ì~”	 Ì~”
+ Ì~” Ì~’” Ì” Ì‘” Ì’” Ì‚” Ì‚
+–” Ì‚” Ì‚
+” Ì¶” Ì¶
+” Ì¶” Ì¶–” Ì‚” Ì‚
+” Ì·” Ì·” Ì·”  Ì·” Ì‚” Ì‚
+” Ì¸” Ì¸” Ì¸” Ì¸”! Ì¸”# Ì¸”% Ì¸”' Ì¸”, Ì¸”. Ì¸ ”0 Ì¸"”2 Ì¸$˜” Ì‚” Ì‚
+” Ì¹”" Ì¹”# Ì¹”( Ì¹”) Ì¹”. Ì¹ Ü ” Ì‚” Ì‚
+” Ìº”! Ìº”" Ìº”# Ìº”/ Ìº!”0 Ìº"”6 Ìº(”7 Ìº)”9 Ìº+”: Ìº,”ÌF Ìº8”ÌG Ìº9”ÌJ Ìº<”ÌL Ìº>”ÌX ÌºÌJ”ÌY ÌºÌK”Ì_ ÌºÌQ”Ì` ÌºÌRš” Ìƒ” Ìƒ
+” Ìƒ” Ìƒ”# Ìƒ”% Ìƒ”2 Ìƒ%”3 Ìƒ&”9 Ìƒ,”; Ìƒ.•” Ì„” Ì„” Ì„” Ì„”) Ì„’” Ì†” Ì†–” Ì†” Ì†” Ì™	” Ì™” Ì™” Ì™’” Ì‡
+” Ì‡˜” Ì‡
+” Ì‡” Ì•” Ì•” Ì•”# Ì•”$ Ì•”' Ì•!–” Ì‡
+” Ì‡” Ì–” Ì–” Ì–” Ì–˜” Ì‡
+” Ì‡” Ì—” Ì—” Ì—”' Ì—!”( Ì—"”6 Ì—0’” Ìˆ” Ìˆ’” Ì‰”$ Ì‰“”< ÌŠ”ÌK ÌŠ”ÌR ÌŠ ””( Ì‹”0 Ì‹”2 Ì‹”6 Ì‹ ””( ÌŒ”2 ÌŒ”4 ÌŒ”8 ÌŒ"•”( Ì”/ Ì”1 Ì”4 Ì”6 Ì š”, Ì”0 Ì”1 Ì”8 Ì ”; Ì#”< Ì$”Ì@ Ì(”ÌA Ì)”ÌH Ì0”ÌI Ì1Ü ”, Ì”0 Ì”1 Ì”8 Ì ”9 Ì!”: Ì"”; Ì#”? Ì'”Ì@ Ì(”ÌE Ì-”ÌG Ì/”ÌH Ì0”ÌI Ì1”ÌJ Ì2”ÌN Ì6”ÌO Ì7”ÌT Ì<”ÌV Ì>”ÌW Ì?’”( Ì”) Ì‘”% Ì‘””, Ì‹”4 Ì‹”6 Ì‹”: Ì‹ ””, ÌŒ”6 ÌŒ”8 ÌŒ”< ÌŒ"•”, Ì”3 Ì”5 Ì”8 Ì”: Ì š”0 Ì”4 Ì”5 Ì”< Ì ”? Ì#”Ì@ Ì$”ÌD Ì(”ÌE Ì)”ÌL Ì0”ÌM Ì1Ü ”0 Ì”4 Ì”5 Ì”< Ì ”= Ì!”> Ì"”? Ì#”ÌC Ì'”ÌD Ì(”ÌI Ì-”ÌK Ì/”ÌL Ì0”ÌM Ì1”ÌN Ì2”ÌR Ì6”ÌS Ì7”ÌX Ì<”ÌZ Ì>”Ì[ Ì?’”, Ì”- Ì’” Ì‰”  Ì‰’” Ì‰” Ì‰Ü ”/ Ìˆ”3 Ìˆ”4 Ìˆ”= Ìˆ"”ÌW Ì“”ÌX Ì“”Ì\ Ì“"”Ì^ Ì“$”Ì` Ì“&”Ìa Ì“'”Ìe Ì“+”Ìf Ì“,”Ìo Ì“5”Ìp Ì“6”Ìt Ì“:”Ìu Ì“;’” Ìˆ” Ìˆ’” Ì‡
+” Ì‡’” Ì†” Ì†“”, Ì›”< Ì›”ÌC Ì›—” Ìœ
+”& Ìœ”( Ìœ”) Ìœ”. Ìœ ”0 Ìœ"”2 Ìœ$Ÿ” Ì”  Ì”! Ì”* Ì”- Ì”1 Ì!”2 Ì"”; Ì+”< Ì,”? Ì/”Ì@ Ì0”ÌA Ì1”ÌE ÌÌC”ÌG ÌÌE”ÌI ÌÌGŸ”  Ì”$ Ì”% Ì”, Ì”/ Ì”4 Ì"”5 Ì#”6 Ì$”7 Ì%”; Ì)”< Ì*”= Ì+”> Ì,”ÌC Ì1”ÌD Ì2””  ÌŸ”' ÌŸ”+ ÌŸ”, ÌŸ”” Ì ” Ì ” Ì ” Ì Ü ” Ì¡”  Ì¡”& Ì¡”) Ì¡”- Ì¡”. Ì¡”7 Ì¡'”8 Ì¡(”> Ì¡.”? Ì¡/”Ì@ Ì¡0”ÌD Ì¡4”ÌF Ì¡6”ÌH Ì¡8”ÌI Ì¡9”ÌM Ì¡=”ÌN Ì¡>”ÌU Ì¡ÌE”ÌV Ì¡ÌF”ÌW Ì¡ÌGÜ ” Ì¢”  Ì¢”! Ì¢”& Ì¢”) Ì¢”- Ì¢”. Ì¢”7 Ì¢'”8 Ì¢(”> Ì¢.”ÌC Ì¢3”ÌD Ì¢4”ÌE Ì¢5”ÌF Ì¢6”ÌG Ì¢7”ÌH Ì¢8”ÌI Ì¢9”ÌJ Ì¢:”ÌK Ì¢;”ÌQ Ì¢ÌA”ÌR Ì¢ÌB”ÌX Ì¢ÌH”ÌY Ì¢ÌI’” Ì£
+” Ì£•” Ì¤
+”' Ì¤”) Ì¤”, Ì¤”. Ì¤ ˜” Ì¥”  Ì¥”$ Ì¥”% Ì¥”* Ì¥”/ Ì¥”0 Ì¥ ”2 Ì¥"’”  Ì¦”$ Ì¦›”$ Ì§”( Ì§”) Ì§”5 Ì§!”7 Ì§#”8 Ì§$”ÌG Ì§3”ÌI Ì§5”ÌJ Ì§6”ÌS Ì§?”ÌT Ì§Ì@“”( Ì¨”/ Ì¨”Ì¦ Ì¨9–”( Ì©”0 Ì©”2 Ì©”ÌA Ì©+”ÌB Ì©,”ÌQ Ì©;“”% Ìª”& Ìª”' Ìª‘”! Ì«””  Ì«”' Ì«”* Ì«”, Ì«Ü ”$ Ì¬”) Ì¬”* Ì¬”/ Ì¬”0 Ì¬”6 Ì¬"”8 Ì¬$”ÌK Ì¬7”ÌM Ì¬9”Ìj Ì¬ÌV”Ìm Ì¬ÌY”Ìn Ì¬ÌZ”Ìr Ì¬Ì^”Ì‚ Ì¬Ìn”Ì… Ì¬Ìq”Ì† Ì¬Ìr”Ì Ì¬Ìy”Ì Ì¬Ì{”Ì Ì¬Ì|”Ì‘ Ì¬Ì}‘”! Ì­‘” Ì®‘”! Ì®˜”  Ì¯”$ Ì¯”% Ì¯”5 Ì¯#”6 Ì¯$”: Ì¯(”< Ì¯*”= Ì¯+‘” Ì°’” Ì±
+” Ì±–” Ì²
+” Ì²”  Ì²”/ Ì²!”0 Ì²"”> Ì²0‘” Ì³	—” Ìœ
+”* Ìœ”, Ìœ”- Ìœ”2 Ìœ ”4 Ìœ"”6 Ìœ$Ÿ”  Ì”$ Ì”% Ì”. Ì”1 Ì”5 Ì!”6 Ì"”? Ì+”Ì@ Ì,”ÌC Ì/”ÌD Ì0”ÌE Ì1”ÌI ÌÌC”ÌK ÌÌE”ÌM ÌÌGŸ”$ Ì”( Ì”) Ì”0 Ì”3 Ì”8 Ì"”9 Ì#”: Ì$”; Ì%”? Ì)”Ì@ Ì*”ÌA Ì+”ÌB Ì,”ÌG Ì1”ÌH Ì2””$ ÌŸ”+ ÌŸ”/ ÌŸ”0 ÌŸ””  Ì ”! Ì ”" Ì ”# Ì Ü ”  Ì¡”$ Ì¡”* Ì¡”- Ì¡”1 Ì¡”2 Ì¡”; Ì¡'”< Ì¡(”ÌB Ì¡.”ÌC Ì¡/”ÌD Ì¡0”ÌH Ì¡4”ÌJ Ì¡6”ÌL Ì¡8”ÌM Ì¡9”ÌQ Ì¡=”ÌR Ì¡>”ÌY Ì¡ÌE”ÌZ Ì¡ÌF”Ì[ Ì¡ÌGÜ ”  Ì¢”$ Ì¢”% Ì¢”* Ì¢”- Ì¢”1 Ì¢”2 Ì¢”; Ì¢'”< Ì¢(”ÌB Ì¢.”ÌG Ì¢3”ÌH Ì¢4”ÌI Ì¢5”ÌJ Ì¢6”ÌK Ì¢7”ÌL Ì¢8”ÌM Ì¢9”ÌN Ì¢:”ÌO Ì¢;”ÌU Ì¢ÌA”ÌV Ì¢ÌB”Ì\ Ì¢ÌH”Ì] Ì¢ÌI’” Ì£
+” Ì£•” Ì¤
+”+ Ì¤”- Ì¤”0 Ì¤”2 Ì¤ ˜”  Ì¥”$ Ì¥”( Ì¥”) Ì¥”. Ì¥”3 Ì¥”4 Ì¥ ”6 Ì¥"’”$ Ì¦”( Ì¦›”( Ì§”, Ì§”- Ì§”9 Ì§!”; Ì§#”< Ì§$”ÌK Ì§3”ÌM Ì§5”ÌN Ì§6”ÌW Ì§?”ÌX Ì§Ì@“”, Ì¨”3 Ì¨”Ìª Ì¨9–”, Ì©”4 Ì©”6 Ì©”ÌE Ì©+”ÌF Ì©,”ÌU Ì©;“”) Ìª”* Ìª”+ Ìª‘”% Ì«””$ Ì«”+ Ì«”. Ì«”0 Ì«Ü ”( Ì¬”- Ì¬”. Ì¬”3 Ì¬”4 Ì¬”: Ì¬"”< Ì¬$”ÌO Ì¬7”ÌQ Ì¬9”Ìn Ì¬ÌV”Ìq Ì¬ÌY”Ìr Ì¬ÌZ”Ìv Ì¬Ì^”Ì† Ì¬Ìn”Ì‰ Ì¬Ìq”ÌŠ Ì¬Ìr”Ì‘ Ì¬Ìy”Ì“ Ì¬Ì{”Ì” Ì¬Ì|”Ì• Ì¬Ì}‘”% Ì­‘”! Ì®‘”% Ì®˜”$ Ì¯”( Ì¯”) Ì¯”9 Ì¯#”: Ì¯$”> Ì¯(”Ì@ Ì¯*”ÌA Ì¯+‘”! Ì°’” Ì±
+” Ì±–” Ì²
+”" Ì²”$ Ì²”3 Ì²!”4 Ì²"”ÌB Ì²0’” Ìƒ” Ìƒ
+’” Ì‚” Ì‚
+‘” Ì»’” Ì¾” Ì¾š” Ì¿” Ì¿” Ì¿	” Ì¿”$ Ì¿”& Ì¿”/ Ì¿ ”0 Ì¿!”6 Ì¿'”8 Ì¿)–” Ì¿” Ì¿” Ìè” Ìè” Ìè” Ìè’” ÌÀ” ÌÀ	˜” ÌÀ” ÌÀ	” ÌÅ” ÌÅ” ÌÅ”( ÌÅ”) ÌÅ ”/ ÌÅ&˜” ÌÀ” ÌÀ	” ÌÆ” ÌÆ” ÌÆ”( ÌÆ”) ÌÆ ”/ ÌÆ&–” ÌÀ” ÌÀ	” ÌÇ” ÌÇ” ÌÇ” ÌÇ–” ÌÀ” ÌÀ	” ÌÈ” ÌÈ” ÌÈ” ÌÈ–” ÌÀ” ÌÀ	” ÌÉ” ÌÉ”  ÌÉ”5 ÌÉ,–” ÌÀ” ÌÀ	” ÌÊ” ÌÊ” ÌÊ” ÌÊš” ÌÀ” ÌÀ	” ÌË” ÌË” ÌË” ÌË” ÌË”  ÌË”! ÌË”# ÌË—” ÌÀ” ÌÀ	” ÌÌ” ÌÌ” ÌÌ” ÌÌ” ÌÌœ” ÌÍ” ÌÍ” ÌÍ”! ÌÍ”# ÌÍ”$ ÌÍ”- ÌÍ%”/ ÌÍ'”0 ÌÍ(”4 ÌÍ,”6 ÌÍ.”7 ÌÍ/’” ÌÎ” ÌÎ’” ÌÁ” ÌÁ–” ÌÁ” ÌÁ” ÌÂ”  ÌÂ”! ÌÂ”# ÌÂ–” ÌÁ” ÌÁ” ÌÃ”" ÌÃ”# ÌÃ”& ÌÃ’” ÌÀ” ÌÀ	’” ÌĞ” ÌĞ	–” ÌĞ” ÌĞ	” Ì×” Ì×” Ì×” Ì×’” ÌÑ” ÌÑ–” ÌÑ” ÌÑ” ÌÒ” ÌÒ” ÌÒ” ÌÒ–” ÌÑ” ÌÑ” ÌÓ” ÌÓ” ÌÓ” ÌÓ–” ÌÑ” ÌÑ” ÌÔ” ÌÔ” ÌÔ” ÌÔ–” ÌÑ” ÌÑ” ÌÕ” ÌÕ” ÌÕ”/ ÌÕ)’” ÌÑ” ÌÑ’” ÌĞ” ÌĞ	’” ÌÙ” ÌÙ	˜” ÌÙ” ÌÙ	” ÌŞ” ÌŞ” ÌŞ”( ÌŞ”) ÌŞ ”/ ÌŞ&˜” ÌÙ” ÌÙ	” Ìß” Ìß” Ìß”( Ìß”) Ìß ”/ Ìß&–” ÌÙ” ÌÙ	” Ìà” Ìà” Ìà” Ìà–” ÌÙ” ÌÙ	” Ìá” Ìá” Ìá” Ìá–” ÌÙ” ÌÙ	” Ìâ” Ìâ”  Ìâ”5 Ìâ,–” ÌÙ” ÌÙ	” Ìã” Ìã” Ìã” Ìã—” ÌÙ” ÌÙ	” Ìä” Ìä” Ìä” Ìä” Ìäœ” Ìå” Ìå” Ìå”! Ìå”# Ìå”$ Ìå”- Ìå%”/ Ìå'”0 Ìå(”4 Ìå,”6 Ìå.”7 Ìå/’” Ìæ” Ìæ’” ÌÚ” ÌÚ˜” ÌÚ” ÌÚ” ÌÛ”! ÌÛ”" ÌÛ”# ÌÛ”4 ÌÛ'”5 ÌÛ(–” ÌÚ” ÌÚ” ÌÜ”  ÌÜ”! ÌÜ”# ÌÜ’” ÌÙ” ÌÙ	’” Ì¿” Ì¿‘” ÌéÔrG–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜŠ‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
+ ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”    ‘”  ! ‘”  " ‘”  # ‘”  $ ‘”  % ‘”  & ‘”  ' ‘”  ( ‘”  ) ‘”  * ‘”  + ‘”  , ‘”  - ‘”  . ‘”  / ‘”  0 ‘”  1 ‘”  2 ‘”  3 ‘”  4 ‘”  5 ‘”  6 ‘”  7 ‘”  8 ‘”  9 ‘”  : ‘”  ; ‘”  < ‘”  = ‘”  > ‘”  ? ‘”  Ì@ ‘”  ÌA ‘”  ÌB ‘”  ÌC ‘”  ÌD ‘”  ÌE ‘”  ÌF ‘”  ÌG ‘”  ÌH ‘”  ÌI ‘”  ÌJ ‘”  ÌK ‘”  ÌL ‘”  ÌM ‘”  ÌN ‘”  ÌO ‘”  ÌP ‘”  ÌQ ‘”  ÌR ‘”  ÌS ‘”  ÌT ‘”  ÌU ‘”  ÌV ‘”  ÌW ‘”  ÌX ‘”  ÌY ‘”  ÌZ ‘”  Ì[ ‘”  Ì\ ‘”  Ì] ‘”  Ì^ ‘”  Ì_ ‘”  Ì` ‘”  Ìa ‘”  Ìb ‘”  Ìc ‘”  Ìd ‘”  Ìe ‘”  Ìf ‘”  Ìg ‘”  Ìh ‘”  Ìi ‘”  Ìj ‘”  Ìk ‘”  Ìl ‘”  Ìm ‘”  Ìn ‘”  Ìo ‘”  Ìp ‘”  Ìq ‘”  Ìr ‘”  Ìs ‘”  Ìt ‘”  Ìu ‘”  Ìv ‘”  Ìw ‘”  Ìx ‘”  Ìy ‘”  Ìz ‘”  Ì{ ‘”  Ì| ‘”  Ì} ‘”  Ì~ ‘”  Ì ‘”  Ì€ ‘”  Ì ‘”  Ì‚ ‘”  Ìƒ ‘”  Ì„ ‘”  Ì… ‘”  Ì† ‘”  Ì‡ ‘”  Ìˆ ‘”  Ì‰ ‘”  ÌŠ ‘”  Ì‹ ‘”  ÌŒ ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì‘ ‘”  Ì’ ‘”  Ì“ ‘”  Ì” ‘”  Ì• ‘”  Ì– ‘”  Ì— ‘”  Ì˜ ‘”  Ì™ ‘”  Ìš ‘”  Ì› ‘”  Ìœ ‘”  Ì ‘”  Ì ‘”  ÌŸ ‘”  Ì  ‘”  Ì¡ ‘”  Ì¢ ‘”  Ì£ ‘”  Ì¤ ‘”  Ì¥ ‘”  Ì¦ ‘”  Ì§ ‘”  Ì¨ ‘”  Ì© ‘”  Ìª ‘”  Ì« ‘”  Ì¬ ‘”  Ì­ ‘”  Ì® ‘”  Ì¯ ‘”  Ì° ‘”  Ì± ‘”  Ì² ‘”  Ì³ ‘”  Ì´ ‘”  Ìµ ‘”  Ì¶ ‘”  Ì· ‘”  Ì¸ ‘”  Ì¹ ‘”  Ìº ‘”  Ì» ‘”  Ì¼ ‘”  Ì½ ‘”  Ì¾ ‘”  Ì¿ ‘”  ÌÀ ‘”  ÌÁ ‘”  ÌÂ ‘”  ÌÃ ‘”  ÌÄ ‘”  ÌÅ ‘”  ÌÆ ‘”  ÌÇ ‘”  ÌÈ ‘”  ÌÉ ‘”  ÌÊ ‘”  ÌË ‘”  ÌÌ ‘”  ÌÍ ‘”  ÌÎ ‘”  ÌÏ ‘”  ÌĞ ‘”  ÌÑ ‘”  ÌÒ ‘”  ÌÓ ‘”  ÌÔ ‘”  ÌÕ ‘”  ÌÖ ‘”  Ì× ‘”  ÌØ ‘”  ÌÙ ‘”  ÌÚ ‘”  ÌÛ ‘”  ÌÜ ‘”  Ìİ ‘”  ÌŞ ‘”  Ìß ‘”  Ìà ‘”  Ìá ‘”  Ìâ ‘”  Ìã ‘”  Ìä ‘”  Ìå ‘”  Ìæ ‘”  Ìç ‘”  Ìè ‘”  Ìé ‘”  Ìê ‘”  Ìë ‘”  Ìì ‘”  Ìí ‘”  Ìî ‘”  Ìï ‘”  Ìğ ‘”  Ìñ ‘”  Ìò ‘”  Ìó ‘”  Ìô ‘”  Ìõ ‘”  Ìö ‘”  Ì÷ ‘”  Ìø ‘”  Ìù ‘”  Ìú ‘”  Ìû ‘”  Ìü ‘”  Ìı ‘”  Ìş ‘”  Ìÿ ‘”  Í  ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í	 ‘”  Í
+ ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í  ‘”  Í! ‘”  Í" ‘”  Í# ‘”  Í$ ‘”  Í% ‘”  Í& ‘”  Í' ‘”  Í( ‘”  Í) ‘”  Í* ‘”  Í+ ‘”  Í, ‘”  Í- ‘”  Í. ‘”  Í/ ‘”  Í0 ‘”  Í1 ‘”  Í2 ‘”  Í3 ‘”  Í4 ‘”  Í5 ‘”  Í6 ‘”  Í7 ‘”  Í8 ‘”  Í9 ‘”  Í: ‘”  Í; ‘”  Í< ‘”  Í= ‘”  Í> ‘”  Í? ‘”  Í@ ‘”  ÍA ‘”  ÍB ‘”  ÍC ‘”  ÍD ‘”  ÍE ‘”  ÍF ‘”  ÍG ‘”  ÍH ‘”  ÍI ‘”  ÍJ ‘”  ÍK ‘”  ÍL ‘”  ÍM ‘”  ÍN ‘”  ÍO ‘”  ÍP ‘”  ÍQ ‘”  ÍR ‘”  ÍS ‘”  ÍT ‘”  ÍU ‘”  ÍV ‘”  ÍW ‘”  ÍX ‘”  ÍY ‘”  ÍZ ‘”  Í[ ‘”  Í\ ‘”  Í] ‘”  Í^ ‘”  Í_ ‘”  Í` ‘”  Ía ‘”  Íb ‘”  Íc ‘”  Íd ‘”  Íe ‘”  Íf ‘”  Íg ‘”  Íh ‘”  Íi ‘”  Íj ‘”  Ík ‘”  Íl ‘”  Ím ‘”  Ín ‘”  Ío ‘”  Íp ‘”  Íq ‘”  Ír ‘”  Ís ‘”  Ít ‘”  Íu ‘”  Ív ‘”  Íw ‘”  Íx ‘”  Íy ‘”  Íz ‘”  Í{ ‘”  Í| ‘”  Í} ‘”  Í~ ‘”  Í ‘”  Í€ ‘”  Í ‘”  Í‚ ‘”  Íƒ ‘”  Í„ ‘”  Í… ‘”  Í† ‘”  Í‡ ‘”  Íˆ ‘”  Í‰ ÔrH’§missing¦pluginÃ¦genAbcÂÔ  ÔrI”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCache–ÔrJ•¤type¥start£endªspecifiers¦source±ImportDeclarationÌ€Ì ‘ÔrK”¤type¥start£end¥local¶ImportDefaultSpecifierÌ‡ÌŒÔrL”¤type¥start£end¤nameªIdentifierÌ‡ÌŒ¥hilogÔrM•¤type¥start£end¥value£raw§LiteralÌ’ÌŸ«@ohos.hilog­"@ohos.hilog"J±ImportDeclarationÌ¢ÌÚ‘K¶ImportDefaultSpecifierÌ©Ì¸LªIdentifierÌ©Ì¸¯CommonConstantsM§LiteralÌ¾ÌÙ¹../common/CommonConstants»'../common/CommonConstants'J±ImportDeclarationÌÜÍ‘K¶ImportDefaultSpecifierÌãÌóLªIdentifierÌãÌó°ContactBottomBarM§LiteralÌùÍ¾../components/ContactBottomBarÙ '../components/ContactBottomBar'J±ImportDeclarationÍÍ\‘ÔrN•¤type¥start£end¨imported¥local¯ImportSpecifierÍ%Í4LªIdentifierÍ%Í4¯ContactListItemLªIdentifierÍ%Í4¯ContactListItemM§LiteralÍ<Í[½../components/ContactListItem¿'../components/ContactListItem'J±ImportDeclarationÍ^Í›‘N¯ImportSpecifierÍgÍsLªIdentifierÍgÍs¬ListItemDataLªIdentifierÍgÍs¬ListItemDataM§LiteralÍ{Íš½../viewmodel/ContactViewModel¿'../viewmodel/ContactViewModel'J±ImportDeclarationÍÍå‘N¯ImportSpecifierÍ¦Í¹LªIdentifierÍ¦Í¹³ContactDeleteDialogLªIdentifierÍ¦Í¹³ContactDeleteDialogM§LiteralÍÁÍäÙ!../components/ContactDeleteDialogÙ#'../components/ContactDeleteDialog'

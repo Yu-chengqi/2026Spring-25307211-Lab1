@@ -1,0 +1,879 @@
+[2026-06-22T20:55:20.484] [DEBUG] debug-file - env: nodejsVersion=v18.20.1
+[2026-06-22T20:55:22.258] [DEBUG] debug-file - Hvigor init with startParameters:{
+  hvigorfileTypeCheck: false,
+  parallelExecution: true,
+  incrementalExecution: true,
+  printStackTrace: false,
+  daemon: false,
+  analyze: 0,
+  logLevel: Level { level: 20000, levelStr: 'INFO', colour: 'green' },
+  optimizationStrategy: 'memory',
+  hotCompile: undefined,
+  hotReloadBuild: undefined,
+  customizedParam: undefined
+}
+[2026-06-22T20:55:26.120] [DEBUG] debug-file - hvigorfile, require result:  { appTasks: [Getter] }
+[2026-06-22T20:55:26.123] [DEBUG] debug-file - Starting plugin build process
+[2026-06-22T20:55:26.277] [DEBUG] debug-file - App plugin register hook start...
+[2026-06-22T20:55:26.300] [DEBUG] debug-file - Start recording SDK configuration permission data.
+[2026-06-22T20:55:26.285] [DEBUG] debug-file - Obtain build option for product 'default'in this build.
+[2026-06-22T20:55:26.279] [DEBUG] debug-file - Start initialize project's product build option map with build mode debug.
+[2026-06-22T20:55:26.344] [DEBUG] debug-file - Project task initialization takes 9 ms 
+[2026-06-22T20:55:26.367] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-06-22T20:55:26.353] [DEBUG] debug-file - failed to load cangjie to dynamically generate schemas: Error: Cannot find module '@ohos/cangjie-build-support/index'
+Require stack:
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\hooks\cangjie-register.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\strategy\stage-init-strategy.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\abstract-plugin-builder.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\app-plugin-builder.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\factory\plugin-factory.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\index.js
+- C:\Users\86182\Desktop\2026Spring-25307211-Lab1\hvigorfile.ts
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\src\base\internal\lifecycle\configuration.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\src\base\boot\index.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\src\cli\main\cli.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\bin\hvigor.js
+[2026-06-22T20:55:26.374] [DEBUG] debug-file - project has submodules:entry
+[2026-06-22T20:55:26.377] [DEBUG] debug-file - start to load updatedOhPackageInfo to the disk
+[2026-06-22T20:55:20.486] [DEBUG] debug-file - env: hvigor-config.json5 content = { modelVersion: '5.1.1', dependencies: {} }
+[2026-06-22T20:55:26.386] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-06-22T20:55:26.396] [DEBUG] debug-file - entry : clean cost memory 0.1119384765625
+[2026-06-22T20:55:26.565] [DEBUG] debug-file - Create  resident worker with id: 0.
+[2026-06-22T20:55:22.258] [DEBUG] debug-file - Since current hvigor version 6.22.4 differs from last hvigor version 
+      undefined, delete file-cache.json and task-cache.json.
+[2026-06-22T20:55:26.123] [DEBUG] debug-file - App plugin prepare start...
+[2026-06-22T20:55:26.121] [DEBUG] debug-file - hvigorfile, binding system plugins { appTasks: [Getter] }
+[2026-06-22T20:55:26.277] [DEBUG] debug-file - App plugin register hook end...
+[2026-06-22T20:55:26.333] [DEBUG] debug-file - Sdk init in 46 ms 
+[2026-06-22T20:55:26.344] [DEBUG] debug-file - hvigorfile, resolve finished C:\Users\86182\Desktop\2026Spring-25307211-Lab1\hvigorfile.ts
+[2026-06-22T20:55:26.280] [DEBUG] debug-file - Picking option from product 'default' with build mode 'debug'.
+[2026-06-22T20:55:26.367] [DEBUG] debug-file - Target 'default' config initialized
+[2026-06-22T20:55:26.287] [DEBUG] debug-file - No signingConfig found, initRemoteHspCache failed.
+[2026-06-22T20:55:26.381] [DEBUG] debug-file - load to the disk finished
+[2026-06-22T20:55:20.488] [DEBUG] debug-file - env: daemon=false
+[2026-06-22T20:55:26.388] [DEBUG] debug-file - Module entry Collected Dependency: 
+[2026-06-22T20:55:26.568] [DEBUG] debug-file - Create  resident worker with id: 1.
+[2026-06-22T20:55:26.396] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 151 ms 
+[2026-06-22T20:55:22.259] [DEBUG] debug-file - Cache service initialization finished in 1 ms 
+[2026-06-22T20:55:26.123] [DEBUG] debug-file - App plugin prepare end...
+[2026-06-22T20:55:26.277] [DEBUG] debug-file - Plugin build process completed
+[2026-06-22T20:55:26.345] [DEBUG] debug-file - hvigorfile, resolving C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\hvigorfile.ts
+[2026-06-22T20:55:26.280] [DEBUG] debug-file - Product 'default' build option initialized
+[2026-06-22T20:55:26.289] [DEBUG] debug-file - Local scan or download HarmonyOS sdk components toolchains,ets,js,native,previewer
+[2026-06-22T20:55:26.367] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-06-22T20:55:26.382] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-06-22T20:55:20.488] [DEBUG] debug-file - no-daemon, use the parent process.execArgv --max-old-space-size=8192,--max-semi-space-size=16,--expose-gc
+[2026-06-22T20:55:26.389] [DEBUG] debug-file - Module entry's total dependency: 0
+[2026-06-22T20:55:26.572] [DEBUG] debug-file - Current worker pool is stopped or closed.
+[2026-06-22T20:55:26.397] [INFO] debug-file - Finished :entry:clean... after 3 ms 
+[2026-06-22T20:55:22.261] [DEBUG] debug-file - hvigorfile, resolving C:\Users\86182\Desktop\2026Spring-25307211-Lab1\hvigorfile.ts
+[2026-06-22T20:55:26.123] [DEBUG] debug-file - App plugin creating...
+[2026-06-22T20:55:26.350] [DEBUG] debug-file - hvigorfile, require result:  { hapTasks: [Getter] }
+[2026-06-22T20:55:26.293] [DEBUG] debug-file - Local scan or download hmscore sdk components toolchains,ets,native
+[2026-06-22T20:55:26.367] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-06-22T20:55:26.280] [DEBUG] debug-file - End initialize project's product build option map with build mode 'debug'.
+[2026-06-22T20:55:26.384] [DEBUG] debug-file - Module 2026Spring-25307211-Lab1 Collected Dependency: 
+[2026-06-22T20:55:26.391] [DEBUG] debug-file - Configuration phase cost:4 s 132 ms 
+[2026-06-22T20:55:26.572] [DEBUG] debug-file - Clear worker 0.
+[2026-06-22T20:55:26.398] [DEBUG] debug-file - Executing task ::clean
+[2026-06-22T20:55:26.367] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=release
+[2026-06-22T20:55:26.351] [DEBUG] debug-file - hvigorfile, binding system plugins { hapTasks: [Getter] }
+[2026-06-22T20:55:26.384] [DEBUG] debug-file - Module 2026Spring-25307211-Lab1's total dependency: 0
+[2026-06-22T20:55:26.393] [DEBUG] debug-file - Configuration task cost before running: 4 s 148 ms 
+[2026-06-22T20:55:26.398] [DEBUG] debug-file - clean: Worker pool is inactive.
+[2026-06-22T20:55:26.573] [DEBUG] debug-file - Worker 0 has been cleared.
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - Target 'default' config initialized
+[2026-06-22T20:55:26.351] [DEBUG] debug-file - Starting plugin build process
+[2026-06-22T20:55:26.394] [DEBUG] debug-file - Executing task :entry:clean
+[2026-06-22T20:55:26.398] [DEBUG] debug-file - 2026Spring-25307211-Lab1 : clean cost memory 0.020233154296875
+[2026-06-22T20:55:26.573] [DEBUG] debug-file - Current idle worker size: 1.
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-06-22T20:55:26.351] [DEBUG] debug-file - Hap plugin creating...
+[2026-06-22T20:55:26.394] [DEBUG] debug-file - clean: Worker pool is inactive.
+[2026-06-22T20:55:26.398] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 153 ms 
+[2026-06-22T20:55:26.573] [DEBUG] debug-file - Current busy worker size: 0.
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-06-22T20:55:26.398] [INFO] debug-file - Finished ::clean... after 1 ms 
+[2026-06-22T20:55:26.573] [DEBUG] debug-file - Clear worker 1.
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-06-22T20:55:26.398] [DEBUG] debug-file - Executing task :entry:init
+[2026-06-22T20:55:26.573] [DEBUG] debug-file - Worker 1 has been cleared.
+[2026-06-22T20:55:26.398] [DEBUG] debug-file - entry : init cost memory 0.01263427734375
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - Target 'default' config initialized
+[2026-06-22T20:55:26.573] [DEBUG] debug-file - Current idle worker size: 0.
+[2026-06-22T20:55:26.398] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 154 ms 
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-06-22T20:55:26.573] [DEBUG] debug-file - Current busy worker size: 0.
+[2026-06-22T20:55:26.399] [INFO] debug-file - Finished :entry:init... after 1 ms 
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-06-22T20:55:26.574] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-06-22T20:55:26.399] [DEBUG] debug-file - Executing task ::init
+[2026-06-22T20:55:26.368] [DEBUG] debug-file - Obtain build option for module 'entry' target 'default'in this build.
+[2026-06-22T20:55:26.587] [DEBUG] debug-file - worker[0] exits with exit code 0.
+[2026-06-22T20:55:26.399] [DEBUG] debug-file - 2026Spring-25307211-Lab1 : init cost memory 0.01141357421875
+[2026-06-22T20:55:26.372] [DEBUG] debug-file - Module entry task initialization takes 4 ms 
+[2026-06-22T20:55:26.587] [DEBUG] debug-file - worker[1] exits with exit code 0.
+[2026-06-22T20:55:26.399] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 154 ms 
+[2026-06-22T20:55:26.372] [DEBUG] debug-file - Hap plugin register hook start...
+[2026-06-22T20:55:26.588] [DEBUG] debug-file - Current worker pool is terminated.
+[2026-06-22T20:55:26.399] [INFO] debug-file - Finished ::init... after 1 ms 
+[2026-06-22T20:55:26.372] [DEBUG] debug-file - Hap plugin register hook end...
+[2026-06-22T20:55:26.555] [DEBUG] debug-file - Obtain build option for module 'entry' target 'default'in this build.
+[2026-06-22T20:55:26.372] [DEBUG] debug-file - Plugin build process completed
+[2026-06-22T20:55:26.562] [DEBUG] debug-file - Since there is no instance or instance is terminated, create a new worker pool.
+[2026-06-22T20:55:26.372] [DEBUG] debug-file - hvigorfile, resolve finished C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\hvigorfile.ts
+[2026-06-22T20:55:26.563] [DEBUG] debug-file - Worker pool is initialized with config:  {
+  minPoolNum: 2,
+  maxPoolNum: undefined,
+  maxCoreSize: undefined,
+  cacheCapacity: undefined,
+  cacheTtl: undefined
+}
+[2026-06-22T20:58:10.666] [DEBUG] debug-file - env: nodejsVersion=v18.20.1
+[2026-06-22T20:58:11.298] [DEBUG] debug-file - env: daemon=true
+[2026-06-22T20:58:10.668] [DEBUG] debug-file - env: hvigor-config.json5 content = { modelVersion: '5.1.1', dependencies: {} }
+[2026-06-22T20:58:15.398] [DEBUG] debug-file - java daemon tryConnect failed Error: connect ECONNREFUSED 127.0.0.1:45050
+[2026-06-22T20:58:15.704] [DEBUG] debug-file - java daemon started at port 45050 pid 333532
+[2026-06-22T20:58:15.749] [DEBUG] debug-file - session manager: set active socket. socketId=W_aT__bq9e0vrM92AAAB
+[2026-06-22T20:58:19.387] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-06-22T20:58:19.391] [DEBUG] debug-file - Since there is no instance or instance is terminated, create a new worker pool.
+[2026-06-22T20:58:19.392] [DEBUG] debug-file - Worker pool is initialized with config:  {
+  minPoolNum: 2,
+  maxPoolNum: undefined,
+  maxCoreSize: undefined,
+  cacheCapacity: undefined,
+  cacheTtl: undefined
+}
+[2026-06-22T20:58:19.393] [DEBUG] debug-file - Create  resident worker with id: 0.
+[2026-06-22T20:58:19.394] [DEBUG] debug-file - Create  resident worker with id: 1.
+[2026-06-22T20:58:19.396] [DEBUG] debug-file - Workers' log level updated to INFO
+[2026-06-22T20:58:19.405] [DEBUG] debug-file - Hvigor init with startParameters:{
+  hvigorfileTypeCheck: false,
+  parallelExecution: true,
+  incrementalExecution: true,
+  printStackTrace: false,
+  daemon: true,
+  analyze: 0,
+  logLevel: Level { level: 20000, levelStr: 'INFO', colour: 'green' },
+  optimizationStrategy: 'memory',
+  hotCompile: undefined,
+  hotReloadBuild: undefined,
+  customizedParam: undefined
+}
+[2026-06-22T20:58:19.407] [DEBUG] debug-file - Cache service initialization finished in 1 ms 
+[2026-06-22T20:58:19.409] [DEBUG] debug-file - hvigorfile, resolving C:\Users\86182\Desktop\2026Spring-25307211-Lab1\hvigorfile.ts
+[2026-06-22T20:58:23.747] [DEBUG] debug-file - hvigorfile, require result:  {}
+[2026-06-22T20:58:23.748] [DEBUG] debug-file - hvigorfile, binding system plugins {}
+[2026-06-22T20:58:23.751] [DEBUG] debug-file - Starting plugin build process
+[2026-06-22T20:58:23.751] [DEBUG] debug-file - App plugin prepare start...
+[2026-06-22T20:58:23.752] [DEBUG] debug-file - App plugin prepare end...
+[2026-06-22T20:58:23.752] [DEBUG] debug-file - App plugin creating...
+[2026-06-22T20:58:24.110] [DEBUG] debug-file - App plugin register hook start...
+[2026-06-22T20:58:24.111] [DEBUG] debug-file - App plugin register hook end...
+[2026-06-22T20:58:24.111] [DEBUG] debug-file - Plugin build process completed
+[2026-06-22T20:58:24.114] [DEBUG] debug-file - Start initialize project's product build option map with build mode debug.
+[2026-06-22T20:58:24.114] [DEBUG] debug-file - Picking option from product 'default' with build mode 'debug'.
+[2026-06-22T20:58:24.114] [DEBUG] debug-file - Product 'default' build option initialized
+[2026-06-22T20:58:24.114] [DEBUG] debug-file - End initialize project's product build option map with build mode 'debug'.
+[2026-06-22T20:58:24.117] [DEBUG] debug-file - Obtain build option for product 'default'in this build.
+[2026-06-22T20:58:24.120] [DEBUG] debug-file - No signingConfig found, initRemoteHspCache failed.
+[2026-06-22T20:58:24.124] [DEBUG] debug-file - Local scan or download HarmonyOS sdk components toolchains,ets,js,native,previewer
+[2026-06-22T20:58:24.130] [DEBUG] debug-file - Local scan or download hmscore sdk components toolchains,ets,native
+[2026-06-22T20:58:24.135] [DEBUG] debug-file - Start recording SDK configuration permission data.
+[2026-06-22T20:58:24.203] [DEBUG] debug-file - Sdk init in 81 ms 
+[2026-06-22T20:58:24.216] [DEBUG] debug-file - Project task initialization takes 11 ms 
+[2026-06-22T20:58:24.216] [DEBUG] debug-file - hvigorfile, resolve finished C:\Users\86182\Desktop\2026Spring-25307211-Lab1\hvigorfile.ts
+[2026-06-22T20:58:24.218] [DEBUG] debug-file - hvigorfile, resolving C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\hvigorfile.ts
+[2026-06-22T20:58:24.229] [DEBUG] debug-file - hvigorfile, require result:  {}
+[2026-06-22T20:58:24.230] [DEBUG] debug-file - hvigorfile, binding system plugins {}
+[2026-06-22T20:58:24.230] [DEBUG] debug-file - Starting plugin build process
+[2026-06-22T20:58:24.230] [DEBUG] debug-file - Hap plugin creating...
+[2026-06-22T20:58:24.233] [DEBUG] debug-file - failed to load cangjie to dynamically generate schemas: Error: Cannot find module '@ohos/cangjie-build-support/index'
+Require stack:
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\hooks\cangjie-register.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\strategy\stage-init-strategy.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\abstract-plugin-builder.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\app-plugin-builder.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\factory\plugin-factory.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\index.js
+- C:\Users\86182\Desktop\2026Spring-25307211-Lab1\hvigorfile.ts
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\src\base\internal\lifecycle\configuration.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\src\base\boot\index.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\cluster\worker-process-lifecycle.js
+- C:\Program Files\Huawei\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\process\daemon-process-boot-script.js
+[2026-06-22T20:58:24.253] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-06-22T20:58:24.254] [DEBUG] debug-file - Target 'default' config initialized
+[2026-06-22T20:58:24.255] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-06-22T20:58:24.255] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-06-22T20:58:24.255] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=release
+[2026-06-22T20:58:24.255] [DEBUG] debug-file - Target 'default' config initialized
+[2026-06-22T20:58:24.256] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-06-22T20:58:24.256] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-06-22T20:58:24.257] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-06-22T20:58:24.257] [DEBUG] debug-file - Target 'default' config initialized
+[2026-06-22T20:58:24.257] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-06-22T20:58:24.257] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-06-22T20:58:24.258] [DEBUG] debug-file - Obtain build option for module 'entry' target 'default'in this build.
+[2026-06-22T20:58:24.270] [DEBUG] debug-file - Module entry task initialization takes 11 ms 
+[2026-06-22T20:58:24.271] [DEBUG] debug-file - Hap plugin register hook start...
+[2026-06-22T20:58:24.271] [DEBUG] debug-file - Hap plugin register hook end...
+[2026-06-22T20:58:24.271] [DEBUG] debug-file - Plugin build process completed
+[2026-06-22T20:58:24.271] [DEBUG] debug-file - hvigorfile, resolve finished C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\hvigorfile.ts
+[2026-06-22T20:58:24.384] [DEBUG] debug-file - hvigorfile, resolve hvigorfile dependencies in 113 ms 
+[2026-06-22T20:58:24.385] [DEBUG] debug-file - project has submodules:entry
+[2026-06-22T20:58:24.389] [DEBUG] debug-file - start to load updatedOhPackageInfo to the disk
+[2026-06-22T20:58:24.409] [DEBUG] debug-file - load to the disk finished
+[2026-06-22T20:58:24.411] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-06-22T20:58:24.417] [DEBUG] debug-file - Module 2026Spring-25307211-Lab1 Collected Dependency: 
+[2026-06-22T20:58:24.417] [DEBUG] debug-file - Module 2026Spring-25307211-Lab1's total dependency: 0
+[2026-06-22T20:58:24.419] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-06-22T20:58:24.426] [DEBUG] debug-file - Module entry Collected Dependency: 
+[2026-06-22T20:58:24.427] [DEBUG] debug-file - Module entry's total dependency: 0
+[2026-06-22T20:58:24.434] [DEBUG] debug-file - Configuration phase cost:5 s 27 ms 
+[2026-06-22T20:58:24.439] [DEBUG] debug-file - Configuration task cost before running: 5 s 42 ms 
+[2026-06-22T20:58:24.451] [DEBUG] debug-file - Executing task :entry:default@PreBuild
+[2026-06-22T20:58:24.454] [DEBUG] debug-file - Task 'entry:default@PreBuild' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:24.685] [DEBUG] debug-file - current product is not Atomic service.
+[2026-06-22T20:58:24.685] [DEBUG] debug-file - Use tool [win32: JAVA_HOME, CLASSPATH]
+ [
+  { JAVA_HOME: 'C:\\Program Files\\Huawei\\DevEco Studio\\jbr' },
+  { CLASSPATH: undefined }
+]
+[2026-06-22T20:58:24.686] [DEBUG] debug-file - Use tool [win32: NODE_HOME]
+ [
+  {
+    NODE_HOME: 'C:\\Program Files\\Huawei\\DevEco Studio\\tools\\node'
+  }
+]
+[2026-06-22T20:58:24.686] [DEBUG] debug-file - entry : default@PreBuild cost memory 11.28009033203125
+[2026-06-22T20:58:24.687] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 290 ms 
+[2026-06-22T20:58:24.689] [INFO] debug-file - Finished :entry:default@PreBuild... after 236 ms 
+[2026-06-22T20:58:24.691] [DEBUG] debug-file - Executing task :entry:default@CreateModuleInfo
+[2026-06-22T20:58:24.691] [DEBUG] debug-file - Task 'entry:default@CreateModuleInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:24.692] [DEBUG] debug-file - entry : default@CreateModuleInfo cost memory 0.04294586181640625
+[2026-06-22T20:58:24.693] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 296 ms 
+[2026-06-22T20:58:24.693] [INFO] debug-file - Finished :entry:default@CreateModuleInfo... after 2 ms 
+[2026-06-22T20:58:24.695] [DEBUG] debug-file - Executing task :entry:default@GenerateMetadata
+[2026-06-22T20:58:24.697] [DEBUG] debug-file - Task 'entry:default@GenerateMetadata' cost while wrapping incremental declarations: 2 ms 
+[2026-06-22T20:58:24.703] [DEBUG] debug-file - entry : default@GenerateMetadata cost memory 0.30849456787109375
+[2026-06-22T20:58:24.703] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 307 ms 
+[2026-06-22T20:58:24.704] [INFO] debug-file - Finished :entry:default@GenerateMetadata... after 8 ms 
+[2026-06-22T20:58:24.706] [DEBUG] debug-file - Executing task :entry:default@ConfigureCmake
+[2026-06-22T20:58:24.706] [DEBUG] debug-file - entry : default@ConfigureCmake cost memory 0.01453399658203125
+[2026-06-22T20:58:24.706] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 310 ms 
+[2026-06-22T20:58:24.706] [INFO] debug-file - Finished :entry:default@ConfigureCmake... after 1 ms 
+[2026-06-22T20:58:24.709] [DEBUG] debug-file - Executing task :entry:default@MergeProfile
+[2026-06-22T20:58:24.710] [DEBUG] debug-file - Task 'entry:default@MergeProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:24.711] [DEBUG] debug-file - Change app api release type with 'Release'
+[2026-06-22T20:58:24.712] [DEBUG] debug-file - Change app compile API version with '6.0.2.130'
+[2026-06-22T20:58:24.712] [DEBUG] debug-file - Change app target API version with '60002022'
+[2026-06-22T20:58:24.712] [DEBUG] debug-file - Change app minimum API version with '50005017'
+[2026-06-22T20:58:24.712] [DEBUG] debug-file - Use cli appEnvironment
+[2026-06-22T20:58:24.718] [DEBUG] debug-file - entry : default@MergeProfile cost memory 0.16197967529296875
+[2026-06-22T20:58:24.718] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 321 ms 
+[2026-06-22T20:58:24.718] [INFO] debug-file - Finished :entry:default@MergeProfile... after 10 ms 
+[2026-06-22T20:58:24.721] [DEBUG] debug-file - Executing task :entry:default@CreateBuildProfile
+[2026-06-22T20:58:24.722] [DEBUG] debug-file - Task 'entry:default@CreateBuildProfile' cost while wrapping incremental declarations: 2 ms 
+[2026-06-22T20:58:24.728] [DEBUG] debug-file - entry : default@CreateBuildProfile cost memory 0.0719146728515625
+[2026-06-22T20:58:24.728] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 331 ms 
+[2026-06-22T20:58:24.728] [INFO] debug-file - Finished :entry:default@CreateBuildProfile... after 7 ms 
+[2026-06-22T20:58:24.730] [DEBUG] debug-file - Executing task :entry:default@PreCheckSyscap
+[2026-06-22T20:58:24.731] [DEBUG] debug-file - entry : default@PreCheckSyscap cost memory 0.0147705078125
+[2026-06-22T20:58:24.731] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 334 ms 
+[2026-06-22T20:58:24.731] [INFO] debug-file - Finished :entry:default@PreCheckSyscap... after 1 ms 
+[2026-06-22T20:58:24.735] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgContextInfo
+[2026-06-22T20:58:24.751] [DEBUG] debug-file - Task 'entry:default@GeneratePkgContextInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:24.752] [DEBUG] debug-file - entry : default@GeneratePkgContextInfo cost memory 0.23589324951171875
+[2026-06-22T20:58:24.752] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 355 ms 
+[2026-06-22T20:58:24.752] [INFO] debug-file - Finished :entry:default@GeneratePkgContextInfo... after 18 ms 
+[2026-06-22T20:58:24.761] [DEBUG] debug-file - Executing task :entry:default@ProcessIntegratedHsp
+[2026-06-22T20:58:24.762] [DEBUG] debug-file - entry : default@ProcessIntegratedHsp cost memory 0.030517578125
+[2026-06-22T20:58:24.762] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 366 ms 
+[2026-06-22T20:58:24.763] [INFO] debug-file - Finished :entry:default@ProcessIntegratedHsp... after 2 ms 
+[2026-06-22T20:58:24.766] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithCmake
+[2026-06-22T20:58:24.766] [DEBUG] debug-file - entry : default@BuildNativeWithCmake cost memory 0.014923095703125
+[2026-06-22T20:58:24.766] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 370 ms 
+[2026-06-22T20:58:24.767] [INFO] debug-file - Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+[2026-06-22T20:58:24.769] [DEBUG] debug-file - Executing task :entry:default@MakePackInfo
+[2026-06-22T20:58:24.773] [DEBUG] debug-file - Module Pack Info:  {
+  summary: {
+    app: { bundleName: 'c***s', bundleType: 'app', version: [Object] },
+    modules: [ [Object] ]
+  },
+  packages: [
+    {
+      deviceType: [Array],
+      moduleType: 'entry',
+      deliveryWithInstall: true,
+      name: 'entry-default'
+    }
+  ]
+}
+[2026-06-22T20:58:24.777] [DEBUG] debug-file - entry : default@MakePackInfo cost memory 0.22574615478515625
+[2026-06-22T20:58:24.777] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 380 ms 
+[2026-06-22T20:58:24.778] [INFO] debug-file - Finished :entry:default@MakePackInfo... after 8 ms 
+[2026-06-22T20:58:24.779] [DEBUG] debug-file - Executing task :entry:default@SyscapTransform
+[2026-06-22T20:58:24.780] [DEBUG] debug-file - File: 'C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\syscap.json' from 'sysCapJsonPath' is not exists, just ignore.
+[2026-06-22T20:58:24.782] [DEBUG] debug-file - Task 'entry:default@SyscapTransform' cost while wrapping incremental declarations: 3 ms 
+[2026-06-22T20:58:24.783] [DEBUG] debug-file - entry : default@SyscapTransform cost memory 0.05774688720703125
+[2026-06-22T20:58:24.783] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 387 ms 
+[2026-06-22T20:58:24.784] [INFO] debug-file - Finished :entry:default@SyscapTransform... after 4 ms 
+[2026-06-22T20:58:24.787] [DEBUG] debug-file - Executing task :entry:default@ProcessProfile
+[2026-06-22T20:58:24.789] [DEBUG] debug-file - Task 'entry:default@ProcessProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:24.792] [DEBUG] debug-file - [
+  'C:\\Program Files\\Huawei\\DevEco Studio\\tools\\node\\node.exe',
+  'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\build-tools\\ets-loader\\bin\\ark\\ts2abc.js',
+  '--target-api-version',
+  '17'
+]
+[2026-06-22T20:58:24.985] [DEBUG] debug-file - 12.0.6.0
+[2026-06-22T20:58:24.990] [DEBUG] debug-file - No need to add fake ui ability because of not in preview process.
+[2026-06-22T20:58:24.992] [DEBUG] debug-file - entry : default@ProcessProfile cost memory 2.41998291015625
+[2026-06-22T20:58:24.993] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 596 ms 
+[2026-06-22T20:58:24.993] [INFO] debug-file - Finished :entry:default@ProcessProfile... after 206 ms 
+[2026-06-22T20:58:24.995] [DEBUG] debug-file - Executing task :entry:default@ProcessRouterMap
+[2026-06-22T20:58:25.003] [DEBUG] debug-file - entry : default@ProcessRouterMap cost memory 0.08933258056640625
+[2026-06-22T20:58:25.003] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 607 ms 
+[2026-06-22T20:58:25.004] [INFO] debug-file - Finished :entry:default@ProcessRouterMap... after 8 ms 
+[2026-06-22T20:58:25.006] [DEBUG] debug-file - Executing task :entry:default@ProcessShareConfig
+[2026-06-22T20:58:25.011] [DEBUG] debug-file - entry : default@ProcessShareConfig cost memory 0.0702056884765625
+[2026-06-22T20:58:25.011] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 615 ms 
+[2026-06-22T20:58:25.012] [INFO] debug-file - Finished :entry:default@ProcessShareConfig... after 5 ms 
+[2026-06-22T20:58:25.014] [DEBUG] debug-file - Executing task :entry:default@ProcessStartupConfig
+[2026-06-22T20:58:25.014] [DEBUG] debug-file - Task 'entry:default@ProcessStartupConfig' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:25.015] [DEBUG] debug-file - entry : default@ProcessStartupConfig cost memory 0.063812255859375
+[2026-06-22T20:58:25.016] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 619 ms 
+[2026-06-22T20:58:25.016] [INFO] debug-file - Finished :entry:default@ProcessStartupConfig... after 2 ms 
+[2026-06-22T20:58:25.017] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithNinja
+[2026-06-22T20:58:25.020] [DEBUG] debug-file - entry : default@BuildNativeWithNinja cost memory 0.028228759765625
+[2026-06-22T20:58:25.020] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 623 ms 
+[2026-06-22T20:58:25.020] [INFO] debug-file - Finished :entry:default@BuildNativeWithNinja... after 3 ms 
+[2026-06-22T20:58:25.023] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@ProcessResource
+[2026-06-22T20:58:25.027] [DEBUG] debug-file - Executing task :entry:default@ProcessResource
+[2026-06-22T20:58:25.027] [DEBUG] debug-file - Task 'entry:default@ProcessResource' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:25.032] [DEBUG] debug-file - entry : default@ProcessResource cost memory 0.1252593994140625
+[2026-06-22T20:58:25.033] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 637 ms 
+[2026-06-22T20:58:25.034] [INFO] debug-file - Finished :entry:default@ProcessResource... after 9 ms 
+[2026-06-22T20:58:25.042] [DEBUG] debug-file - Executing task :entry:default@GenerateLoaderJson
+[2026-06-22T20:58:25.043] [DEBUG] debug-file - Task 'entry:default@GenerateLoaderJson' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:25.057] [DEBUG] debug-file - entry : default@GenerateLoaderJson cost memory 0.5385208129882812
+[2026-06-22T20:58:25.057] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 661 ms 
+[2026-06-22T20:58:25.063] [INFO] debug-file - Finished :entry:default@GenerateLoaderJson... after 16 ms 
+[2026-06-22T20:58:25.064] [DEBUG] debug-file - Executing task :entry:default@ProcessLibs
+[2026-06-22T20:58:25.071] [DEBUG] debug-file - Worker dispatch failed, running processLibs on main thread.
+[2026-06-22T20:58:25.072] [DEBUG] debug-file - entry : default@ProcessLibs cost memory 0.36017608642578125
+[2026-06-22T20:58:25.073] [DEBUG] debug-file - runTaskFromQueue task cost before running: 5 s 676 ms 
+[2026-06-22T20:58:25.073] [INFO] debug-file - Finished :entry:default@ProcessLibs... after 9 ms 
+[2026-06-22T20:58:25.075] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@CompileResource
+[2026-06-22T20:58:25.076] [DEBUG] debug-file - Executing task :entry:default@CompileResource
+[2026-06-22T20:58:25.215] [DEBUG] debug-file - Use tool [C:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony\toolchains\restool.exe]
+ [
+  'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\toolchains\\restool.exe',
+  '-l',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\res\\default\\resConfig.json'
+]
+[2026-06-22T20:58:25.217] [DEBUG] debug-file - current process  memoryUsage: {
+  rss: 279818240,
+  heapTotal: 175665152,
+  heapUsed: 130498048,
+  external: 3396516,
+  arrayBuffers: 1615341
+} os memoryUsage :17.284313201904297
+[2026-06-22T20:58:26.219] [DEBUG] debug-file - Info: Pack: normal pack mode
+
+[2026-06-22T20:58:26.344] [DEBUG] debug-file - Info: hardware concurrency count is : 20
+Info: thread count is : 20
+
+[2026-06-22T20:58:26.345] [DEBUG] debug-file - Info: thread pool is started
+
+[2026-06-22T20:58:26.351] [DEBUG] debug-file - Info: GenericCompiler::CompileFiles
+
+[2026-06-22T20:58:26.374] [DEBUG] debug-file - Info: GenericCompiler::CompileFiles
+
+[2026-06-22T20:58:26.391] [DEBUG] debug-file - Info: GenericCompiler::CompileFiles
+
+[2026-06-22T20:58:26.407] [DEBUG] debug-file - 06-22 20:58:26.406 480492 563016 E C01400/ImageTranscoderUtils: DecodeToRGBA IN
+06-22 20:58:26.406 480492 563016 E C01400/ImageTranscoderUtils: ImageFilter IN C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\resources\base\media\app_icon.png
+
+[2026-06-22T20:58:26.414] [DEBUG] debug-file - 06-22 20:58:26.413 480492 563016 E C01400/ImageTranscoder: TranscodeSLR Only zoom-out is supported.
+
+[2026-06-22T20:58:26.414] [DEBUG] debug-file - Warning: ScaleImage failed, error message: INVALID_PARAMETERS, file path = C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\resources\base\media\app_icon.png
+
+[2026-06-22T20:58:26.417] [DEBUG] debug-file - 06-22 20:58:26.416 480492 563016 E C01400/ImageTranscoderUtils: DecodeToRGBA IN
+06-22 20:58:26.416 480492 563016 E C01400/ImageTranscoderUtils: ImageFilter IN C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\resources\base\media\ic_icon.png
+
+[2026-06-22T20:58:26.418] [DEBUG] debug-file - 06-22 20:58:26.417 480492 563016 E C01400/ImageTranscoder: TranscodeSLR Only zoom-out is supported.
+Warning: ScaleImage failed, error message: INVALID_PARAMETERS, file path = C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\resources\base\media\ic_icon.png
+
+[2026-06-22T20:58:26.421] [DEBUG] debug-file - Warning: The width or height of the png file referenced by the icon exceeds the limit (41 pixels)
+at C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\resources\base\media\app_icon.png
+
+[2026-06-22T20:58:26.422] [DEBUG] debug-file - Warning: The width or height of the png file referenced by the icon exceeds the limit (41 pixels)
+at C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\resources\base\media\ic_icon.png
+
+[2026-06-22T20:58:26.422] [DEBUG] debug-file - Warning: The width or height of the png file referenced by the startWindowIcon exceeds the limit (144 pixels)
+at C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\resources\base\media\ic_icon.png
+
+[2026-06-22T20:58:26.425] [DEBUG] debug-file - Info: restool resources compile success.
+
+[2026-06-22T20:58:26.426] [DEBUG] debug-file - Info: thread pool is stopped
+
+[2026-06-22T20:58:26.507] [DEBUG] debug-file - entry : default@CompileResource cost memory -12.85736083984375
+[2026-06-22T20:58:26.507] [DEBUG] debug-file - runTaskFromQueue task cost before running: 7 s 110 ms 
+[2026-06-22T20:58:26.509] [INFO] debug-file - Finished :entry:default@CompileResource... after 1 s 432 ms 
+[2026-06-22T20:58:26.512] [DEBUG] debug-file - Executing task :entry:default@DoNativeStrip
+[2026-06-22T20:58:26.513] [DEBUG] debug-file - Task 'entry:default@DoNativeStrip' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:26.518] [DEBUG] debug-file - entry : default@DoNativeStrip cost memory 0.071990966796875
+[2026-06-22T20:58:26.518] [DEBUG] debug-file - runTaskFromQueue task cost before running: 7 s 121 ms 
+[2026-06-22T20:58:26.518] [INFO] debug-file - Finished :entry:default@DoNativeStrip... after 6 ms 
+[2026-06-22T20:58:26.521] [DEBUG] debug-file - Executing task :entry:default@CompileArkTS
+[2026-06-22T20:58:26.523] [DEBUG] debug-file - obfuscationOptions: undefined
+[2026-06-22T20:58:26.526] [DEBUG] debug-file - Task 'entry:default@CompileArkTS' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:26.593] [DEBUG] debug-file - build config:
+[2026-06-22T20:58:26.594] [DEBUG] debug-file - {
+  moduleType: 'entry',
+  perf: 0,
+  targetName: '.default',
+  packageManagerType: 'ohpm',
+  localPropertiesPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\local.properties',
+  isPreview: false,
+  isOhosTest: false,
+  isLocalTest: false,
+  buildMode: 'Debug',
+  hotReloadBuild: undefined,
+  watchMode: 'false',
+  aceProfilePath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\res\\default\\resources\\base\\profile',
+  etsLoaderPath: 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\build-tools\\ets-loader',
+  modulePath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry',
+  testFrameworkPar: {
+    testMode: undefined,
+    coveragePathFilter: undefined,
+    coverageMode: undefined
+  },
+  needCoverageInsert: false,
+  debugLine: false,
+  projectTopDir: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1',
+  compileSdkVersion: 22,
+  compatibleSdkVersion: 17,
+  originCompatibleSdkVersion: '5.0.5(17)',
+  compatibleSdkVersionStage: undefined,
+  bundleName: 'c***s',
+  etsLoaderVersion: '6.0.2.130',
+  etsLoaderReleaseType: 'Release',
+  aotCompileMode: 'type',
+  apPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\modules.ap',
+  entryModuleName: 'entry',
+  entryModuleVersion: '1.0.0',
+  entryPackageName: 'entry',
+  allModuleNameHash: '119a8b03c6445480bfe246150491e262720a19fbf9ac205c3688090e883785f1',
+  externalApiPaths: [
+    'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\hms\\ets'
+  ],
+  compilerTypes: [],
+  isCrossplatform: false,
+  hvigorPluginFile: undefined,
+  compilePluginPath: undefined,
+  buildGeneratedProfilePath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\generated\\profile\\default',
+  bundleType: 'app',
+  arkTSVersion: undefined,
+  apiVersion: 22,
+  needCompleteSourcesMap: false,
+  isFaMode: false,
+  buildDir: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build',
+  deviceTypes: [ 'phone' ],
+  pkgContextInfo: undefined,
+  ohPackagePathMap: {},
+  dependencyAliasMap: {},
+  permission: { requestPermissions: [ [Object] ], definePermissions: undefined },
+  useGetCurrentBundleName: false,
+  projectArkOption: undefined,
+  sourceMapDir: undefined,
+  branchElimination: false,
+  transformLib: undefined,
+  tsImportSendable: false,
+  resolveConflictMode: true,
+  depName2RootPath: {},
+  depName2DepInfo: {},
+  rootPathSet: [ 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1' ],
+  useNativeResolver: true,
+  shouldEmitJs: true,
+  useTscResolve: false,
+  singleFileEmit: false,
+  userProjectConfig: {
+    autoLazyImport: false,
+    allowEmptyBundleName: false,
+    reExportCheckMode: 'noCheck',
+    executionMode: 'memory',
+    usePathPlaceholder: false,
+    writeRollupCache: true,
+    isExpandImportEnabled: false,
+    expandImportExclude: '',
+    lazyImportExclude: '',
+    lazyImportInclude: '',
+    ignoreCrossplatformCheck: false,
+    isHarDeduplicateEnabled: false,
+    skipOhModulesLint: false,
+    enableStrictCheckOHModule: false,
+    disableSendableCheckRules: [],
+    useDeclarationFileSignature: false,
+    customizedOptions: undefined,
+    integratedHsp: false,
+    isPreloadSoEnabled: false
+  },
+  executionMode: 'memory',
+  arkCompileCachePath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule',
+  autoLazyFilter: undefined,
+  isHarDeduplicateEnabled: false,
+  intermediateHarDuplicateDirPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\har_duplicate\\default',
+  autoLazyImport: false,
+  allowEmptyBundleName: false,
+  reExportCheckMode: 'noCheck',
+  usePathPlaceholder: false,
+  writeRollupCache: true,
+  isExpandImportEnabled: false,
+  expandImportExclude: '',
+  lazyImportExclude: '',
+  lazyImportInclude: '',
+  ignoreCrossplatformCheck: false,
+  skipOhModulesLint: false,
+  enableStrictCheckOHModule: false,
+  disableSendableCheckRules: [],
+  useDeclarationFileSignature: false,
+  customizedOptions: undefined,
+  integratedHsp: false,
+  isPreloadSoEnabled: false,
+  strictMode: undefined,
+  useNormalizedOHMUrl: false,
+  caseSensitiveCheck: false,
+  aceModuleJsonPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\res\\default\\ark_module.json',
+  appResource: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\res\\default\\ResourceTable.txt',
+  rawFileResource: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\res\\default\\resources\\rawfile',
+  resourceTableHash: '90fb47c6b743ee0e28e15dd39a890a2e674e64acd110b3ebf1bf5467511b1503',
+  runtimeOS: 'HarmonyOS',
+  sdkInfo: 'false:22:6.0.2.130:Release',
+  aceModuleRoot: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets',
+  compileMode: 'esmodule',
+  aceSuperVisualPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\supervisual',
+  aceBuildJson: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\loader\\default\\loader.json',
+  cachePath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule\\debug',
+  aceModuleBuild: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\loader_out\\default\\ets',
+  supportChunks: true,
+  declaredFilesPath: undefined,
+  shouldCollectDirectImportees: false,
+  isByteCodeHarOptimize: false,
+  expandImportPath: undefined,
+  pkgNameToPkgBriefInfo: {
+    entry: {
+      pkgRoot: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry',
+      originalSourceRoots: undefined,
+      sourceRoots: [Array],
+      pkgName: 'entry'
+    }
+  },
+  projectModel: {
+    'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main': {
+      moduleName: 'entry',
+      modulePkgPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry',
+      belongProjectPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1'
+    },
+    'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry': {
+      moduleName: 'entry',
+      modulePkgPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry',
+      belongProjectPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1'
+    },
+    'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1': {
+      moduleName: '2026Spring-25307211-Lab1',
+      modulePkgPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1',
+      belongProjectPath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1'
+    }
+  },
+  pkgJsonFileHash: '2926efe5b7e2ad4ec5ffa7427fd70794f3aa2109c26f2f41bc9aec1a67770188',
+  allModulePaths: [ 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry' ],
+  routerMap: {},
+  obfuscationOptions: undefined,
+  byteCodeHarToDependencyKeys: undefined,
+  compileBlockPkg: [],
+  mockParams: {
+    decorator: '@MockSetup',
+    packageName: '@ohos/hamock',
+    etsSourceRootPath: 'src/main/ets',
+    mockConfigPath: undefined,
+    mockConfigKey2ModuleInfo: {},
+    source2ModuleIdMap: {}
+  },
+  copyCodeResourceEnable: true,
+  copyCodeResourceExcludes: [],
+  copyCodeResourceIncludes: undefined,
+  uiTransformOptimization: false,
+  sdkPath: 'C:/Program Files/Huawei/DevEco Studio/sdk',
+  needPreloadSoFileSet: {},
+  preloadSoFilePath: 'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\preload\\default\\preload.json',
+  useSourceHash: false,
+  localModuleParamMap: {},
+  otherPaths: {
+    'entry/*': [
+      '..\\*',
+      '..\\..\\..\\build\\default\\generated\\profile\\default\\*'
+    ]
+  },
+  collectImportersConfig: undefined
+}
+[2026-06-22T20:58:26.595] [DEBUG] debug-file - Compile arkts with external api path: C:\Program Files\Huawei\DevEco Studio\sdk\default\hms\ets
+[2026-06-22T20:58:26.600] [DEBUG] debug-file - default@CompileArkTS work[0] is submitted.
+[2026-06-22T20:58:26.601] [DEBUG] debug-file - default@CompileArkTS work[0] is pushed to ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[19] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[18] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[17] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[16] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[15] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[14] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[13] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[12] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[11] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[10] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[9] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[8] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[7] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[6] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.602] [DEBUG] debug-file - A work dispatched to worker[5] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.603] [DEBUG] debug-file - Create  resident worker with id: 4.
+[2026-06-22T20:58:26.605] [DEBUG] debug-file - default@CompileArkTS work[0] has been dispatched to worker[4].
+[2026-06-22T20:58:26.605] [DEBUG] debug-file - default@CompileArkTS work[0] is dispatched.
+[2026-06-22T20:58:26.605] [DEBUG] debug-file - CopyResources startTime: 1369250197328400
+[2026-06-22T20:58:26.605] [DEBUG] debug-file - default@CompileArkTS work[1] is submitted.
+[2026-06-22T20:58:26.606] [DEBUG] debug-file - default@CompileArkTS work[1] is pushed to ready queue.
+[2026-06-22T20:58:26.606] [DEBUG] debug-file - A work dispatched to worker[19] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.606] [DEBUG] debug-file - Create  resident worker with id: 18.
+[2026-06-22T20:58:26.608] [DEBUG] debug-file - default@CompileArkTS work[1] has been dispatched to worker[18].
+[2026-06-22T20:58:26.608] [DEBUG] debug-file - default@CompileArkTS work[1] is dispatched.
+[2026-06-22T20:58:26.608] [DEBUG] debug-file - entry : default@CompileArkTS cost memory 1.5518035888671875
+[2026-06-22T20:58:26.612] [DEBUG] debug-file - Executing task :entry:default@BuildJS
+[2026-06-22T20:58:26.612] [DEBUG] debug-file - Task 'entry:default@BuildJS' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:26.619] [DEBUG] debug-file - entry : default@BuildJS cost memory 0.16075897216796875
+[2026-06-22T20:58:26.620] [DEBUG] debug-file - runTaskFromQueue task cost before running: 7 s 223 ms 
+[2026-06-22T20:58:26.621] [INFO] debug-file - Finished :entry:default@BuildJS... after 9 ms 
+[2026-06-22T20:58:26.624] [DEBUG] debug-file - Executing task :entry:default@CacheNativeLibs
+[2026-06-22T20:58:26.625] [DEBUG] debug-file - Task 'entry:default@CacheNativeLibs' cost while wrapping incremental declarations: 2 ms 
+[2026-06-22T20:58:26.626] [DEBUG] debug-file - default@CacheNativeLibs work[2] is submitted.
+[2026-06-22T20:58:26.626] [DEBUG] debug-file - default@CacheNativeLibs work[2] is pushed to ready queue.
+[2026-06-22T20:58:26.626] [DEBUG] debug-file - A work dispatched to worker[19] failed because unable to get work from ready queue.
+[2026-06-22T20:58:26.626] [DEBUG] debug-file - A work dispatched to worker[18] failed because of worker busy.
+[2026-06-22T20:58:26.627] [DEBUG] debug-file - Create  resident worker with id: 17.
+[2026-06-22T20:58:26.628] [DEBUG] debug-file - default@CacheNativeLibs work[2] has been dispatched to worker[17].
+[2026-06-22T20:58:26.628] [DEBUG] debug-file - default@CacheNativeLibs work[2] is dispatched.
+[2026-06-22T20:58:26.628] [DEBUG] debug-file - entry : default@CacheNativeLibs cost memory 0.15970611572265625
+[2026-06-22T20:58:30.449] [DEBUG] debug-file - worker[18] has one work done.
+[2026-06-22T20:58:30.449] [DEBUG] debug-file - CopyResources is end, endTime: 1369254041275600
+[2026-06-22T20:58:30.450] [DEBUG] debug-file - default@CompileArkTS work[1] done.
+[2026-06-22T20:58:30.450] [DEBUG] debug-file - A work dispatched to worker[18] failed because unable to get work from ready queue.
+[2026-06-22T20:58:30.506] [DEBUG] debug-file - worker[17] has one work done.
+[2026-06-22T20:58:30.506] [DEBUG] debug-file - default@CacheNativeLibs work[2] done.
+[2026-06-22T20:58:30.507] [INFO] debug-file - Finished :entry:default@CacheNativeLibs... after 16 ms 
+[2026-06-22T20:58:30.611] [DEBUG] debug-file - A work dispatched to worker[17] failed because unable to get work from ready queue.
+[2026-06-22T20:58:43.494] [DEBUG] debug-file - worker[4] has one work done.
+[2026-06-22T20:58:43.494] [DEBUG] debug-file - Ark compile task finished.finished time is 1369267085823400
+[2026-06-22T20:58:43.497] [DEBUG] debug-file - default@CompileArkTS work[0] done.
+[2026-06-22T20:58:43.498] [DEBUG] debug-file - A work dispatched to worker[4] failed because unable to get work from ready queue.
+[2026-06-22T20:58:43.500] [INFO] debug-file - Finished :entry:default@CompileArkTS... after 9 s 147 ms 
+[2026-06-22T20:58:43.502] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgModuleJson
+[2026-06-22T20:58:43.503] [DEBUG] debug-file - File: 'C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-06-22T20:58:43.503] [DEBUG] debug-file - Error occurs while handling @Input 'shouldDeduplicateHar': The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2026-06-22T20:58:43.504] [DEBUG] debug-file - Task 'entry:default@GeneratePkgModuleJson' cost while wrapping incremental declarations: 2 ms 
+[2026-06-22T20:58:43.507] [DEBUG] debug-file - entry : default@GeneratePkgModuleJson cost memory 0.17981719970703125
+[2026-06-22T20:58:43.507] [DEBUG] debug-file - runTaskFromQueue task cost before running: 24 s 111 ms 
+[2026-06-22T20:58:43.508] [INFO] debug-file - Finished :entry:default@GeneratePkgModuleJson... after 6 ms 
+[2026-06-22T20:58:43.509] [DEBUG] debug-file - Executing task :entry:default@ProcessCompiledResources
+[2026-06-22T20:58:43.509] [DEBUG] debug-file - File: 'C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-06-22T20:58:43.509] [DEBUG] debug-file - Task 'entry:default@ProcessCompiledResources' cost while wrapping incremental declarations: 1 ms 
+[2026-06-22T20:58:43.509] [DEBUG] debug-file - entry : default@ProcessCompiledResources cost memory 0.06026458740234375
+[2026-06-22T20:58:43.510] [DEBUG] debug-file - runTaskFromQueue task cost before running: 24 s 113 ms 
+[2026-06-22T20:58:43.510] [INFO] debug-file - Finished :entry:default@ProcessCompiledResources... after 1 ms 
+[2026-06-22T20:58:43.512] [DEBUG] debug-file - Executing task :entry:default@PackageHap
+[2026-06-22T20:58:43.517] [DEBUG] debug-file - Use tool [C:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony\toolchains\lib\app_packing_tool.jar]
+ [
+  'java',
+  '-Dfile.encoding=GBK',
+  '-jar',
+  'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\toolchains\\lib\\app_packing_tool.jar',
+  '--mode',
+  'hap',
+  '--force',
+  'true',
+  '--lib-path',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\stripped_native_libs\\default',
+  '--json-path',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\package\\default\\module.json',
+  '--resources-path',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\res\\default\\resources',
+  '--index-path',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\res\\default\\resources.index',
+  '--pack-info-path',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\outputs\\default\\pack.info',
+  '--out-path',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\outputs\\default\\entry-default-unsigned.hap',
+  '--ets-path',
+  'C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\build\\default\\intermediates\\loader_out\\default\\ets'
+]
+[2026-06-22T20:58:44.178] [DEBUG] debug-file - java daemon socket received message:{"code":0,"message":"pack success"}
+[2026-06-22T20:58:44.187] [DEBUG] debug-file - entry : default@PackageHap cost memory -17.309226989746094
+[2026-06-22T20:58:44.187] [DEBUG] debug-file - runTaskFromQueue task cost before running: 24 s 791 ms 
+[2026-06-22T20:58:44.189] [INFO] debug-file - Finished :entry:default@PackageHap... after 675 ms 
+[2026-06-22T20:58:44.191] [DEBUG] debug-file - Executing task :entry:default@PackingCheck
+[2026-06-22T20:58:44.200] [DEBUG] debug-file - entry : default@PackingCheck cost memory 0.8635711669921875
+[2026-06-22T20:58:44.200] [DEBUG] debug-file - runTaskFromQueue task cost before running: 24 s 804 ms 
+[2026-06-22T20:58:44.201] [INFO] debug-file - Finished :entry:default@PackingCheck... after 10 ms 
+[2026-06-22T20:58:44.203] [DEBUG] debug-file - Executing task :entry:default@SignHap
+[2026-06-22T20:58:44.203] [WARN] debug-file - Will skip sign 'hos_hap'. No signingConfigs profile is configured in current project.
+             If needed, configure the signingConfigs in C:\Users\86182\Desktop\2026Spring-25307211-Lab1\build-profile.json5.
+[2026-06-22T20:58:44.205] [DEBUG] debug-file - entry : default@SignHap cost memory 0.0563201904296875
+[2026-06-22T20:58:44.205] [DEBUG] debug-file - runTaskFromQueue task cost before running: 24 s 809 ms 
+[2026-06-22T20:58:44.206] [INFO] debug-file - Finished :entry:default@SignHap... after 3 ms 
+[2026-06-22T20:58:44.209] [DEBUG] debug-file - Executing task :entry:default@CollectDebugSymbol
+[2026-06-22T20:58:44.211] [DEBUG] debug-file - entry : default@CollectDebugSymbol cost memory 0.10024261474609375
+[2026-06-22T20:58:44.211] [DEBUG] debug-file - runTaskFromQueue task cost before running: 24 s 814 ms 
+[2026-06-22T20:58:44.211] [INFO] debug-file - Finished :entry:default@CollectDebugSymbol... after 3 ms 
+[2026-06-22T20:58:44.212] [DEBUG] debug-file - Executing task :entry:assembleHap
+[2026-06-22T20:58:44.212] [DEBUG] debug-file - entry : assembleHap cost memory 0.01279449462890625
+[2026-06-22T20:58:44.212] [DEBUG] debug-file - runTaskFromQueue task cost before running: 24 s 816 ms 
+[2026-06-22T20:58:44.213] [INFO] debug-file - Finished :entry:assembleHap... after 1 ms 
+[2026-06-22T20:58:44.565] [INFO] debug-file - BUILD SUCCESSFUL in 25 s 168 ms 
+[2026-06-22T20:58:44.567] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\app.json5 cache by regenerate.
+[2026-06-22T20:58:44.569] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\module.json5 cache by regenerate.
+[2026-06-22T20:58:44.570] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\build-profile.json5 cache by regenerate.
+[2026-06-22T20:58:44.570] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build-profile.json5 cache by regenerate.
+[2026-06-22T20:58:44.571] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\resources\base\profile\main_pages.json cache by regenerate.
+[2026-06-22T20:58:44.571] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\hvigor\hvigor-config.json5 cache by regenerate.
+[2026-06-22T20:58:44.572] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\oh-package.json5 cache by regenerate.
+[2026-06-22T20:58:44.572] [DEBUG] debug-file - Update task entry:default@PreBuild input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\oh-package.json5 cache by regenerate.
+[2026-06-22T20:58:44.573] [DEBUG] debug-file - Incremental task entry:default@PreBuild post-execution cost:7 ms .
+[2026-06-22T20:58:44.573] [DEBUG] debug-file - Update task entry:default@CreateModuleInfo output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\generated\profile\default\ModuleInfo.ts cache.
+[2026-06-22T20:58:44.574] [DEBUG] debug-file - Incremental task entry:default@CreateModuleInfo post-execution cost:1 ms .
+[2026-06-22T20:58:44.574] [DEBUG] debug-file - Update task entry:default@GenerateMetadata input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\module.json5 cache by regenerate.
+[2026-06-22T20:58:44.575] [DEBUG] debug-file - Update task entry:default@GenerateMetadata output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\hap_metadata\default\output_metadata.json cache.
+[2026-06-22T20:58:44.575] [DEBUG] debug-file - Incremental task entry:default@GenerateMetadata post-execution cost:2 ms .
+[2026-06-22T20:58:44.575] [DEBUG] debug-file - Update task entry:default@MergeProfile input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\app.json5 cache by regenerate.
+[2026-06-22T20:58:44.576] [DEBUG] debug-file - Update task entry:default@MergeProfile input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\build-profile.json5 cache by regenerate.
+[2026-06-22T20:58:44.577] [DEBUG] debug-file - Update task entry:default@MergeProfile input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\module.json5 cache by regenerate.
+[2026-06-22T20:58:44.577] [DEBUG] debug-file - Update task entry:default@MergeProfile output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\merge_profile\default\module.json cache.
+[2026-06-22T20:58:44.578] [DEBUG] debug-file - Incremental task entry:default@MergeProfile post-execution cost:3 ms .
+[2026-06-22T20:58:44.578] [DEBUG] debug-file - Update task entry:default@CreateBuildProfile input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\app.json5 cache by regenerate.
+[2026-06-22T20:58:44.578] [DEBUG] debug-file - Update task entry:default@CreateBuildProfile input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\build-profile.json5 cache by regenerate.
+[2026-06-22T20:58:44.579] [DEBUG] debug-file - Update task entry:default@CreateBuildProfile output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\generated\profile\default\BuildProfile.ets cache.
+[2026-06-22T20:58:44.579] [DEBUG] debug-file - Incremental task entry:default@CreateBuildProfile post-execution cost:1 ms .
+[2026-06-22T20:58:44.579] [DEBUG] debug-file - Update task entry:default@GeneratePkgContextInfo output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache.
+[2026-06-22T20:58:44.579] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgContextInfo post-execution cost:1 ms .
+[2026-06-22T20:58:44.580] [DEBUG] debug-file - Update task entry:default@ProcessIntegratedHsp output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\build\cache\default\integrated_hsp\integratedHspCache.json cache.
+[2026-06-22T20:58:44.580] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp post-execution cost:1 ms .
+[2026-06-22T20:58:44.580] [DEBUG] debug-file - Update task entry:default@MakePackInfo input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\app.json5 cache by regenerate.
+[2026-06-22T20:58:44.581] [DEBUG] debug-file - Update task entry:default@MakePackInfo input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\module.json5 cache by regenerate.
+[2026-06-22T20:58:44.582] [DEBUG] debug-file - Update task entry:default@MakePackInfo input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\build-profile.json5 cache by regenerate.
+[2026-06-22T20:58:44.582] [DEBUG] debug-file - Update task entry:default@MakePackInfo output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\pack.info cache.
+[2026-06-22T20:58:44.583] [DEBUG] debug-file - Incremental task entry:default@MakePackInfo post-execution cost:3 ms .
+[2026-06-22T20:58:44.583] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:C:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony\toolchains\syscap_tool.exe cache by regenerate.
+[2026-06-22T20:58:44.584] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:C:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony\ets\api\device-define cache by regenerate.
+[2026-06-22T20:58:44.586] [DEBUG] debug-file - Update task entry:default@SyscapTransform output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\syscap\default\rpcid.sc cache.
+[2026-06-22T20:58:44.587] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform post-execution cost:4 ms .
+[2026-06-22T20:58:44.587] [DEBUG] debug-file - Update task entry:default@ProcessProfile input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\merge_profile\default\module.json cache by regenerate.
+[2026-06-22T20:58:44.587] [DEBUG] debug-file - Update task entry:default@ProcessProfile output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\process_profile\default\module.json cache.
+[2026-06-22T20:58:44.588] [DEBUG] debug-file - Incremental task entry:default@ProcessProfile post-execution cost:2 ms .
+[2026-06-22T20:58:44.589] [DEBUG] debug-file - Update task entry:default@ProcessRouterMap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\oh-package.json5 cache by regenerate.
+[2026-06-22T20:58:44.589] [DEBUG] debug-file - Update task entry:default@ProcessRouterMap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\oh-package.json5 cache by regenerate.
+[2026-06-22T20:58:44.590] [DEBUG] debug-file - Update task entry:default@ProcessRouterMap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\module.json5 cache by regenerate.
+[2026-06-22T20:58:44.590] [DEBUG] debug-file - Update task entry:default@ProcessRouterMap output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\router_map\default\temp-router-map.json cache.
+[2026-06-22T20:58:44.591] [DEBUG] debug-file - Update task entry:default@ProcessRouterMap output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\router_map\default\loader-router-map.json cache.
+[2026-06-22T20:58:44.591] [DEBUG] debug-file - Incremental task entry:default@ProcessRouterMap post-execution cost:4 ms .
+[2026-06-22T20:58:44.592] [DEBUG] debug-file - Update task entry:default@ProcessShareConfig input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\oh-package.json5 cache by regenerate.
+[2026-06-22T20:58:44.592] [DEBUG] debug-file - Update task entry:default@ProcessShareConfig input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\oh-package.json5 cache by regenerate.
+[2026-06-22T20:58:44.592] [DEBUG] debug-file - Update task entry:default@ProcessShareConfig input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\module.json5 cache by regenerate.
+[2026-06-22T20:58:44.592] [DEBUG] debug-file - Update task entry:default@ProcessShareConfig output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\share_config\default\temp-share-config.json cache.
+[2026-06-22T20:58:44.592] [DEBUG] debug-file - Incremental task entry:default@ProcessShareConfig post-execution cost:1 ms .
+[2026-06-22T20:58:44.593] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\startup\default\startup_config.json cache.
+[2026-06-22T20:58:44.593] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig post-execution cost:1 ms .
+[2026-06-22T20:58:44.593] [DEBUG] debug-file - Update task entry:default@ProcessResource output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\resConfig.json cache.
+[2026-06-22T20:58:44.594] [DEBUG] debug-file - Update task entry:default@ProcessResource output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\opt-compression.json cache.
+[2026-06-22T20:58:44.594] [DEBUG] debug-file - Incremental task entry:default@ProcessResource post-execution cost:1 ms .
+[2026-06-22T20:58:44.596] [DEBUG] debug-file - Update task entry:default@GenerateLoaderJson input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\router_map\default\temp-router-map.json cache by regenerate.
+[2026-06-22T20:58:44.596] [DEBUG] debug-file - Update task entry:default@GenerateLoaderJson output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader\default\loader.json cache.
+[2026-06-22T20:58:44.597] [DEBUG] debug-file - Incremental task entry:default@GenerateLoaderJson post-execution cost:3 ms .
+[2026-06-22T20:58:44.597] [DEBUG] debug-file - Update task entry:default@ProcessLibs input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\build-profile.json5 cache by regenerate.
+[2026-06-22T20:58:44.598] [DEBUG] debug-file - Update task entry:default@ProcessLibs input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build-profile.json5 cache by regenerate.
+[2026-06-22T20:58:44.598] [DEBUG] debug-file - Update task entry:default@ProcessLibs output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\libs\default cache.
+[2026-06-22T20:58:44.599] [DEBUG] debug-file - Incremental task entry:default@ProcessLibs post-execution cost:3 ms .
+[2026-06-22T20:58:44.600] [DEBUG] debug-file - Update task entry:default@CompileResource input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\resources cache by regenerate.
+[2026-06-22T20:58:44.607] [DEBUG] debug-file - Update task entry:default@CompileResource input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\AppScope\resources cache by regenerate.
+[2026-06-22T20:58:44.608] [DEBUG] debug-file - Update task entry:default@CompileResource input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\process_profile\default\module.json cache by regenerate.
+[2026-06-22T20:58:44.608] [DEBUG] debug-file - Update task entry:default@CompileResource input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\resConfig.json cache by regenerate.
+[2026-06-22T20:58:44.608] [DEBUG] debug-file - Update task entry:default@CompileResource output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default cache.
+[2026-06-22T20:58:44.614] [DEBUG] debug-file - Update task entry:default@CompileResource output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\generated\r\default\ResourceTable.h cache.
+[2026-06-22T20:58:44.614] [DEBUG] debug-file - Update task entry:default@CompileResource output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\generated\r\default cache.
+[2026-06-22T20:58:44.615] [DEBUG] debug-file - Incremental task entry:default@CompileResource post-execution cost:16 ms .
+[2026-06-22T20:58:44.615] [DEBUG] debug-file - Update task entry:default@DoNativeStrip input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\libs\default cache by regenerate.
+[2026-06-22T20:58:44.615] [DEBUG] debug-file - Update task entry:default@DoNativeStrip output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\stripped_native_libs\default cache.
+[2026-06-22T20:58:44.615] [DEBUG] debug-file - Incremental task entry:default@DoNativeStrip post-execution cost:1 ms .
+[2026-06-22T20:58:44.617] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-06-22T20:58:44.617] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-06-22T20:58:44.617] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-06-22T20:58:44.618] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-06-22T20:58:44.618] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets cache by regenerate.
+[2026-06-22T20:58:44.621] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\generated\profile\default\BuildProfile.ets cache by regenerate.
+[2026-06-22T20:58:44.621] [DEBUG] debug-file - Update task entry:default@CompileArkTS output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader_out\default\ets cache.
+[2026-06-22T20:58:44.622] [DEBUG] debug-file - Incremental task entry:default@CompileArkTS post-execution cost:7 ms .
+[2026-06-22T20:58:44.623] [DEBUG] debug-file - Update task entry:default@BuildJS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-06-22T20:58:44.623] [DEBUG] debug-file - Update task entry:default@BuildJS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-06-22T20:58:44.624] [DEBUG] debug-file - Update task entry:default@BuildJS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-06-22T20:58:44.624] [DEBUG] debug-file - Update task entry:default@BuildJS input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-06-22T20:58:44.624] [DEBUG] debug-file - Update task entry:default@BuildJS output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader_out\default\js cache.
+[2026-06-22T20:58:44.624] [DEBUG] debug-file - Incremental task entry:default@BuildJS post-execution cost:3 ms .
+[2026-06-22T20:58:44.624] [DEBUG] debug-file - Update task entry:default@CacheNativeLibs input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\stripped_native_libs\default cache by regenerate.
+[2026-06-22T20:58:44.625] [DEBUG] debug-file - Update task entry:default@CacheNativeLibs input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\libs\default cache by regenerate.
+[2026-06-22T20:58:44.625] [DEBUG] debug-file - Update task entry:default@CacheNativeLibs output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\patch\default\base_native_libs.json cache.
+[2026-06-22T20:58:44.625] [DEBUG] debug-file - Incremental task entry:default@CacheNativeLibs post-execution cost:1 ms .
+[2026-06-22T20:58:44.625] [DEBUG] debug-file - Update task entry:default@GeneratePkgModuleJson input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\module.json cache by regenerate.
+[2026-06-22T20:58:44.625] [DEBUG] debug-file - Update task entry:default@GeneratePkgModuleJson output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\package\default\module.json cache.
+[2026-06-22T20:58:44.626] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgModuleJson post-execution cost:1 ms .
+[2026-06-22T20:58:44.626] [DEBUG] debug-file - Incremental task entry:default@ProcessCompiledResources post-execution cost:1 ms .
+[2026-06-22T20:58:44.626] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\stripped_native_libs\default cache by regenerate.
+[2026-06-22T20:58:44.627] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\module.json cache by regenerate.
+[2026-06-22T20:58:44.627] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\resources cache by regenerate.
+[2026-06-22T20:58:44.631] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\res\default\resources.index cache by regenerate.
+[2026-06-22T20:58:44.631] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\pack.info cache by regenerate.
+[2026-06-22T20:58:44.631] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader_out\default\ets cache by regenerate.
+[2026-06-22T20:58:44.632] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-06-22T20:58:44.632] [DEBUG] debug-file - Update task entry:default@PackageHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\generated\profile\default\BuildProfile.ets cache by regenerate.
+[2026-06-22T20:58:44.632] [DEBUG] debug-file - Update task entry:default@PackageHap output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\entry-default-unsigned.hap cache.
+[2026-06-22T20:58:44.632] [DEBUG] debug-file - Update task entry:default@PackageHap output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\source_map\default\sourceMaps.map cache.
+[2026-06-22T20:58:44.633] [DEBUG] debug-file - Update task entry:default@PackageHap output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\mapping\sourceMaps.map cache.
+[2026-06-22T20:58:44.633] [DEBUG] debug-file - Incremental task entry:default@PackageHap post-execution cost:8 ms .
+[2026-06-22T20:58:44.633] [DEBUG] debug-file - Update task entry:default@SignHap input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\entry-default-unsigned.hap cache by regenerate.
+[2026-06-22T20:58:44.633] [DEBUG] debug-file - Update task entry:default@SignHap output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\entry-default-signed.hap cache.
+[2026-06-22T20:58:44.633] [DEBUG] debug-file - Incremental task entry:default@SignHap post-execution cost:1 ms .
+[2026-06-22T20:58:44.634] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-06-22T20:58:44.634] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\libs\default cache by regenerate.
+[2026-06-22T20:58:44.634] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\symbol cache.
+[2026-06-22T20:58:44.634] [DEBUG] debug-file - Incremental task entry:default@CollectDebugSymbol post-execution cost:1 ms .
+[2026-06-22T20:58:44.911] [DEBUG] debug-file - Cleanup worker 0.
+[2026-06-22T20:58:44.911] [DEBUG] debug-file - Worker 0 has been cleaned up.
+[2026-06-22T20:58:44.911] [DEBUG] debug-file - Current idle worker size: 4.
+[2026-06-22T20:58:44.911] [DEBUG] debug-file - Current resident worker size: 5.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Cleanup worker 1.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Worker 1 has been cleaned up.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Current idle worker size: 3.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Current resident worker size: 5.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Cleanup worker 18.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Worker 18 has been cleaned up.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Current idle worker size: 2.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Current resident worker size: 5.
+[2026-06-22T20:58:44.912] [DEBUG] debug-file - Cleanup worker 17.
+[2026-06-22T20:58:44.913] [DEBUG] debug-file - Worker 17 has been cleaned up.
+[2026-06-22T20:58:44.913] [DEBUG] debug-file - Current idle worker size: 1.
+[2026-06-22T20:58:44.913] [DEBUG] debug-file - Current resident worker size: 5.
+[2026-06-22T20:58:44.917] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-06-22T20:58:44.918] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-06-22T20:58:44.915] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-06-22T20:58:44.916] [DEBUG] debug-file - java daemon socket close code:1000 reason:close by user
+[2026-06-22T20:58:44.923] [DEBUG] debug-file - worker[0] exits with exit code 1.
+[2026-06-22T20:58:44.923] [DEBUG] debug-file - worker[1] exits with exit code 1.
+[2026-06-22T20:58:44.924] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-06-22T20:58:44.925] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-06-22T20:58:44.926] [DEBUG] debug-file - worker[18] exits with exit code 1.
+[2026-06-22T20:58:44.932] [DEBUG] debug-file - worker[17] exits with exit code 1.
