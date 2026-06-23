@@ -9992,3 +9992,14 @@ Require stack:
 [2026-06-23T17:06:38.343] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\intermediates\libs\default cache by regenerate.
 [2026-06-23T17:06:38.343] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol output file:C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\build\default\outputs\default\symbol cache.
 [2026-06-23T17:06:38.344] [DEBUG] debug-file - Incremental task entry:default@CollectDebugSymbol post-execution cost:2 ms .
+[2026-06-23T17:06:38.638] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-06-23T17:06:38.639] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-06-23T17:06:38.597] [DEBUG] debug-file - Cleanup worker 18.
+[2026-06-23T17:06:38.597] [DEBUG] debug-file - Worker 18 has been cleaned up.
+[2026-06-23T17:06:38.598] [DEBUG] debug-file - Current idle worker size: 1.
+[2026-06-23T17:06:38.598] [DEBUG] debug-file - Current resident worker size: 2.
+[2026-06-23T17:06:38.598] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-06-23T17:06:38.599] [DEBUG] debug-file - java daemon socket close code:1000 reason:close by user
+[2026-06-23T17:06:38.604] [DEBUG] debug-file - worker[18] exits with exit code 1.
+[2026-06-23T17:06:38.639] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-06-23T17:06:38.640] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
