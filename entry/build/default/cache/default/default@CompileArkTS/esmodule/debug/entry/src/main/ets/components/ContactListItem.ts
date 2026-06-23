@@ -18,7 +18,8 @@ export class ContactListItem extends ViewPU {
             id: 0,
             name: '',
             checked: false,
-            groupName: ''
+            groupName: '',
+            birthday: ''
         };
         this.isCanCheck = false;
         this.onCheck = () => { };
@@ -47,6 +48,30 @@ export class ContactListItem extends ViewPU {
     public itemInfo: ListItemData;
     public isCanCheck;
     public onCheck: () => void;
+    /**
+     * 判断是否为生日当天
+     * 生日格式为 MM-DD，只对比月日，忽略年份
+     */
+    isBirthdayToday(): boolean {
+        if (!this.itemInfo.birthday || this.itemInfo.birthday === '') {
+            return false;
+        }
+        try {
+            const today = new Date();
+            // 解析生日（格式：MM-DD）
+            const birthdayParts = this.itemInfo.birthday.split('-');
+            if (birthdayParts.length !== 2) {
+                return false;
+            }
+            const birthMonth = parseInt(birthdayParts[0]) - 1; // 月份从0开始
+            const birthDay = parseInt(birthdayParts[1]);
+            // 只对比月日，忽略年份
+            return today.getMonth() === birthMonth && today.getDate() === birthDay;
+        }
+        catch (err) {
+            return false;
+        }
+    }
     initialRender() {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Column.create();
@@ -102,6 +127,41 @@ export class ContactListItem extends ViewPU {
                         Text.borderRadius(4);
                     }, Text);
                     Text.pop();
+                });
+            }
+            // 显示生日标签
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            // 显示生日标签
+            if (this.itemInfo.birthday && this.itemInfo.birthday !== '') {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Row.create();
+                        Row.margin({ top: 4 });
+                        Row.padding({ left: 6, right: 6, top: 2, bottom: 2 });
+                        Row.backgroundColor(this.isBirthdayToday() ? '#FF6B6B' : 'rgba(255, 107, 107, 0.1)');
+                        Row.borderRadius(4);
+                    }, Row);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        SymbolGlyph.create({ "id": 125832399, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                        SymbolGlyph.fontSize(12);
+                        SymbolGlyph.fontColor([this.isBirthdayToday() ? '#FFFFFF' : '#FF6B6B']);
+                    }, SymbolGlyph);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.isBirthdayToday() ? '今天生日' : this.itemInfo.birthday);
+                        Text.fontSize(12);
+                        Text.fontColor(this.isBirthdayToday() ? '#FFFFFF' : '#FF6B6B');
+                        Text.fontWeight(400);
+                        Text.margin({ left: 4 });
+                    }, Text);
+                    Text.pop();
+                    Row.pop();
                 });
             }
             else {

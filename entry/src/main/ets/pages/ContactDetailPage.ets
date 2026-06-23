@@ -31,6 +31,7 @@ struct ContractDetailPage {
   @State remarks: string = '';
   @State address: string = '';
   @State groupName: string = ''; // 分组名称
+  @State birthday: string = ''; // 联系人生日
   kvManager = AppStorage.get('kvManager') as KvManager;
   dialogController: CustomDialogController = new CustomDialogController({
     builder: ContactDeleteDialog({
@@ -106,6 +107,8 @@ struct ContractDetailPage {
       this.remarks = contactsData.remarks as string;
       // 解析分组名称，兼容旧数据
       this.groupName = contactsData.groupName || '';
+      // 解析生日信息，兼容旧数据
+      this.birthday = contactsData.birthday || '';
     });
   }
 
@@ -181,7 +184,8 @@ struct ContractDetailPage {
             telephony: this.telephony,
             email: this.email,
             remarks: this.remarks,
-            groupName: this.groupName
+            groupName: this.groupName,
+            birthday: this.birthday
           }
         }).catch((error: BusinessError) => {
           hilog.error(0x0000, 'ContactDetailPage', `have error .Code:${error.code},message: ${error.message}`);
@@ -233,6 +237,24 @@ struct ContractDetailPage {
           .padding({ left: 12, right: 12, top: 4, bottom: 4 })
           .backgroundColor('rgba(10, 89, 247, 0.1)')
           .borderRadius(8)
+      }
+
+      // 显示生日信息
+      if (this.birthday && this.birthday !== '') {
+        Row() {
+          SymbolGlyph($r('sys.symbol.cake'))
+            .fontSize(16)
+            .fontColor(['#FF6B6B'])
+          Text(this.birthday)
+            .fontSize(14)
+            .fontColor('#FF6B6B')
+            .fontWeight(500)
+            .margin({ left: 6 })
+        }
+        .margin({ top: 8 })
+        .padding({ left: 12, right: 12, top: 4, bottom: 4 })
+        .backgroundColor('rgba(255, 107, 107, 0.1)')
+        .borderRadius(8)
       }
 
       Row() {

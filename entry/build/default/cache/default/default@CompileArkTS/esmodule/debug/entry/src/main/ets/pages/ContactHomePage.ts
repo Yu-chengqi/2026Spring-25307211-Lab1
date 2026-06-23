@@ -12,6 +12,7 @@ interface ContactHomePage_Params {
     selectedGroupIndex?: number;
     groupOptions?: string[];
     selectOptions?: Array<SelectOption>;
+    birthdayReminders?: Array<ListItemData>;
     context?: common.UIAbilityContext;
     contactDeviceManager?: ContactDeviceManager;
     kvManager?;
@@ -49,6 +50,7 @@ class ContactHomePage extends ViewPU {
             { value: '朋友' },
             { value: '同事' }
         ];
+        this.__birthdayReminders = new ObservedPropertyObjectPU([], this, "birthdayReminders");
         this.context = this.getUIContext().getHostContext() as common.UIAbilityContext;
         this.contactDeviceManager = new ContactDeviceManager(this.context);
         this.kvManager = AppStorage.get('kvManager') as KvManager;
@@ -58,7 +60,7 @@ class ContactHomePage extends ViewPU {
                     deviceList: this.__deviceList,
                     selectedDeviceIndex: this.__selectedDeviceIndex,
                     onSelectedIndexChange: (index: number): Promise<void> => this.onSelectedIndexChange(index)
-                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 52, col: 14 });
+                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 54, col: 14 });
                 jsDialog.setController(this.dialogController);
                 ViewPU.create(jsDialog);
                 let paramsLambda = () => {
@@ -109,6 +111,9 @@ class ContactHomePage extends ViewPU {
         if (params.selectOptions !== undefined) {
             this.selectOptions = params.selectOptions;
         }
+        if (params.birthdayReminders !== undefined) {
+            this.birthdayReminders = params.birthdayReminders;
+        }
         if (params.context !== undefined) {
             this.context = params.context;
         }
@@ -133,6 +138,7 @@ class ContactHomePage extends ViewPU {
         this.__selectedDeviceIndex.purgeDependencyOnElmtId(rmElmtId);
         this.__searchValue.purgeDependencyOnElmtId(rmElmtId);
         this.__selectedGroupIndex.purgeDependencyOnElmtId(rmElmtId);
+        this.__birthdayReminders.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__uiContext.aboutToBeDeleted();
@@ -143,6 +149,7 @@ class ContactHomePage extends ViewPU {
         this.__selectedDeviceIndex.aboutToBeDeleted();
         this.__searchValue.aboutToBeDeleted();
         this.__selectedGroupIndex.aboutToBeDeleted();
+        this.__birthdayReminders.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -206,6 +213,14 @@ class ContactHomePage extends ViewPU {
     private groupOptions: string[]; // 分组选项
     // Select 组件选项数据
     private selectOptions: Array<SelectOption>;
+    // 生日提醒相关状态变量
+    private __birthdayReminders: ObservedPropertyObjectPU<Array<ListItemData>>; // 未来7天内过生日的联系人列表
+    get birthdayReminders() {
+        return this.__birthdayReminders.get();
+    }
+    set birthdayReminders(newValue: Array<ListItemData>) {
+        this.__birthdayReminders.set(newValue);
+    }
     private context: common.UIAbilityContext;
     private contactDeviceManager: ContactDeviceManager;
     private kvManager;
@@ -225,8 +240,10 @@ class ContactHomePage extends ViewPU {
         return true;
     }
     getAllData() {
+        console.log('[BirthdayDebug] getAllData: 开始获取所有联系人数据...');
         this.kvManager.getEntries(CommonConstants.CONTACTS_DATABASE_KEY, (err: BusinessError, entries: distributedKVStore.Entry[]) => {
             hilog.info(0x0000, 'ContactHomePage', `getAllData entries: ${JSON.stringify(entries)}`);
+            console.log(`[BirthdayDebug] getAllData回调: entries数量=${entries.length}, err=${err ? '有错误' : '无错误'}`);
             if (err) {
                 hilog.error(0x0000, 'ContactHomePage', `Fail to get Entries: ${err.code}  msg:${err.message}`);
                 return;
@@ -238,12 +255,54 @@ class ContactHomePage extends ViewPU {
                 itemInfo.name = contactData.name;
                 // 解析分组名称字段，兼容旧数据（无groupName字段时默认为空）
                 itemInfo.groupName = contactData.groupName || '';
+                // 解析生日字段，兼容旧数据（无birthday字段时默认为空）
+                itemInfo.birthday = contactData.birthday || '';
                 itemInfo.id = index;
                 listItems.push(itemInfo);
+                // 打印每个联系人的生日信息
+                if (itemInfo.birthday) {
+                    console.log(`[BirthdayDebug] 联系人: ${itemInfo.name}, 生日: ${itemInfo.birthday}`);
+                }
             });
             this.initContactList = listItems;
+            console.log(`[BirthdayDebug] initContactList已更新, 数量: ${this.initContactList.length}`);
             // 根据当前选中的分组进行过滤
             this.filterContactsByGroup();
+            // 加载生日提醒数据（在联系人数据加载完成后调用）
+            this.loadBirthdayReminders();
+        });
+    }
+    /**
+     * 加载未来7天内过生日的联系人列表
+     * 在数据加载完成后调用，确保UI能正确刷新
+     */
+    loadBirthdayReminders(): void {
+        console.log('[BirthdayDebug] loadBirthdayReminders: 开始加载生日提醒数据...');
+        hilog.info(0x0000, 'ContactHomePage', `loadBirthdayReminders: start loading...`);
+        this.kvManager.getUpcomingBirthdays(CommonConstants.CONTACTS_DATABASE_KEY, (err: BusinessError, entries: distributedKVStore.Entry[]) => {
+            if (err) {
+                console.error(`[BirthdayDebug] 获取生日数据失败: code=${err.code}, msg=${err.message}`);
+                hilog.error(0x0000, 'ContactHomePage', `Fail to get upcoming birthdays: ${err.code}  msg:${err.message}`);
+                return;
+            }
+            console.log(`[BirthdayDebug] 筛选返回的条目数量: ${entries.length}`);
+            let reminders: Array<ListItemData> = [];
+            entries.forEach((item, index) => {
+                let itemInfo: ListItemData = new ListItemData();
+                let contactData = JSON.parse(item.value.value as string) as Record<string, string>;
+                itemInfo.name = contactData.name;
+                itemInfo.groupName = contactData.groupName || '';
+                itemInfo.birthday = contactData.birthday || '';
+                itemInfo.id = index;
+                reminders.push(itemInfo);
+                console.log(`[BirthdayDebug] 添加生日提醒: name=${itemInfo.name}, birthday=${itemInfo.birthday}`);
+            });
+            // 更新状态数组，触发UI刷新
+            this.birthdayReminders = reminders;
+            // 控制台打印birthdayReminders数组长度，用于调试筛选逻辑是否生效
+            console.log(`[BirthdayDebug] birthdayReminders数组长度: ${this.birthdayReminders.length}`);
+            console.log(`[BirthdayDebug] birthdayReminders内容: [${this.birthdayReminders.map(r => `${r.name}(${r.birthday})`).join(', ')}]`);
+            hilog.info(0x0000, 'ContactHomePage', `loadBirthdayReminders: birthdayReminders.length=${this.birthdayReminders.length}, names=[${this.birthdayReminders.map(r => r.name).join(', ')}]`);
         });
     }
     /**
@@ -319,18 +378,34 @@ class ContactHomePage extends ViewPU {
     }
     initialRender() {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
-            Flex.create({ direction: FlexDirection.Column });
-            Flex.width('100%');
-            Flex.height('100%');
-            Flex.padding({ left: 16, right: 16 });
-            Flex.backgroundColor(Color.White);
-            Flex.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM]);
-        }, Flex);
+            Column.create();
+            Column.width('100%');
+            Column.height('100%');
+            Column.padding({ left: 16, right: 16 });
+            Column.backgroundColor(Color.White);
+            Column.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM]);
+        }, Column);
         this.NavigationTitle.bind(this)();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            // 生日提醒横幅（仅当有近期生日时显示）
+            // 渲染位置：在分组筛选上方，不会被列表遮挡
+            if (this.birthdayReminders.length > 0) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.BirthdayReminderBanner.bind(this)();
+                });
+            }
+            // 添加分组筛选 Picker 下拉选择器
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
         // 添加分组筛选 Picker 下拉选择器
         this.GroupPicker.bind(this)();
         this.ContactList.bind(this)();
-        Flex.pop();
+        Column.pop();
     }
     /**
      * 分组筛选下拉选择器
@@ -368,6 +443,165 @@ class ContactHomePage extends ViewPU {
         }, Select);
         Select.pop();
         Row.pop();
+    }
+    /**
+     * 生日提醒横幅组件
+     * 显示未来7天内过生日的联系人，横向滚动展示
+     */
+    BirthdayReminderBanner(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('100%');
+            Column.padding({ left: 16, top: 12, bottom: 12, right: 16 });
+            Column.margin({ top: 8 });
+            Column.backgroundColor('rgba(255, 107, 107, 0.08)');
+            Column.borderRadius(12);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.width('100%');
+            Row.margin({ bottom: 8 });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            SymbolGlyph.create({ "id": 125832400, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            SymbolGlyph.fontSize(18);
+            SymbolGlyph.fontColor(['#FF6B6B']);
+        }, SymbolGlyph);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('生日提醒');
+            Text.fontSize(14);
+            Text.fontColor('#FF6B6B');
+            Text.fontWeight(500);
+            Text.margin({ left: 6 });
+        }, Text);
+        Text.pop();
+        Row.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            // 横向滚动的生日提醒列表
+            Scroll.create();
+            // 横向滚动的生日提醒列表
+            Scroll.scrollBar(BarState.Off);
+            // 横向滚动的生日提醒列表
+            Scroll.layoutWeight(1);
+        }, Scroll);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create({ space: 12 });
+            Row.padding({ right: 16 });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            ForEach.create();
+            const forEachItemGenFunction = _item => {
+                const item = _item;
+                this.BirthdayReminderItem.bind(this)(item);
+            };
+            this.forEachUpdateFunction(elmtId, this.birthdayReminders, forEachItemGenFunction, (item: ListItemData) => item.name, false, false);
+        }, ForEach);
+        ForEach.pop();
+        Row.pop();
+        // 横向滚动的生日提醒列表
+        Scroll.pop();
+        Column.pop();
+    }
+    /**
+     * 单个生日提醒项组件
+     */
+    BirthdayReminderItem(item: ListItemData, parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.padding({ left: 12, right: 12, top: 8, bottom: 8 });
+            Row.backgroundColor(Color.White);
+            Row.borderRadius(8);
+            Row.shadow({ radius: 2, color: 'rgba(0, 0, 0, 0.1)', offsetX: 0, offsetY: 1 });
+            Row.onClick(() => {
+                const contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + item.name;
+                this.getUIContext().getRouter().pushUrl({
+                    url: 'pages/ContactDetailPage',
+                    params: {
+                        key: contactsKey,
+                    },
+                }).catch((err: BusinessError) => {
+                    hilog.error(0x0000, 'ContactHomePage', `BirthdayReminderItem err: ${err.code}  msg:${err.message}`);
+                });
+            });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            SymbolGlyph.create({ "id": 125832137, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            SymbolGlyph.fontSize(32);
+            SymbolGlyph.fontColor(['#FFB3B3']);
+        }, SymbolGlyph);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.alignItems(HorizontalAlign.Start);
+            Column.margin({ left: 8 });
+            Column.layoutWeight(1);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(item.name);
+            Text.fontSize(14);
+            Text.fontColor('rgba(0, 0, 0, 0.9)');
+            Text.fontWeight(500);
+            Text.maxLines(1);
+            Text.textOverflow({ overflow: TextOverflow.Ellipsis });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (item.birthday) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.formatBirthdayDisplay(item.birthday));
+                        Text.fontSize(12);
+                        Text.fontColor('#FF6B6B');
+                        Text.margin({ top: 2 });
+                    }, Text);
+                    Text.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        Column.pop();
+        Row.pop();
+    }
+    /**
+     * 格式化生日显示文本（计算距离生日的天数）
+     * 生日格式为 MM-DD，只对比月日，忽略年份
+     */
+    formatBirthdayDisplay(birthday: string): string {
+        try {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            // 解析生日（格式：MM-DD）
+            const birthdayParts = birthday.split('-');
+            if (birthdayParts.length !== 2) {
+                return birthday;
+            }
+            const birthMonth = parseInt(birthdayParts[0]) - 1; // 月份从0开始
+            const birthDay = parseInt(birthdayParts[1]);
+            // 计算今年的生日日期
+            let birthdayThisYear = new Date(currentYear, birthMonth, birthDay);
+            // 如果今年的生日已过，计算明年的生日
+            if (birthdayThisYear < today) {
+                birthdayThisYear = new Date(currentYear + 1, birthMonth, birthDay);
+            }
+            const diffTime = birthdayThisYear.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) {
+                return '今天生日';
+            }
+            else if (diffDays === 1) {
+                return '明天生日';
+            }
+            else {
+                return `${diffDays}天后生日`;
+            }
+        }
+        catch (err) {
+            return birthday;
+        }
     }
     NavigationTitle(parent = null) {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -567,7 +801,7 @@ class ContactHomePage extends ViewPU {
                         {
                             this.observeComponentCreation2((elmtId, isInitialRender) => {
                                 if (isInitialRender) {
-                                    let componentCall = new ContactListItem(this, { itemInfo: item }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 351, col: 15 });
+                                    let componentCall = new ContactListItem(this, { itemInfo: item }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 523, col: 15 });
                                     ViewPU.create(componentCall);
                                     let paramsLambda = () => {
                                         return {

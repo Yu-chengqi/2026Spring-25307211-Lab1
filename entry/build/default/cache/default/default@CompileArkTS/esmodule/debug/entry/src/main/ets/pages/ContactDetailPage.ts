@@ -9,6 +9,7 @@ interface ContractDetailPage_Params {
     remarks?: string;
     address?: string;
     groupName?: string;
+    birthday?: string;
     kvManager?;
     dialogController?: CustomDialogController;
 }
@@ -32,6 +33,7 @@ class ContractDetailPage extends ViewPU {
         this.__remarks = new ObservedPropertySimplePU('', this, "remarks");
         this.__address = new ObservedPropertySimplePU('', this, "address");
         this.__groupName = new ObservedPropertySimplePU('', this, "groupName");
+        this.__birthday = new ObservedPropertySimplePU('', this, "birthday");
         this.kvManager = AppStorage.get('kvManager') as KvManager;
         this.dialogController = new CustomDialogController({
             builder: () => {
@@ -43,7 +45,7 @@ class ContractDetailPage extends ViewPU {
                         this.onConfirm();
                     },
                     promptMessage: { "id": 16777260, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
-                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 36, col: 14 });
+                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 37, col: 14 });
                 jsDialog.setController(this.dialogController);
                 ViewPU.create(jsDialog);
                 let paramsLambda = () => {
@@ -88,6 +90,9 @@ class ContractDetailPage extends ViewPU {
         if (params.groupName !== undefined) {
             this.groupName = params.groupName;
         }
+        if (params.birthday !== undefined) {
+            this.birthday = params.birthday;
+        }
         if (params.kvManager !== undefined) {
             this.kvManager = params.kvManager;
         }
@@ -105,6 +110,7 @@ class ContractDetailPage extends ViewPU {
         this.__remarks.purgeDependencyOnElmtId(rmElmtId);
         this.__address.purgeDependencyOnElmtId(rmElmtId);
         this.__groupName.purgeDependencyOnElmtId(rmElmtId);
+        this.__birthday.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__uiContext.aboutToBeDeleted();
@@ -114,6 +120,7 @@ class ContractDetailPage extends ViewPU {
         this.__remarks.aboutToBeDeleted();
         this.__address.aboutToBeDeleted();
         this.__groupName.aboutToBeDeleted();
+        this.__birthday.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -165,6 +172,13 @@ class ContractDetailPage extends ViewPU {
     }
     set groupName(newValue: string) {
         this.__groupName.set(newValue);
+    }
+    private __birthday: ObservedPropertySimplePU<string>; // 联系人生日
+    get birthday() {
+        return this.__birthday.get();
+    }
+    set birthday(newValue: string) {
+        this.__birthday.set(newValue);
     }
     private kvManager;
     private dialogController: CustomDialogController;
@@ -226,6 +240,8 @@ class ContractDetailPage extends ViewPU {
             this.remarks = contactsData.remarks as string;
             // 解析分组名称，兼容旧数据
             this.groupName = contactsData.groupName || '';
+            // 解析生日信息，兼容旧数据
+            this.birthday = contactsData.birthday || '';
         });
     }
     onBackPress() {
@@ -304,7 +320,8 @@ class ContractDetailPage extends ViewPU {
                         telephony: this.telephony,
                         email: this.email,
                         remarks: this.remarks,
-                        groupName: this.groupName
+                        groupName: this.groupName,
+                        birthday: this.birthday
                     }
                 }).catch((error: BusinessError) => {
                     hilog.error(0x0000, 'ContactDetailPage', `have error .Code:${error.code},message: ${error.message}`);
@@ -379,6 +396,41 @@ class ContractDetailPage extends ViewPU {
                     Text.pop();
                 });
             }
+            // 显示生日信息
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            // 显示生日信息
+            if (this.birthday && this.birthday !== '') {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Row.create();
+                        Row.margin({ top: 8 });
+                        Row.padding({ left: 12, right: 12, top: 4, bottom: 4 });
+                        Row.backgroundColor('rgba(255, 107, 107, 0.1)');
+                        Row.borderRadius(8);
+                    }, Row);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        SymbolGlyph.create({ "id": 125832399, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+                        SymbolGlyph.fontSize(16);
+                        SymbolGlyph.fontColor(['#FF6B6B']);
+                    }, SymbolGlyph);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.birthday);
+                        Text.fontSize(14);
+                        Text.fontColor('#FF6B6B');
+                        Text.fontWeight(500);
+                        Text.margin({ left: 6 });
+                    }, Text);
+                    Text.pop();
+                    Row.pop();
+                });
+            }
             else {
                 this.ifElseBranchUpdateFunction(1, () => {
                 });
@@ -434,7 +486,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.telephony,
                         bottomContent: { "id": 16777241, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 269, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 291, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -458,7 +510,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.email,
                         bottomContent: { "id": 16777238, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 273, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 295, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -482,7 +534,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.remarks,
                         bottomContent: { "id": 16777240, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 277, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 299, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {

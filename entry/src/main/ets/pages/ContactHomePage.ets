@@ -45,6 +45,8 @@ struct ContactHomePage {
     { value: '朋友' },
     { value: '同事' }
   ];
+  // 生日提醒相关状态变量
+  @State birthdayReminders: Array<ListItemData> = []; // 未来7天内过生日的联系人列表
   private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private contactDeviceManager: ContactDeviceManager = new ContactDeviceManager(this.context);
   kvManager = AppStorage.get('kvManager') as KvManager;
@@ -78,10 +80,12 @@ struct ContactHomePage {
   }
 
   getAllData() {
+    console.log('[BirthdayDebug] getAllData: 开始获取所有联系人数据...');
     this.kvManager.getEntries(CommonConstants.CONTACTS_DATABASE_KEY, (
       err: BusinessError,
       entries: distributedKVStore.Entry[]) => {
       hilog.info(0x0000, 'ContactHomePage', `getAllData entries: ${JSON.stringify(entries)}`);
+      console.log(`[BirthdayDebug] getAllData回调: entries数量=${entries.length}, err=${err ? '有错误' : '无错误'}`);
       if (err) {
         hilog.error(0x0000, 'ContactHomePage', `Fail to get Entries: ${err.code}  msg:${err.message}`);
         return;
@@ -93,12 +97,57 @@ struct ContactHomePage {
         itemInfo.name = contactData.name;
         // 解析分组名称字段，兼容旧数据（无groupName字段时默认为空）
         itemInfo.groupName = contactData.groupName || '';
+        // 解析生日字段，兼容旧数据（无birthday字段时默认为空）
+        itemInfo.birthday = contactData.birthday || '';
         itemInfo.id = index;
         listItems.push(itemInfo);
+        // 打印每个联系人的生日信息
+        if (itemInfo.birthday) {
+          console.log(`[BirthdayDebug] 联系人: ${itemInfo.name}, 生日: ${itemInfo.birthday}`);
+        }
       });
       this.initContactList = listItems;
+      console.log(`[BirthdayDebug] initContactList已更新, 数量: ${this.initContactList.length}`);
       // 根据当前选中的分组进行过滤
       this.filterContactsByGroup();
+      // 加载生日提醒数据（在联系人数据加载完成后调用）
+      this.loadBirthdayReminders();
+    });
+  }
+
+  /**
+   * 加载未来7天内过生日的联系人列表
+   * 在数据加载完成后调用，确保UI能正确刷新
+   */
+  loadBirthdayReminders(): void {
+    console.log('[BirthdayDebug] loadBirthdayReminders: 开始加载生日提醒数据...');
+    hilog.info(0x0000, 'ContactHomePage', `loadBirthdayReminders: start loading...`);
+    this.kvManager.getUpcomingBirthdays(CommonConstants.CONTACTS_DATABASE_KEY, (
+      err: BusinessError,
+      entries: distributedKVStore.Entry[]) => {
+      if (err) {
+        console.error(`[BirthdayDebug] 获取生日数据失败: code=${err.code}, msg=${err.message}`);
+        hilog.error(0x0000, 'ContactHomePage', `Fail to get upcoming birthdays: ${err.code}  msg:${err.message}`);
+        return;
+      }
+      console.log(`[BirthdayDebug] 筛选返回的条目数量: ${entries.length}`);
+      let reminders: Array<ListItemData> = [];
+      entries.forEach((item, index) => {
+        let itemInfo: ListItemData = new ListItemData();
+        let contactData = JSON.parse(item.value.value as string) as Record<string, string>;
+        itemInfo.name = contactData.name;
+        itemInfo.groupName = contactData.groupName || '';
+        itemInfo.birthday = contactData.birthday || '';
+        itemInfo.id = index;
+        reminders.push(itemInfo);
+        console.log(`[BirthdayDebug] 添加生日提醒: name=${itemInfo.name}, birthday=${itemInfo.birthday}`);
+      });
+      // 更新状态数组，触发UI刷新
+      this.birthdayReminders = reminders;
+      // 控制台打印birthdayReminders数组长度，用于调试筛选逻辑是否生效
+      console.log(`[BirthdayDebug] birthdayReminders数组长度: ${this.birthdayReminders.length}`);
+      console.log(`[BirthdayDebug] birthdayReminders内容: [${this.birthdayReminders.map(r => `${r.name}(${r.birthday})`).join(', ')}]`);
+      hilog.info(0x0000, 'ContactHomePage', `loadBirthdayReminders: birthdayReminders.length=${this.birthdayReminders.length}, names=[${this.birthdayReminders.map(r => r.name).join(', ')}]`);
     });
   }
 
@@ -176,8 +225,13 @@ struct ContactHomePage {
   }
 
   build() {
-    Flex({ direction: FlexDirection.Column }) {
+    Column() {
       this.NavigationTitle();
+      // 生日提醒横幅（仅当有近期生日时显示）
+      // 渲染位置：在分组筛选上方，不会被列表遮挡
+      if (this.birthdayReminders.length > 0) {
+        this.BirthdayReminderBanner();
+      }
       // 添加分组筛选 Picker 下拉选择器
       this.GroupPicker();
       this.ContactList();
@@ -218,6 +272,124 @@ struct ContactHomePage {
     .width('100%')
     .margin({ top: 8, bottom: 8 })
     .justifyContent(FlexAlign.Start)
+  }
+
+  /**
+   * 生日提醒横幅组件
+   * 显示未来7天内过生日的联系人，横向滚动展示
+   */
+  @Builder
+  BirthdayReminderBanner() {
+    Column() {
+      Row() {
+        SymbolGlyph($r('sys.symbol.cake_fill'))
+          .fontSize(18)
+          .fontColor(['#FF6B6B'])
+        Text('生日提醒')
+          .fontSize(14)
+          .fontColor('#FF6B6B')
+          .fontWeight(500)
+          .margin({ left: 6 })
+      }
+      .width('100%')
+      .margin({ bottom: 8 })
+
+      // 横向滚动的生日提醒列表
+      Scroll() {
+        Row({ space: 12 }) {
+          ForEach(this.birthdayReminders, (item: ListItemData) => {
+            this.BirthdayReminderItem(item);
+          }, (item: ListItemData) => item.name)
+        }
+        .padding({ right: 16 })
+      }
+      .scrollBar(BarState.Off)
+      .layoutWeight(1) // 占满剩余宽度
+    }
+    .width('100%')
+    .padding({ left: 16, top: 12, bottom: 12, right: 16 })
+    .margin({ top: 8 })
+    .backgroundColor('rgba(255, 107, 107, 0.08)')
+    .borderRadius(12)
+  }
+
+  /**
+   * 单个生日提醒项组件
+   */
+  @Builder
+  BirthdayReminderItem(item: ListItemData) {
+    Row() {
+      SymbolGlyph($r('sys.symbol.person_crop_circle_fill'))
+        .fontSize(32)
+        .fontColor(['#FFB3B3'])
+      Column() {
+        Text(item.name)
+          .fontSize(14)
+          .fontColor('rgba(0, 0, 0, 0.9)')
+          .fontWeight(500)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+        if (item.birthday) {
+          Text(this.formatBirthdayDisplay(item.birthday))
+            .fontSize(12)
+            .fontColor('#FF6B6B')
+            .margin({ top: 2 })
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .margin({ left: 8 })
+      .layoutWeight(1)
+    }
+    .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+    .backgroundColor(Color.White)
+    .borderRadius(8)
+    .shadow({ radius: 2, color: 'rgba(0, 0, 0, 0.1)', offsetX: 0, offsetY: 1 })
+    .onClick(() => {
+      const contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + item.name;
+      this.getUIContext().getRouter().pushUrl({
+        url: 'pages/ContactDetailPage',
+        params: {
+          key: contactsKey,
+        },
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, 'ContactHomePage', `BirthdayReminderItem err: ${err.code}  msg:${err.message}`);
+      });
+    })
+  }
+
+  /**
+   * 格式化生日显示文本（计算距离生日的天数）
+   * 生日格式为 MM-DD，只对比月日，忽略年份
+   */
+  formatBirthdayDisplay(birthday: string): string {
+    try {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      // 解析生日（格式：MM-DD）
+      const birthdayParts = birthday.split('-');
+      if (birthdayParts.length !== 2) {
+        return birthday;
+      }
+      const birthMonth = parseInt(birthdayParts[0]) - 1; // 月份从0开始
+      const birthDay = parseInt(birthdayParts[1]);
+      // 计算今年的生日日期
+      let birthdayThisYear = new Date(currentYear, birthMonth, birthDay);
+      // 如果今年的生日已过，计算明年的生日
+      if (birthdayThisYear < today) {
+        birthdayThisYear = new Date(currentYear + 1, birthMonth, birthDay);
+      }
+      const diffTime = birthdayThisYear.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays === 0) {
+        return '今天生日';
+      } else if (diffDays === 1) {
+        return '明天生日';
+      } else {
+        return `${diffDays}天后生日`;
+      }
+    } catch (err) {
+      return birthday;
+    }
   }
 
   @Builder

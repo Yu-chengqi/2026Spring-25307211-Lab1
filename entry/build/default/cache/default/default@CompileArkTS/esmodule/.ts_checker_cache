@@ -127,7 +127,7 @@
       "error": false
     },
     "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\utils\\KvManager.ets": {
-      "mtimeMs": 1782144695710.73,
+      "mtimeMs": 1782204571578.9753,
       "children": [
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.data.distributedKVStore.d.ts",
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.app.ability.common.d.ts",
@@ -1657,7 +1657,7 @@
       "error": false
     },
     "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\viewmodel\\ContactViewModel.ets": {
-      "mtimeMs": 1782143427234.5234,
+      "mtimeMs": 1782197759151.1458,
       "children": [],
       "parent": [
         "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\pages\\ContactHomePage.ets",
@@ -1669,7 +1669,7 @@
       "error": false
     },
     "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\components\\ContactListItem.ets": {
-      "mtimeMs": 1782143531231.7678,
+      "mtimeMs": 1782198301117.077,
       "children": [
         "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\common\\CommonConstants.ets",
         "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\viewmodel\\ContactViewModel.ets"
@@ -1709,7 +1709,7 @@
       "error": false
     },
     "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\pages\\ContactHomePage.ets": {
-      "mtimeMs": 1782144803889.527,
+      "mtimeMs": 1782205416473.855,
       "children": [
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.app.ability.common.d.ts",
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.distributedDeviceManager.d.ts",
@@ -1752,7 +1752,7 @@
       "error": false
     },
     "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\pages\\ContactDetailPage.ets": {
-      "mtimeMs": 1782144171241.5383,
+      "mtimeMs": 1782190571907.9807,
       "children": [
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.hilog.d.ts",
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.base.d.ts",
@@ -1766,7 +1766,7 @@
       "error": false
     },
     "C:\\Users\\86182\\Desktop\\2026Spring-25307211-Lab1\\entry\\src\\main\\ets\\pages\\ContactAddAndEditPage.ets": {
-      "mtimeMs": 1782144847659.594,
+      "mtimeMs": 1782197863505.9785,
       "children": [
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.app.ability.common.d.ts",
         "C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\ets\\api\\@ohos.arkui.UIContext.d.ts",

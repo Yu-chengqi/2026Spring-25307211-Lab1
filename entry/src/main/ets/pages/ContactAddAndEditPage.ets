@@ -39,6 +39,9 @@ struct ContactAddAndEditPage {
     { value: '朋友' },
     { value: '同事' }
   ];
+  // 生日相关状态变量
+  @State birthday: string = ''; // 联系人生日，格式：YYYY-MM-DD
+  @State showDatePicker: boolean = false; // 是否显示日期选择器
   private isEdit: boolean = false;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   kvManager = AppStorage.get('kvManager') as KvManager;
@@ -103,6 +106,8 @@ struct ContactAddAndEditPage {
           this.selectedGroupIndex = groupIndex;
         }
       }
+      // 初始化生日信息
+      this.birthday = (params.birthday as string) || '';
     }
   }
 
@@ -129,6 +134,8 @@ struct ContactAddAndEditPage {
           this.Item('edit_item_note', $r('app.media.ic_note'), this.remarks);
           // 添加分组选择器
           this.GroupSelector();
+          // 添加生日选择器
+          this.BirthdaySelector();
         }
         .margin({ top: 16, bottom: 64 })
         .layoutWeight(CommonConstants.WEIGHT)
@@ -188,6 +195,132 @@ struct ContactAddAndEditPage {
     .width('100%')
   }
 
+  /**
+   * 生日选择器组件
+   */
+  @Builder
+  BirthdaySelector() {
+    Row() {
+      SymbolGlyph($r('sys.symbol.calendar'))
+        .fontSize(24)
+        .fontColor([$r('app.color.font_color')])
+        .margin({ right: $r('app.float.item_icon_margin') })
+      Text('生日')
+        .fontSize($r('app.float.item_font_size'))
+        .fontColor($r('app.color.font_color'))
+        .fontWeight(FontWeight.Regular)
+      Blank()
+        .layoutWeight(1)
+      // 显示当前选择的生日或提示文本
+      Text(this.birthday || '点击选择日期')
+        .fontSize(14)
+        .fontColor(this.birthday ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.4)')
+        .margin({ right: 8 })
+      // 清除生日按钮（仅当有生日时显示）
+      if (this.birthday) {
+        Row() {
+          SymbolGlyph($r('sys.symbol.xmark'))
+            .fontSize(16)
+            .fontColor(['rgba(0, 0, 0, 0.6)'])
+        }
+        .width(24)
+        .height(24)
+        .justifyContent(FlexAlign.Center)
+        .onClick(() => {
+          this.birthday = '';
+        })
+      }
+    }
+    .padding({
+      top: 16,
+      bottom: 16,
+      left: 12,
+      right: 12
+    })
+    .margin({ bottom: 12 })
+    .justifyContent(FlexAlign.Start)
+    .backgroundColor(Color.White)
+    .borderRadius(24)
+    .width('100%')
+    .onClick(() => {
+      // 显示日期选择器弹窗
+      this.showDatePicker = true;
+    })
+    .bindSheet($$this.showDatePicker, this.DatePickerSheet(), {
+      height: 320,
+      backgroundColor: Color.White,
+      dragBar: true,
+      showClose: false
+    })
+  }
+
+  /**
+   * 日期选择器弹窗内容
+   * 只选择月日，不选择年份，格式为 MM-DD
+   */
+  @Builder
+  DatePickerSheet() {
+    Column() {
+      // 标题栏
+      Row() {
+        Text('选择生日')
+          .fontSize(18)
+          .fontWeight(FontWeight.Medium)
+          .fontColor('rgba(0, 0, 0, 0.9)')
+      }
+      .width('100%')
+      .height(56)
+      .justifyContent(FlexAlign.Center)
+
+      // 日期选择器（只选择月日）
+      DatePicker({
+        selected: this.birthday ? this.parseMonthDay(this.birthday) : new Date()
+      })
+        .lunar(false)
+        .onDateChange((value: Date) => {
+          // 格式化为 MM-DD（只保存月日，不保存年份）
+          const month = String(value.getMonth() + 1).padStart(2, '0');
+          const day = String(value.getDate()).padStart(2, '0');
+          this.birthday = `${month}-${day}`;
+        })
+
+      // 确认按钮
+      Row() {
+        Text('确定')
+          .fontSize(16)
+          .fontColor('#0A59F7')
+          .fontWeight(FontWeight.Medium)
+      }
+      .width('100%')
+      .height(48)
+      .justifyContent(FlexAlign.Center)
+      .onClick(() => {
+        this.showDatePicker = false;
+      })
+    }
+    .width('100%')
+    .padding({ left: 16, right: 16 })
+  }
+
+  /**
+   * 解析 MM-DD 格式的生日为 Date 对象
+   * 用于日期选择器的初始值显示
+   */
+  parseMonthDay(birthday: string): Date {
+    try {
+      const parts = birthday.split('-');
+      if (parts.length === 2) {
+        const month = parseInt(parts[0]) - 1; // 月份从0开始
+        const day = parseInt(parts[1]);
+        // 使用当前年份作为基准
+        return new Date(new Date().getFullYear(), month, day);
+      }
+    } catch (err) {
+      hilog.error(0x0000, 'ContactAddAndEditPage', `Parse birthday failed`);
+    }
+    return new Date();
+  }
+
   @Builder
   NavigationTitle() {
     Flex({ alignItems: ItemAlign.Center }) {
@@ -240,7 +373,7 @@ struct ContactAddAndEditPage {
           // 获取选中的分组名称
           const groupName = this.groupOptions[this.selectedGroupIndex];
           const contactData: ContactData =
-            new ContactData(this.name, this.address, this.telephony, this.email, this.remarks, groupName);
+            new ContactData(this.name, this.address, this.telephony, this.email, this.remarks, groupName, this.birthday);
           let contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + contactData.name;
           // Save the contact information.
           this.kvManager.addAndSave(contactsKey, JSON.stringify(contactData));

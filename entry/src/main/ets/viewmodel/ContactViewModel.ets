@@ -41,14 +41,19 @@ export class ContactData {
    * Contact group name (分组名称：家人、朋友、同事).
    */
   groupName?: string;
+  /**
+   * Contact birthday (联系人生日，格式：MM-DD，只存储月日，不存储年份).
+   */
+  birthday?: string;
 
-  constructor(name: string, address?: string, telephony?: string, email?: string, remarks?: string, groupName?: string) {
+  constructor(name: string, address?: string, telephony?: string, email?: string, remarks?: string, groupName?: string, birthday?: string) {
     this.name = name;
     this.address = address;
     this.telephony = telephony;
     this.email = email;
     this.remarks = remarks;
     this.groupName = groupName;
+    this.birthday = birthday;
   }
 }
 
@@ -69,4 +74,8 @@ export class ListItemData {
    * Contact group name (分组名称).
    */
   groupName: string = '';
+  /**
+   * Contact birthday (联系人生日，格式：MM-DD，只存储月日，不存储年份).
+   */
+  birthday: string = '';
 }
