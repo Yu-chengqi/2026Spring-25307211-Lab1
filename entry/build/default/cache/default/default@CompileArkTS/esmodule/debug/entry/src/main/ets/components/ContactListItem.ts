@@ -17,7 +17,8 @@ export class ContactListItem extends ViewPU {
         this.itemInfo = {
             id: 0,
             name: '',
-            checked: false
+            checked: false,
+            groupName: ''
         };
         this.isCanCheck = false;
         this.onCheck = () => { };
@@ -85,6 +86,30 @@ export class ContactListItem extends ViewPU {
             });
         }, Text);
         Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            // 显示分组标签
+            if (this.itemInfo.groupName && this.itemInfo.groupName !== '') {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.itemInfo.groupName);
+                        Text.fontSize(12);
+                        Text.fontColor('#0A59F7');
+                        Text.fontWeight(400);
+                        Text.margin({ top: 4 });
+                        Text.padding({ left: 6, right: 6, top: 2, bottom: 2 });
+                        Text.backgroundColor('rgba(10, 89, 247, 0.1)');
+                        Text.borderRadius(4);
+                    }, Text);
+                    Text.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
         Column.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             If.create();

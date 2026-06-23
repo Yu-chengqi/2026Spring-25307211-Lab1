@@ -1,4 +1,4 @@
-Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚRTif (!("finalizeConstruction" in ViewPU.prototype)) {
+Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚXÁif (!("finalizeConstruction" in ViewPU.prototype)) {
     Reflect.set(ViewPU.prototype, "finalizeConstruction", () => { });
 }
 /*
@@ -31,6 +31,7 @@ class ContractDetailPage extends ViewPU {
         this.__email = new ObservedPropertySimplePU('', this, "email");
         this.__remarks = new ObservedPropertySimplePU('', this, "remarks");
         this.__address = new ObservedPropertySimplePU('', this, "address");
+        this.__groupName = new ObservedPropertySimplePU('', this, "groupName");
         this.kvManager = AppStorage.get('kvManager');
         this.dialogController = new CustomDialogController({
             builder: () => {
@@ -42,7 +43,7 @@ class ContractDetailPage extends ViewPU {
                         this.onConfirm();
                     },
                     promptMessage: { "id": 16777260, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
-                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 35, col: 14 });
+                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 36, col: 14 });
                 jsDialog.setController(this.dialogController);
                 ViewPU.create(jsDialog);
                 let paramsLambda = () => {
@@ -84,6 +85,9 @@ class ContractDetailPage extends ViewPU {
         if (params.address !== undefined) {
             this.address = params.address;
         }
+        if (params.groupName !== undefined) {
+            this.groupName = params.groupName;
+        }
         if (params.kvManager !== undefined) {
             this.kvManager = params.kvManager;
         }
@@ -100,6 +104,7 @@ class ContractDetailPage extends ViewPU {
         this.__email.purgeDependencyOnElmtId(rmElmtId);
         this.__remarks.purgeDependencyOnElmtId(rmElmtId);
         this.__address.purgeDependencyOnElmtId(rmElmtId);
+        this.__groupName.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__uiContext.aboutToBeDeleted();
@@ -108,6 +113,7 @@ class ContractDetailPage extends ViewPU {
         this.__email.aboutToBeDeleted();
         this.__remarks.aboutToBeDeleted();
         this.__address.aboutToBeDeleted();
+        this.__groupName.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -146,6 +152,12 @@ class ContractDetailPage extends ViewPU {
     }
     set address(newValue) {
         this.__address.set(newValue);
+    }
+    get groupName() {
+        return this.__groupName.get();
+    }
+    set groupName(newValue) {
+        this.__groupName.set(newValue);
     }
     // Close the pop-up window.
     onCancel() {
@@ -203,6 +215,8 @@ class ContractDetailPage extends ViewPU {
             this.telephony = contactsData.telephony;
             this.email = contactsData.email;
             this.remarks = contactsData.remarks;
+            // è§£æžåˆ†ç»„åç§°ï¼Œå…¼å®¹æ—§æ•°æ®
+            this.groupName = contactsData.groupName || '';
         });
     }
     onBackPress() {
@@ -280,7 +294,8 @@ class ContractDetailPage extends ViewPU {
                         address: this.address,
                         telephony: this.telephony,
                         email: this.email,
-                        remarks: this.remarks
+                        remarks: this.remarks,
+                        groupName: this.groupName
                     }
                 }).catch((error) => {
                     hilog.error(0x0000, 'ContactDetailPage', `have error .Code:${error.code},message: ${error.message}`);
@@ -338,6 +353,30 @@ class ContractDetailPage extends ViewPU {
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            // æ˜¾ç¤ºåˆ†ç»„æ ‡ç­¾
+            if (this.groupName && this.groupName !== '') {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.groupName);
+                        Text.fontSize(14);
+                        Text.fontColor('#0A59F7');
+                        Text.fontWeight(500);
+                        Text.margin({ top: 8 });
+                        Text.padding({ left: 12, right: 12, top: 4, bottom: 4 });
+                        Text.backgroundColor('rgba(10, 89, 247, 0.1)');
+                        Text.borderRadius(8);
+                    }, Text);
+                    Text.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
             Row.create();
             Row.width('100%');
             Row.margin({ top: 28 });
@@ -386,7 +425,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.telephony,
                         bottomContent: { "id": 16777241, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 253, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 269, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -410,7 +449,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.email,
                         bottomContent: { "id": 16777238, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 257, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 273, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -434,7 +473,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.remarks,
                         bottomContent: { "id": 16777240, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 261, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 277, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -463,7 +502,7 @@ class ContractDetailPage extends ViewPU {
     }
 }
 registerNamedRoute(() => new ContractDetailPage(undefined, {}), "", { bundleName: "com.example.distributedcontacts", moduleName: "entry", pagePath: "pages/ContactDetailPage", pageFullPath: "entry/src/main/ets/pages/ContactDetailPage", integratedHsp: "false", moduleType: "followWithHap" });
-//# sourceMappingURL=ContactDetailPage.js.mapÂ”Ùe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsÙcC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDetailItem.etsÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeleteDialog.etsÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsÙ^C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\pages\ContactDetailPage.etsÔrB›ªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo°belongModulePath§checker¬shouldEmitJs¥entryÃÂÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÙ/C:\Users\86182\Desktop\2026Spring-25307211-Lab1¥entry¥1.0.0Ô  Ù5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÔrCÜ ®¬getNodeCount²getIdentifierCount®getSymbolCount¬getTypeCountµgetInstantiationCountµgetRelationCacheSizes±isUndefinedSymbol±isArgumentsSymbol¯isUnknownSymbol¯getMergedSymbol®getDiagnostics´getGlobalDiagnostics´getRecursionIdentity¶getUnmatchedProperties¹getTypeOfSymbolAtLocation¯getTypeOfSymbolÙ(getSymbolsOfParameterPropertyDeclaration·getDeclaredTypeOfSymbol³getPropertiesOfType±getPropertyOfTypeÙ"getPrivateIdentifierPropertyOfType·getTypeOfPropertyOfType²getIndexInfoOfType³getIndexInfosOfTypeºgetIndexInfosOfIndexSymbol³getSignaturesOfType²getIndexTypeOfType¬getIndexType¬getBaseTypes¸getBaseTypeOfLiteralType®getWidenedType³getTypeFromTypeNode°getParameterTypeÙ$getParameterIdentifierNameAtPosition¸getPromisedTypeOfPromise®getAwaitedType¸getReturnTypeOfSignature®isNullableType¯getNullableType²getNonNullableType²getNonOptionalType°getTypeArguments®typeToTypeNodeÙ$indexInfoToIndexSignatureDeclaration¿signatureToSignatureDeclaration²symbolToEntityName²symbolToExpression¬symbolToNodeÙ!symbolToTypeParameterDeclarations¼symbolToParameterDeclarationºtypeParameterToDeclaration±getSymbolsInScope³getSymbolAtLocation·getIndexInfosAtLocationÙ!getShorthandAssignmentValueSymbolÙ#getExportSpecifierLocalTargetSymbol·getExportSymbolOfSymbol±getTypeAtLocationºgetTypeAtLocationForLinterÙ tryGetTypeAtLocationWithoutCheckºgetTypeOfAssignmentPatternÙ*getPropertySymbolOfDestructuringAssignment±signatureToString¬typeToString®symbolToStringµtypePredicateToString®writeSignature©writeType«writeSymbol²writeTypePredicate¼getAugmentedPropertiesOfType®getRootSymbols²getSymbolOfExpando±getContextualTypeÙ(getContextualTypeForObjectLiteralElementÙ#getContextualTypeForArgumentAtIndexÙ getContextualTypeForJsxAttribute²isContextSensitiveÙ!getTypeOfPropertyOfContextualTypeµgetFullyQualifiedNameÙ#tryGetResolvedSignatureWithoutCheck´getResolvedSignatureÙ/getResolvedSignatureForStringLiteralCompletionsÙ$getResolvedSignatureForSignatureHelpµgetExpandedParameters¹hasEffectiveRestParameterºcontainsArgumentsReference°getConstantValueµisValidPropertyAccessÙ#isValidPropertyAccessForCompletions»getSignatureFromDeclarationºisImplementationOfOverload¹getImmediateAliasedSymbol°getAliasedSymbol¯getEmitResolver²getExportsOfModule¿getExportsAndPropertiesOfModuleÙ forEachExportAndPropertyOfModule¯getSymbolWalker±getAmbientModules¹getJsxIntrinsicTagNamesAt³isOptionalParameter»tryGetMemberInModuleExportsÙ(tryGetMemberInModuleExportsAndProperties´tryFindAmbientModuleÙ(tryFindAmbientModuleWithoutAugmentations¯getApparentType¬getUnionType²isTypeAssignableTo³createAnonymousType¯createSignature¬createSymbol¯createIndexInfoªgetAnyType­getStringType­getNumberType±createPromiseType¯createArrayType¹getElementTypeOfArrayType®getBooleanType¬getFalseType«getTrueType«getVoidType°getUndefinedType«getNullType¯getESSymbolType¬getNeverType¯getOptionalType®getPromiseType²getPromiseLikeType´getAsyncIterableType²isSymbolAccessible«isArrayType«isTupleType¯isArrayLikeTypeÙ#isTypeInvalidDueToUnionDiscriminantºgetExactOptionalProperties¿getAllPossiblePropertiesOfTypesÙ(getSuggestedSymbolForNonexistentPropertyÙ#getSuggestionForNonexistentPropertyÙ,getSuggestedSymbolForNonexistentJSXAttributeÙ&getSuggestedSymbolForNonexistentSymbolÙ!getSuggestionForNonexistentSymbolÙ&getSuggestedSymbolForNonexistentModuleÙ!getSuggestionForNonexistentExportÙ+getSuggestedSymbolForNonexistentClassMember·getBaseConstraintOfType»getDefaultFromTypeParameter«resolveName¯getJsxNamespaceµgetJsxFragmentFactory¸getAccessibleSymbolChain»getTypePredicateOfSignature¹resolveExternalModuleName»resolveExternalModuleSymbol°tryGetThisTypeAt¹getTypeArgumentConstraint¸getSuggestionDiagnostics¸runWithCancellationTokenÙ3getLocalTypeParametersOfClassOrInterfaceOrTypeAlias´isDeclarationVisible´isPropertyAccessible»getTypeOnlyAliasDeclaration¿getMemberOverrideModifierStatusÙ!isTypeParameterPossiblyReferenced²getConstEnumRelate´clearConstEnumRelateµdeleteConstEnumRelateÙ$getTypeArgumentsForResolvedSignatureµgetCheckedSourceFilesÙ"collectHaveTsNoCheckFilesForLinter·clearQualifiedNameCache®isStaticRecord²isStaticSourceFileÔ  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  ÃÃÚ T/*
+//# sourceMappingURL=ContactDetailPage.js.mapÂ”Ùe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsÙcC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDetailItem.etsÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeleteDialog.etsÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsÙ^C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\pages\ContactDetailPage.etsÔrB›ªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo°belongModulePath§checker¬shouldEmitJs¥entryÃÂÙ5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÙ/C:\Users\86182\Desktop\2026Spring-25307211-Lab1¥entry¥1.0.0Ô  Ù5C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entryÔrCÜ ®¬getNodeCount²getIdentifierCount®getSymbolCount¬getTypeCountµgetInstantiationCountµgetRelationCacheSizes±isUndefinedSymbol±isArgumentsSymbol¯isUnknownSymbol¯getMergedSymbol®getDiagnostics´getGlobalDiagnostics´getRecursionIdentity¶getUnmatchedProperties¹getTypeOfSymbolAtLocation¯getTypeOfSymbolÙ(getSymbolsOfParameterPropertyDeclaration·getDeclaredTypeOfSymbol³getPropertiesOfType±getPropertyOfTypeÙ"getPrivateIdentifierPropertyOfType·getTypeOfPropertyOfType²getIndexInfoOfType³getIndexInfosOfTypeºgetIndexInfosOfIndexSymbol³getSignaturesOfType²getIndexTypeOfType¬getIndexType¬getBaseTypes¸getBaseTypeOfLiteralType®getWidenedType³getTypeFromTypeNode°getParameterTypeÙ$getParameterIdentifierNameAtPosition¸getPromisedTypeOfPromise®getAwaitedType¸getReturnTypeOfSignature®isNullableType¯getNullableType²getNonNullableType²getNonOptionalType°getTypeArguments®typeToTypeNodeÙ$indexInfoToIndexSignatureDeclaration¿signatureToSignatureDeclaration²symbolToEntityName²symbolToExpression¬symbolToNodeÙ!symbolToTypeParameterDeclarations¼symbolToParameterDeclarationºtypeParameterToDeclaration±getSymbolsInScope³getSymbolAtLocation·getIndexInfosAtLocationÙ!getShorthandAssignmentValueSymbolÙ#getExportSpecifierLocalTargetSymbol·getExportSymbolOfSymbol±getTypeAtLocationºgetTypeAtLocationForLinterÙ tryGetTypeAtLocationWithoutCheckºgetTypeOfAssignmentPatternÙ*getPropertySymbolOfDestructuringAssignment±signatureToString¬typeToString®symbolToStringµtypePredicateToString®writeSignature©writeType«writeSymbol²writeTypePredicate¼getAugmentedPropertiesOfType®getRootSymbols²getSymbolOfExpando±getContextualTypeÙ(getContextualTypeForObjectLiteralElementÙ#getContextualTypeForArgumentAtIndexÙ getContextualTypeForJsxAttribute²isContextSensitiveÙ!getTypeOfPropertyOfContextualTypeµgetFullyQualifiedNameÙ#tryGetResolvedSignatureWithoutCheck´getResolvedSignatureÙ/getResolvedSignatureForStringLiteralCompletionsÙ$getResolvedSignatureForSignatureHelpµgetExpandedParameters¹hasEffectiveRestParameterºcontainsArgumentsReference°getConstantValueµisValidPropertyAccessÙ#isValidPropertyAccessForCompletions»getSignatureFromDeclarationºisImplementationOfOverload¹getImmediateAliasedSymbol°getAliasedSymbol¯getEmitResolver²getExportsOfModule¿getExportsAndPropertiesOfModuleÙ forEachExportAndPropertyOfModule¯getSymbolWalker±getAmbientModules¹getJsxIntrinsicTagNamesAt³isOptionalParameter»tryGetMemberInModuleExportsÙ(tryGetMemberInModuleExportsAndProperties´tryFindAmbientModuleÙ(tryFindAmbientModuleWithoutAugmentations¯getApparentType¬getUnionType²isTypeAssignableTo³createAnonymousType¯createSignature¬createSymbol¯createIndexInfoªgetAnyType­getStringType­getNumberType±createPromiseType¯createArrayType¹getElementTypeOfArrayType®getBooleanType¬getFalseType«getTrueType«getVoidType°getUndefinedType«getNullType¯getESSymbolType¬getNeverType¯getOptionalType®getPromiseType²getPromiseLikeType´getAsyncIterableType²isSymbolAccessible«isArrayType«isTupleType¯isArrayLikeTypeÙ#isTypeInvalidDueToUnionDiscriminantºgetExactOptionalProperties¿getAllPossiblePropertiesOfTypesÙ(getSuggestedSymbolForNonexistentPropertyÙ#getSuggestionForNonexistentPropertyÙ,getSuggestedSymbolForNonexistentJSXAttributeÙ&getSuggestedSymbolForNonexistentSymbolÙ!getSuggestionForNonexistentSymbolÙ&getSuggestedSymbolForNonexistentModuleÙ!getSuggestionForNonexistentExportÙ+getSuggestedSymbolForNonexistentClassMember·getBaseConstraintOfType»getDefaultFromTypeParameter«resolveName¯getJsxNamespaceµgetJsxFragmentFactory¸getAccessibleSymbolChain»getTypePredicateOfSignature¹resolveExternalModuleName»resolveExternalModuleSymbol°tryGetThisTypeAt¹getTypeArgumentConstraint¸getSuggestionDiagnostics¸runWithCancellationTokenÙ3getLocalTypeParametersOfClassOrInterfaceOrTypeAlias´isDeclarationVisible´isPropertyAccessible»getTypeOnlyAliasDeclaration¿getMemberOverrideModifierStatusÙ!isTypeParameterPossiblyReferenced²getConstEnumRelate´clearConstEnumRelateµdeleteConstEnumRelateÙ$getTypeArgumentsForResolvedSignatureµgetCheckedSourceFilesÙ"collectHaveTsNoCheckFilesForLinter·clearQualifiedNameCache®isStaticRecord²isStaticSourceFileÔ  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  Ô  ÃÃÚ"†/*
  *  Copyright (c) 2025 Huawei Device Co., Ltd.
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -495,6 +534,7 @@ struct ContractDetailPage {
   @State email: string = '';
   @State remarks: string = '';
   @State address: string = '';
+  @State groupName: string = ''; // åˆ†ç»„åç§°
   kvManager = AppStorage.get('kvManager') as KvManager;
   dialogController: CustomDialogController = new CustomDialogController({
     builder: ContactDeleteDialog({
@@ -568,6 +608,8 @@ struct ContractDetailPage {
       this.telephony = contactsData.telephony as string;
       this.email = contactsData.email as string;
       this.remarks = contactsData.remarks as string;
+      // è§£æžåˆ†ç»„åç§°ï¼Œå…¼å®¹æ—§æ•°æ®
+      this.groupName = contactsData.groupName || '';
     });
   }
 
@@ -642,7 +684,8 @@ struct ContractDetailPage {
             address: this.address,
             telephony: this.telephony,
             email: this.email,
-            remarks: this.remarks
+            remarks: this.remarks,
+            groupName: this.groupName
           }
         }).catch((error: BusinessError) => {
           hilog.error(0x0000, 'ContactDetailPage', `have error .Code:${error.code},message: ${error.message}`);
@@ -683,6 +726,18 @@ struct ContractDetailPage {
         .fontSize(38)
         .fontWeight(700)
         .margin({ top: 32 })
+
+      // æ˜¾ç¤ºåˆ†ç»„æ ‡ç­¾
+      if (this.groupName && this.groupName !== '') {
+        Text(this.groupName)
+          .fontSize(14)
+          .fontColor('#0A59F7')
+          .fontWeight(500)
+          .margin({ top: 8 })
+          .padding({ left: 12, right: 12, top: 4, bottom: 4 })
+          .backgroundColor('rgba(10, 89, 247, 0.1)')
+          .borderRadius(8)
+      }
 
       Row() {
         Row() {
@@ -733,80 +788,78 @@ struct ContractDetailPage {
     }
     .width('100%')
   }
-}ÀÔrD”«@ohos.hilog¿../components/ContactDetailItem¹../common/CommonConstantsÙ!../components/ContactDeleteDialogÔrE—ªassertions¨external¢id¤meta±moduleSideEffectsªresolvedByµsyntheticNamedExportsAÃÙe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsAÃªoh-resolveÂEAÂÙcC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDetailItem.etsAÃªoh-resolveÂEAÂÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsAÃªoh-resolveÂEAÂÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeleteDialog.etsAÃªoh-resolveÂ“ÔrF–§version¤fileªsourceRoot§sources¥names¨mappings´ContactDetailPage.js ‘µContactDetailPage.etsÜÉ‘”    ‘” –”   ” 	” ” ” 3”  4–”   ” ” ” ”? ?”Ì@ Ì@˜”   ” ”	 	” ” ”$ $”ÌG ÌG”ÌH ÌH–”   ” ” ” ”7 7”8 8’” ” ‘”  —”8 ,”ÌB 6”ÌC 7”ÌF :”ÌG ;”ÌR ÌF”ÌS ÌG’”3 ”5 ’”8 ”: ’”4 ”6 ’”6 ”8 ’”6 ”8 —”  ”#  ”$  ”'  ”(  ”3  (”4  6’”$ !1”: !ÌG’” "” "“”# "”6 " ”= "!•” #” #” #” #”! #–” $” $” $”% $”' $”( $’” %” %•” &” &” &”  &”" &–” '” '” '”& '”( '”) '’” (” (“” )”! )”Ì˜ )0‘” *’”, !”< !•” #” #”  #”# #”% #–” $”  $”! $”) $”+ $”, $’” %” %•” &” &”! &”$ &”& &–” '”  '”! '”* '”, '”- '’” (” (’” )”% )‘” *”” +” +” +” +–” ,” ,” ,”& ,”' ,”- ,%”” -” -” -” -‘” 8’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 0” 0’” 1” 1
-’” 2” 2›” 3” 3
-” 3” 3” 3”  3”/ 3)”1 3+”2 3,”; 35”< 36“” 4” 4”ÌŽ 44–” 5” 5” 5”) 5!”* 5"”9 51“” 6” 6” 6	˜” 7” 7
-” 7”! 7”" 7”' 7!”) 7#”* 7$‘”	 8”” 8” 8” 8” 8Ü ” 9” 9” 9” 9” 9” 9”  9”3 9-”5 9/”ÌP 9ÌJ”ÌU 9ÌO”ÌV 9ÌP”ÌZ 9ÌT”Ìc 9Ì]”Ìh 9Ìb”Ìi 9Ìc”Ìp 9Ìj”Ìr 9Ìl”Ìs 9Ìm”Ìt 9Ìn‘”	 :’” ;” ;’” =”/ =-’” >” >œ” ?” ?” ?” ?”) ?%”* ?&”? ?;”ÌB ?>”ÌF ?ÌB”ÌG ?ÌC”ÌK ?ÌG”ÌL ?ÌH›” Ì@” Ì@” Ì@	” Ì@” Ì@”! Ì@”" Ì@”- Ì@)”/ Ì@+”2 Ì@.”4 Ì@0’” ÌA” ÌA
-›” ÌB” ÌB” ÌB”! ÌB”# ÌB”$ ÌB”3 ÌB+”5 ÌB-”6 ÌB.”? ÌB7”Ì@ ÌB8“” ÌC
-” ÌC”Ì’ ÌC:–” ÌD
-” ÌD” ÌD”- ÌD#”. ÌD$”= ÌD3“” ÌE	” ÌE
-” ÌE‘” ÌF”” ÌF” ÌF” ÌF” ÌFÜ ” ÌG” ÌG” ÌG” ÌG” ÌG”" ÌG”$ ÌG”7 ÌG/”9 ÌG1”ÌX ÌGÌP”Ì] ÌGÌU”Ì^ ÌGÌV”Ìb ÌGÌZ”Ìk ÌGÌc”Ìp ÌGÌh”Ìq ÌGÌi”Ìx ÌGÌp”Ìz ÌGÌr”Ì{ ÌGÌs”Ì| ÌGÌt‘” ÌH›” ÌI” ÌI
-” ÌI” ÌI” ÌI”  ÌI”) ÌI#”+ ÌI%”, ÌI&”3 ÌI-”4 ÌI.–” ÌJ” ÌJ” ÌJ”$ ÌJ”% ÌJ”2 ÌJ*™” ÌK” ÌK” ÌK	” ÌK” ÌK” ÌK” ÌK"” ÌK$” ÌK&Ü ” ÌL” ÌL” ÌL” ÌL” ÌL”" ÌL”$ ÌL”7 ÌL/”9 ÌL1”ÌO ÌLÌG”ÌR ÌLÌJ”ÌS ÌLÌK”ÌW ÌLÌO”Ì` ÌLÌX”Ìc ÌLÌ[”Ìd ÌLÌ\”Ìk ÌLÌc”Ìm ÌLÌe”Ìn ÌLÌf”Ìo ÌLÌg”” ÌM” ÌM” ÌM” ÌM	”” ÌN”	 ÌN”
- ÌN” ÌN˜” ÌO” ÌO” ÌO	” ÌO” ÌO”# ÌO”% ÌO!”& ÌO"’” ÌP” ÌP’” ÌR” ÌRŸ” ÌS” ÌS” ÌS” ÌS” ÌS” ÌS”& ÌS"”( ÌS$”) ÌS%”2 ÌS.”4 ÌS0”5 ÌS1”> ÌS:”Ì@ ÌSÌV”ÌA ÌSÌW˜” ÌT” ÌT” ÌT” ÌT” ÌT” ÌT”  ÌT”" ÌTš” ÌU” ÌU
-” ÌU” ÌU”  ÌU”& ÌU ”' ÌU!”* ÌU.”+ ÌU/”, ÌU0‘”	 ÌV’” ÌW” ÌW‘” ÌY‘” Ì[”” Ì\” Ì\” Ì\” Ì\’” Ì]” Ì]Ÿ” Ì^” Ì^” Ì^	” Ì^” Ì^”! Ì^”" Ì^”% Ì^!”' Ì^#”( Ì^$”+ Ì^6”- Ì^8”1 Ì^<”3 Ì^>”5 Ì^Ì@”” Ì_” Ì_
-” Ì_” Ì_Ü ” Ì`” Ì`” Ì`” Ì`” Ì`”" Ì`”$ Ì`”7 Ì`/”9 Ì`1”ÌX Ì`ÌP”Ì[ Ì`ÌS”Ì\ Ì`ÌT”Ì` Ì`ÌX”Ìi Ì`Ìa”Ìl Ì`Ìd”Ìm Ì`Ìe”Ìt Ì`Ìl”Ìv Ì`Ìn”Ìw Ì`Ìo”Ìx Ì`Ìp’” Ìa” Ìa‘” Ìb›” Ìc” Ìc
-” Ìc” Ìc&”# Ìc*”$ Ìc+”) Ìc0”* Ìc1”. Ìc?”/ ÌcÌ@”0 ÌcÌA™” Ìd” Ìd
-” Ìd” Ìd” Ìd”$ Ìd”% Ìd”) Ìd-”* Ìd.™” Ìe” Ìe
-” Ìe” Ìe” Ìe”' Ìe!”( Ìe"”/ Ìe3”0 Ìe4™” Ìf” Ìf
-” Ìf” Ìf” Ìf”) Ìf#”* Ìf$”3 Ìf7”4 Ìf8™” Ìg” Ìg
-” Ìg” Ìg” Ìg”% Ìg”& Ìg ”+ Ìg/”, Ìg0™” Ìh” Ìh
-” Ìh” Ìh” Ìh”' Ìh!”( Ìh"”/ Ìh3”0 Ìh4”” Ìi”	 Ìi”
- Ìi” Ìi’” Ìj” Ìj’” Ìl” Ìl›” Ìm” Ìm” Ìm	” Ìm” Ìm”! Ìm”# Ìm”$ Ìm ”) Ìm%”+ Ìm'”, Ìm(’” Ìn” ÌnÜ ” Ìo” Ìo
-” Ìo” Ìo” Ìo”% Ìo”' Ìo!”( Ìo"”2 Ìo,”3 Ìp”5 Ìp
-”8 Ìp”: Ìp”ÌQ Ìp&”ÌS Ìp(”ÌT Ìq”ÌU Ìq”ÌZ Ìq”Ì[ Ìq”Ì\ Ìq”Ìa Ìq#”Ìc Ìq%”Ìe Ìq'Ü ” Ìr” Ìr” Ìr” Ìr” Ìr”" Ìr”$ Ìr”7 Ìr/”9 Ìr1”ÌM ÌrÌE”ÌR ÌrÌJ”ÌS ÌrÌK”ÌW ÌrÌO”Ìd ÌrÌ\”Ìi ÌrÌa”Ìj ÌrÌb”Ìq ÌrÌi”Ìs ÌrÌk”Ìt ÌrÌl”Ìu ÌrÌm”” Ìs” Ìs” Ìs” Ìs	”” Ìt” Ìt” Ìt” Ìt‘”	 Ìu”” Ìu” Ìu” Ìu” ÌuÜ ” Ìv” Ìv” Ìv” Ìv” Ìv” Ìv”  Ìv”3 Ìv-”5 Ìv/”ÌI ÌvÌC”ÌN ÌvÌH”ÌO ÌvÌI”ÌS ÌvÌM”Ì` ÌvÌZ”Ìe ÌvÌ_”Ìf ÌvÌ`”Ìm ÌvÌg”Ìo ÌvÌi”Ìp ÌvÌj”Ìq ÌvÌk”” Ìw” Ìw” Ìw” Ìw‘”	 Ìx’” Ìy” Ìy‘” Ì{’” Ì|” Ì|
-–” Ì|” Ì|
-” Ì€” Ì€
-” Ì€” Ì€–” Ì|” Ì|
-” Ì” Ì” Ì”  Ìž” Ì|” Ì|
-” Ì‚” Ì‚” Ì‚” Ì‚”! Ì‚”# Ì‚”% Ì‚”' Ì‚”, Ì‚”. Ì‚ ”0 Ì‚"”2 Ì‚$”” Ì|” Ì|
-” Ìƒ”" ÌƒÜ ” Ì|” Ì|
-” Ì„”! Ì„”" Ì„”# Ì„”/ Ì„!”0 Ì„"”6 Ì„(”7 Ì„)”9 Ì„+”: Ì„,”ÌF Ì„8”ÌG Ì„9”ÌJ Ì„<”ÌL Ì„>”ÌX Ì„ÌJ”ÌY Ì„ÌK”Ì_ Ì„ÌQ”Ì` Ì„ÌR•” Ì}” Ì}
-” Ì}” Ì}”) Ì}•” Ì~” Ì~
-” Ì~” Ì~”" Ì~’” Ì|” Ì|
-‘” Ì…’” Ìˆ” Ìˆš” Ì‰” Ì‰” Ì‰	” Ì‰”$ Ì‰”& Ì‰”/ Ì‰ ”0 Ì‰!”6 Ì‰'”8 Ì‰)–” Ì‰” Ì‰” ÌÊ” ÌÊ” ÌÊ” ÌÊ’” ÌŠ” ÌŠ	˜” ÌŠ” ÌŠ	” Ì” Ì” Ì”( Ì”) Ì ”/ Ì&˜” ÌŠ” ÌŠ	” Ì” Ì” Ì”( Ì”) Ì ”/ Ì&–” ÌŠ” ÌŠ	” Ì‘” Ì‘” Ì‘” Ì‘–” ÌŠ” ÌŠ	” Ì’” Ì’” Ì’” Ì’–” ÌŠ” ÌŠ	” Ì“” Ì“”  Ì“”5 Ì“,–” ÌŠ” ÌŠ	” Ì”” Ì”” Ì”” Ì”š” ÌŠ” ÌŠ	” Ì•” Ì•” Ì•” Ì•” Ì•”  Ì•”! Ì•”# Ì•—” ÌŠ” ÌŠ	” Ì–” Ì–” Ì–” Ì–” Ì–œ” Ì—” Ì—” Ì—”! Ì—”# Ì—”$ Ì—”- Ì—%”/ Ì—'”0 Ì—(”4 Ì—,”6 Ì—.”7 Ì—/’” Ì˜” Ì˜’” Ì‹” Ì‹–” Ì‹” Ì‹” ÌŒ”  ÌŒ”! ÌŒ”# ÌŒ–” Ì‹” Ì‹” Ì”" Ì”# Ì”& Ì’” ÌŠ” ÌŠ	’” Ìš” Ìš–” Ìš” Ìš” Ì›	” Ì›” Ì›” Ì›’” Ìš” Ìš’” Ìœ” Ìœ	˜” Ìœ” Ìœ	” Ì¡” Ì¡” Ì¡”( Ì¡”) Ì¡ ”/ Ì¡&˜” Ìœ” Ìœ	” Ì¢” Ì¢” Ì¢”( Ì¢”) Ì¢ ”/ Ì¢&–” Ìœ” Ìœ	” Ì£” Ì£” Ì£” Ì£–” Ìœ” Ìœ	” Ì¤” Ì¤” Ì¤” Ì¤–” Ìœ” Ìœ	” Ì¥” Ì¥”  Ì¥”5 Ì¥,–” Ìœ” Ìœ	” Ì¦” Ì¦” Ì¦” Ì¦š” Ìœ” Ìœ	” Ì§” Ì§” Ì§” Ì§” Ì§”  Ì§”! Ì§”# Ì§—” Ìœ” Ìœ	” Ì¨” Ì¨” Ì¨” Ì¨” Ì¨Ÿ” Ì©” Ì©” Ì©” Ì©”! Ì©”" Ì©”. Ì©&”0 Ì©(”1 Ì©)”: Ì©2”< Ì©4”= Ì©5”ÌF Ì©>”ÌH Ì©ÌZ”ÌI Ì©Ì[›” Ìª” Ìª” Ìª”! Ìª”# Ìª”$ Ìª”- Ìª%”/ Ìª'”0 Ìª(”7 Ìª/”8 Ìª0”” Ì«
-” Ì«” Ì«”6 Ì«,“” Ì¬
-” Ì¬” Ì¬–” Ì­” Ì­” Ì­”# Ì­”$ Ì­”' Ì­%”” Ì®” Ì®”  Ì®”$ Ì®–” Ì¯” Ì¯” Ì¯”" Ì¯”# Ì¯”' Ì¯–” Ì°” Ì°”! Ì°”% Ì°”& Ì°”- Ì°!–” Ì±”! Ì±”# Ì±”' Ì±”( Ì±”1 Ì±%–” Ì²” Ì²” Ì²”# Ì²”$ Ì²”) Ì²–” Ì³” Ì³”! Ì³”% Ì³”& Ì³”- Ì³!‘” Ì´™” Ìµ	” Ìµ
-” Ìµ” Ìµ” Ìµ” Ìµ” Ìµ&”! Ìµ(”# Ìµ*Ü ” Ì¶
-” Ì¶” Ì¶” Ì¶”  Ì¶”& Ì¶”( Ì¶”; Ì¶1”= Ì¶3”ÌQ Ì¶ÌG”ÌV Ì¶ÌL”ÌW Ì¶ÌM”Ì[ Ì¶ÌQ”Ìh Ì¶Ì^”Ìm Ì¶Ìc”Ìn Ì¶Ìd”Ìu Ì¶Ìk”Ìw Ì¶Ìm”Ìx Ì¶Ìn”Ìy Ì¶Ìo”” Ì·” Ì·	” Ì·
-” Ì·’” Ì¸” Ì¸’” Ì” Ì–” Ì” Ì” Ìž”  Ìž”! Ìž”# Ìž–” Ì” Ì” ÌŸ”" ÌŸ”# ÌŸ”& ÌŸ’” Ìœ” Ìœ	’” Ìº” Ìº	˜” Ìº” Ìº	” Ì¿” Ì¿” Ì¿”( Ì¿”) Ì¿ ”/ Ì¿&˜” Ìº” Ìº	” ÌÀ” ÌÀ” ÌÀ”( ÌÀ”) ÌÀ ”/ ÌÀ&–” Ìº” Ìº	” ÌÁ” ÌÁ” ÌÁ” ÌÁ–” Ìº” Ìº	” ÌÂ” ÌÂ” ÌÂ” ÌÂ–” Ìº” Ìº	” ÌÃ” ÌÃ”  ÌÃ”5 ÌÃ,–” Ìº” Ìº	” ÌÄ” ÌÄ” ÌÄ” ÌÄš” Ìº” Ìº	” ÌÅ” ÌÅ” ÌÅ” ÌÅ” ÌÅ”  ÌÅ”! ÌÅ”# ÌÅ—” Ìº” Ìº	” ÌÆ” ÌÆ” ÌÆ” ÌÆ” ÌÆ˜” ÌÇ” ÌÇ” ÌÇ”% ÌÇ”& ÌÇ”* ÌÇ"”, ÌÇ$”- ÌÇ%’” ÌÈ” ÌÈ’” Ì»” Ì»–” Ì»” Ì»” Ì¼”  Ì¼”! Ì¼”# Ì¼–” Ì»” Ì»” Ì½”" Ì½”# Ì½”& Ì½’” Ìº” Ìº	’” Ì‰” Ì‰‘” ÌË’” ÌÎ” ÌÎ
-’” ÌÏ” ÌÏ
-–” ÌÏ” ÌÏ
-” Í” Í
-” Í” Í’” ÌÐ” ÌÐ	š” ÌÐ” ÌÐ	” ÌÕ” ÌÕ” ÌÕ” ÌÕ” ÌÕ” ÌÕ”  ÌÕ”" ÌÕ’” ÌÑ” ÌÑ–” ÌÑ” ÌÑ” ÌÒ”  ÌÒ”! ÌÒ”$ ÌÒ˜” ÌÑ” ÌÑ” ÌÓ”! ÌÓ”" ÌÓ”# ÌÓ”, ÌÓ”- ÌÓ ’” ÌÐ” ÌÐ	–” Ì×” Ì×
-” Ì×” Ì×” Ì×”! Ì×–” Ì×” Ì×
-” ÌØ	” ÌØ” ÌØ”/ ÌØ'–” Ì×” Ì×
-” ÌÙ	” ÌÙ” ÌÙ” ÌÙ–” Ì×” Ì×
-” ÌÚ	” ÌÚ” ÌÚ” ÌÚš” Ì×” Ì×
-” ÌÛ	” ÌÛ” ÌÛ” ÌÛ” ÌÛ” ÌÛ”! ÌÛ”# ÌÛ’” Ì×” Ì×
-’” ÌÝ” ÌÝ	–” ÌÝ” ÌÝ	” Ìö” Ìö” Ìö” Ìöš” ÌÝ” ÌÝ	” Ì÷” Ì÷” Ì÷” Ì÷” Ì÷” Ì÷”  Ì÷”" Ì÷ž” ÌÝ” ÌÝ	” Ìø” Ìø” Ìø” Ìø” Ìø”  Ìø”" Ìø”$ Ìø”) Ìø ”+ Ìø"”- Ìø$”/ Ìø&˜” ÌÝ” ÌÝ	” Ìù” Ìù” Ìù”( Ìù”) Ìù ”5 Ìù,’” ÌÞ” ÌÞ˜” ÌÞ” ÌÞ” Ìã	” Ìã” Ìã”( Ìã!”) Ìã"”/ Ìã(˜” ÌÞ” ÌÞ” Ìä	” Ìä” Ìä”( Ìä!”) Ìä"”/ Ìä(–” ÌÞ” ÌÞ” Ìå	” Ìå” Ìå” Ìå–” ÌÞ” ÌÞ” Ìæ	” Ìæ” Ìæ” Ìæ–” ÌÞ” ÌÞ” Ìç	” Ìç”  Ìç”) Ìç"–” ÌÞ” ÌÞ” Ìè	” Ìè” Ìè”" Ìè’” Ìß
-” Ìß–” Ìß
-” Ìß” Ìà”  Ìà”! Ìà”# Ìàš” Ìß
-” Ìß” Ìá”! Ìá”" Ìá”# Ìá”( Ìá”) Ìá”. Ìá#”/ Ìá$’” ÌÞ” ÌÞ’” Ìê” Ìê˜” Ìê” Ìê” Ìï	” Ìï” Ìï”( Ìï!”) Ìï"”/ Ìï(˜” Ìê” Ìê” Ìð	” Ìð” Ìð”( Ìð!”) Ìð"”/ Ìð(–” Ìê” Ìê” Ìñ	” Ìñ” Ìñ” Ìñ–” Ìê” Ìê” Ìò	” Ìò” Ìò” Ìò–” Ìê” Ìê” Ìó	” Ìó”  Ìó”) Ìó"–” Ìê” Ìê” Ìô	” Ìô” Ìô”" Ìô’” Ìë
-” Ìë–” Ìë
-” Ìë” Ìì”  Ìì”! Ìì”# Ììš” Ìë
-” Ìë” Ìí”! Ìí”" Ìí”# Ìí”( Ìí”) Ìí”. Ìí#”/ Ìí$’” Ìê” Ìê’” ÌÝ” ÌÝ	’” Ìû” Ìûš” Ìû” Ìû” Í	” Í	” Í	” Í	” Í	”! Í	”# Í	”% Í	–” Ìû” Ìû” Í
-” Í
-” Í
-” Í
-“”, Ìü”= Ìü”ÌD Ìü–” Ìý
-”" Ìý”$ Ìý”( Ìý”) Ìý”2 Ìý$“” Ìþ
-”% Ìþ”Ìœ Ìþ9‘” Ìÿ	–” Ìý
-”& Ìý”( Ìý”, Ìý”- Ìý”6 Ìý$’” Ìþ
-”) Ìþ–” Ìý
-”" Ìý”$ Ìý”( Ìý”) Ìý”2 Ìý$“” Ìþ
-”% Ìþ”Ìœ Ìþ9“”, Í ”= Í ”ÌD Í –” Í
-”" Í”$ Í”( Í”) Í”. Í “” Í
-”% Í”Ìœ Í9‘” Í	–” Í
-”& Í”( Í”, Í”- Í”2 Í ’” Í
-”) Í–” Í
-”" Í”$ Í”( Í”) Í”. Í “” Í
-”% Í”Ìœ Í9“”, Í”= Í”ÌD Í–” Í
-”" Í”$ Í”( Í”) Í”0 Í"“” Í
-”% Í”Ìœ Í8‘” Í	–” Í
-”& Í”( Í”, Í”- Í”4 Í"’” Í
-”) Í–” Í
-”" Í”$ Í”( Í”) Í”0 Í"“” Í
-”% Í”Ìœ Í8’” Ìû” Ìû’” ÌÏ” ÌÏ
-‘” ÍÔrG–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜÒ‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
+}ÀÔrD”«@ohos.hilog¿../components/ContactDetailItemÙ!../components/ContactDeleteDialog¹../common/CommonConstantsÔrE—ªassertions¨external¢id¤meta±moduleSideEffectsªresolvedByµsyntheticNamedExportsAÃÙe hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.hilog.d.tsÔrF‘¯hostModulesInfo—ÔrG’²hostDependencyName®hostModuleName«@ohos.hilog¥entryG«@ohos.hilog¥entryG«@ohos.hilog¥entryG«@ohos.hilog¥entryG«@ohos.hilog¥entryG«@ohos.hilog¥entryG«@ohos.hilog¥entryÃªoh-resolveÂEAÂÙcC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDetailItem.etsAÃªoh-resolveÂEAÂÙeC:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\components\ContactDeleteDialog.etsAÃªoh-resolveÂEAÂÙ]C:\Users\86182\Desktop\2026Spring-25307211-Lab1\entry\src\main\ets\common\CommonConstants.etsAÃªoh-resolveÂ“ÔrH–§version¤fileªsourceRoot§sources¥names¨mappings´ContactDetailPage.js ‘µContactDetailPage.etsÜð‘”    ‘” –”   ” 	” ” ” 3”  4–”   ” ” ” ”? ?”Ì@ Ì@˜”   ” ”	 	” ” ”$ $”ÌG ÌG”ÌH ÌH–”   ” ” ” ”7 7”8 8’” ” ‘”  —”8 ,”ÌB 6”ÌC 7”ÌF :”ÌG ;”ÌR ÌF”ÌS ÌG’”3 ”5 ’”8 ”: ’”4 ”6 ’”6 ”8 ’”6 ”8 ’”8  ”:  —” !”# !”$ !”' !”( !”3 !(”4 !6’”$ "1”: "ÌG’” #” #“”# #”6 # ”= #!•” $” $” $” $”! $–” %” %” %”% %”' %”( %’” &” &•” '” '” '”  '”" '–” (” (” (”& (”( (”) (’” )” )“” *”! *”Ì˜ *0‘” +’”, "”< "•” $” $”  $”# $”% $–” %”  %”! %”) %”+ %”, %’” &” &•” '” '”! '”$ '”& '–” (”  (”! (”* (”, (”- (’” )” )’” *”% *‘” +”” ,” ,” ,” ,–” -” -” -”& -”' -”- -%”” .” .” .” .‘” 8’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’” 	” ’”  	”  ’”  	”  ’” 1” 1’” 2” 2
+’” 3” 3›” 4” 4
+” 4” 4” 4”  4”/ 4)”1 4+”2 4,”; 45”< 46“” 5” 5”ÌŽ 54–” 6” 6” 6”) 6!”* 6"”9 61“” 7” 7” 7	˜” 8” 8
+” 8”! 8”" 8”' 8!”) 8#”* 8$‘”	 9”” 9” 9” 9” 9Ü ” :” :” :” :” :” :”  :”3 :-”5 :/”ÌP :ÌJ”ÌU :ÌO”ÌV :ÌP”ÌZ :ÌT”Ìc :Ì]”Ìh :Ìb”Ìi :Ìc”Ìp :Ìj”Ìr :Ìl”Ìs :Ìm”Ìt :Ìn‘”	 ;’” <” <’” >”/ >-’” ?” ?œ” Ì@” Ì@” Ì@” Ì@”) Ì@%”* Ì@&”? Ì@;”ÌB Ì@>”ÌF Ì@ÌB”ÌG Ì@ÌC”ÌK Ì@ÌG”ÌL Ì@ÌH›” ÌA” ÌA” ÌA	” ÌA” ÌA”! ÌA”" ÌA”- ÌA)”/ ÌA+”2 ÌA.”4 ÌA0’” ÌB” ÌB
+›” ÌC” ÌC” ÌC”! ÌC”# ÌC”$ ÌC”3 ÌC+”5 ÌC-”6 ÌC.”? ÌC7”Ì@ ÌC8“” ÌD
+” ÌD”Ì’ ÌD:–” ÌE
+” ÌE” ÌE”- ÌE#”. ÌE$”= ÌE3“” ÌF	” ÌF
+” ÌF‘” ÌG”” ÌG” ÌG” ÌG” ÌGÜ ” ÌH” ÌH” ÌH” ÌH” ÌH”" ÌH”$ ÌH”7 ÌH/”9 ÌH1”ÌX ÌHÌP”Ì] ÌHÌU”Ì^ ÌHÌV”Ìb ÌHÌZ”Ìk ÌHÌc”Ìp ÌHÌh”Ìq ÌHÌi”Ìx ÌHÌp”Ìz ÌHÌr”Ì{ ÌHÌs”Ì| ÌHÌt‘” ÌI›” ÌJ” ÌJ
+” ÌJ” ÌJ” ÌJ”  ÌJ”) ÌJ#”+ ÌJ%”, ÌJ&”3 ÌJ-”4 ÌJ.–” ÌK” ÌK” ÌK”$ ÌK”% ÌK”2 ÌK*™” ÌL” ÌL” ÌL	” ÌL” ÌL” ÌL” ÌL"” ÌL$” ÌL&Ü ” ÌM” ÌM” ÌM” ÌM” ÌM”" ÌM”$ ÌM”7 ÌM/”9 ÌM1”ÌO ÌMÌG”ÌR ÌMÌJ”ÌS ÌMÌK”ÌW ÌMÌO”Ì` ÌMÌX”Ìc ÌMÌ[”Ìd ÌMÌ\”Ìk ÌMÌc”Ìm ÌMÌe”Ìn ÌMÌf”Ìo ÌMÌg”” ÌN” ÌN” ÌN” ÌN	”” ÌO”	 ÌO”
+ ÌO” ÌO˜” ÌP” ÌP” ÌP	” ÌP” ÌP”# ÌP”% ÌP!”& ÌP"’” ÌQ” ÌQ’” ÌS” ÌSŸ” ÌT” ÌT” ÌT” ÌT” ÌT” ÌT”& ÌT"”( ÌT$”) ÌT%”2 ÌT.”4 ÌT0”5 ÌT1”> ÌT:”Ì@ ÌTÌV”ÌA ÌTÌW˜” ÌU” ÌU” ÌU” ÌU” ÌU” ÌU”  ÌU”" ÌUš” ÌV” ÌV
+” ÌV” ÌV”  ÌV”& ÌV ”' ÌV!”* ÌV.”+ ÌV/”, ÌV0‘”	 ÌW’” ÌX” ÌX‘” ÌZ‘” Ì\”” Ì]” Ì]” Ì]” Ì]’” Ì^” Ì^Ÿ” Ì_” Ì_” Ì_	” Ì_” Ì_”! Ì_”" Ì_”% Ì_!”' Ì_#”( Ì_$”+ Ì_6”- Ì_8”1 Ì_<”3 Ì_>”5 Ì_Ì@”” Ì`” Ì`
+” Ì`” Ì`Ü ” Ìa” Ìa” Ìa” Ìa” Ìa”" Ìa”$ Ìa”7 Ìa/”9 Ìa1”ÌX ÌaÌP”Ì[ ÌaÌS”Ì\ ÌaÌT”Ì` ÌaÌX”Ìi ÌaÌa”Ìl ÌaÌd”Ìm ÌaÌe”Ìt ÌaÌl”Ìv ÌaÌn”Ìw ÌaÌo”Ìx ÌaÌp’” Ìb” Ìb‘” Ìc›” Ìd” Ìd
+” Ìd” Ìd&”# Ìd*”$ Ìd+”) Ìd0”* Ìd1”. Ìd?”/ ÌdÌ@”0 ÌdÌA™” Ìe” Ìe
+” Ìe” Ìe” Ìe”$ Ìe”% Ìe”) Ìe-”* Ìe.™” Ìf” Ìf
+” Ìf” Ìf” Ìf”' Ìf!”( Ìf"”/ Ìf3”0 Ìf4™” Ìg” Ìg
+” Ìg” Ìg” Ìg”) Ìg#”* Ìg$”3 Ìg7”4 Ìg8™” Ìh” Ìh
+” Ìh” Ìh” Ìh”% Ìh”& Ìh ”+ Ìh/”, Ìh0™” Ìi” Ìi
+” Ìi” Ìi” Ìi”' Ìi!”( Ìi"”/ Ìi3”0 Ìi4’” Ìj” Ìj›” Ìk” Ìk
+” Ìk” Ìk” Ìk”) Ìk#”* Ìk$”3 Ìk-”7 Ìk1”9 Ìk3”: Ìk4”” Ìl”	 Ìl”
+ Ìl” Ìl’” Ìm” Ìm’” Ìo” Ìo›” Ìp” Ìp” Ìp	” Ìp” Ìp”! Ìp”# Ìp”$ Ìp ”) Ìp%”+ Ìp'”, Ìp(’” Ìq” ÌqÜ ” Ìr” Ìr
+” Ìr” Ìr” Ìr”% Ìr”' Ìr!”( Ìr"”2 Ìr,”3 Ìs”5 Ìs
+”8 Ìs”: Ìs”ÌQ Ìs&”ÌS Ìs(”ÌT Ìt”ÌU Ìt”ÌZ Ìt”Ì[ Ìt”Ì\ Ìt”Ìa Ìt#”Ìc Ìt%”Ìe Ìt'Ü ” Ìu” Ìu” Ìu” Ìu” Ìu”" Ìu”$ Ìu”7 Ìu/”9 Ìu1”ÌM ÌuÌE”ÌR ÌuÌJ”ÌS ÌuÌK”ÌW ÌuÌO”Ìd ÌuÌ\”Ìi ÌuÌa”Ìj ÌuÌb”Ìq ÌuÌi”Ìs ÌuÌk”Ìt ÌuÌl”Ìu ÌuÌm”” Ìv” Ìv” Ìv” Ìv	”” Ìw” Ìw” Ìw” Ìw‘”	 Ìx”” Ìx” Ìx” Ìx” ÌxÜ ” Ìy” Ìy” Ìy” Ìy” Ìy” Ìy”  Ìy”3 Ìy-”5 Ìy/”ÌI ÌyÌC”ÌN ÌyÌH”ÌO ÌyÌI”ÌS ÌyÌM”Ì` ÌyÌZ”Ìe ÌyÌ_”Ìf ÌyÌ`”Ìm ÌyÌg”Ìo ÌyÌi”Ìp ÌyÌj”Ìq ÌyÌk”” Ìz” Ìz” Ìz” Ìz‘”	 Ì{’” Ì|” Ì|‘” Ì~’” Ì” Ì
+–” Ì” Ì
+” Ìƒ” Ìƒ
+” Ìƒ” Ìƒ–” Ì” Ì
+” Ì„” Ì„” Ì„”  Ì„ž” Ì” Ì
+” Ì…” Ì…” Ì…” Ì…”! Ì…”# Ì…”% Ì…”' Ì…”, Ì…”. Ì… ”0 Ì…"”2 Ì…$”” Ì” Ì
+” Ì†”" Ì†Ü ” Ì” Ì
+” Ì‡”! Ì‡”" Ì‡”# Ì‡”/ Ì‡!”0 Ì‡"”6 Ì‡(”7 Ì‡)”9 Ì‡+”: Ì‡,”ÌF Ì‡8”ÌG Ì‡9”ÌJ Ì‡<”ÌL Ì‡>”ÌX Ì‡ÌJ”ÌY Ì‡ÌK”Ì_ Ì‡ÌQ”Ì` Ì‡ÌR•” Ì€” Ì€
+” Ì€” Ì€”) Ì€•” Ì” Ì
+” Ì” Ì”" Ì’” Ì” Ì
+‘” Ìˆ’” Ì‹” Ì‹š” ÌŒ” ÌŒ” ÌŒ	” ÌŒ”$ ÌŒ”& ÌŒ”/ ÌŒ ”0 ÌŒ!”6 ÌŒ'”8 ÌŒ)–” ÌŒ” ÌŒ” ÌÎ” ÌÎ” ÌÎ” ÌÎ’” Ì” Ì	˜” Ì” Ì	” Ì’” Ì’” Ì’”( Ì’”) Ì’ ”/ Ì’&˜” Ì” Ì	” Ì“” Ì“” Ì“”( Ì“”) Ì“ ”/ Ì“&–” Ì” Ì	” Ì”” Ì”” Ì”” Ì”–” Ì” Ì	” Ì•” Ì•” Ì•” Ì•–” Ì” Ì	” Ì–” Ì–”  Ì–”5 Ì–,–” Ì” Ì	” Ì—” Ì—” Ì—” Ì—š” Ì” Ì	” Ì˜” Ì˜” Ì˜” Ì˜” Ì˜”  Ì˜”! Ì˜”# Ì˜—” Ì” Ì	” Ì™” Ì™” Ì™” Ì™” Ì™œ” Ìš” Ìš” Ìš”! Ìš”# Ìš”$ Ìš”- Ìš%”/ Ìš'”0 Ìš(”4 Ìš,”6 Ìš.”7 Ìš/’” Ì›” Ì›’” ÌŽ” ÌŽ–” ÌŽ” ÌŽ” Ì”  Ì”! Ì”# Ì–” ÌŽ” ÌŽ” Ì”" Ì”# Ì”& Ì’” Ì” Ì	’” Ì” Ì–” Ì” Ì” Ìž	” Ìž” Ìž” Ìž’” Ì” Ì’” ÌŸ” ÌŸ	˜” ÌŸ” ÌŸ	” Ì¤” Ì¤” Ì¤”( Ì¤”) Ì¤ ”/ Ì¤&˜” ÌŸ” ÌŸ	” Ì¥” Ì¥” Ì¥”( Ì¥”) Ì¥ ”/ Ì¥&–” ÌŸ” ÌŸ	” Ì¦” Ì¦” Ì¦” Ì¦–” ÌŸ” ÌŸ	” Ì§” Ì§” Ì§” Ì§–” ÌŸ” ÌŸ	” Ì¨” Ì¨”  Ì¨”5 Ì¨,–” ÌŸ” ÌŸ	” Ì©” Ì©” Ì©” Ì©š” ÌŸ” ÌŸ	” Ìª” Ìª” Ìª” Ìª” Ìª”  Ìª”! Ìª”# Ìª—” ÌŸ” ÌŸ	” Ì«” Ì«” Ì«” Ì«” Ì«Ÿ” Ì¬” Ì¬” Ì¬” Ì¬”! Ì¬”" Ì¬”. Ì¬&”0 Ì¬(”1 Ì¬)”: Ì¬2”< Ì¬4”= Ì¬5”ÌF Ì¬>”ÌH Ì¬ÌZ”ÌI Ì¬Ì[›” Ì­” Ì­” Ì­”! Ì­”# Ì­”$ Ì­”- Ì­%”/ Ì­'”0 Ì­(”7 Ì­/”8 Ì­0”” Ì®
+” Ì®” Ì®”6 Ì®,“” Ì¯
+” Ì¯” Ì¯–” Ì°” Ì°” Ì°”# Ì°”$ Ì°”' Ì°%”” Ì±” Ì±”  Ì±”$ Ì±–” Ì²” Ì²” Ì²”" Ì²”# Ì²”' Ì²–” Ì³” Ì³”! Ì³”% Ì³”& Ì³”- Ì³!–” Ì´”! Ì´”# Ì´”' Ì´”( Ì´”1 Ì´%–” Ìµ” Ìµ” Ìµ”# Ìµ”$ Ìµ”) Ìµ–” Ì¶” Ì¶”! Ì¶”% Ì¶”& Ì¶”- Ì¶!–” Ì·”! Ì·”# Ì·”' Ì·”( Ì·”1 Ì·%‘” Ì¸™” Ì¹	” Ì¹
+” Ì¹” Ì¹” Ì¹” Ì¹” Ì¹&”! Ì¹(”# Ì¹*Ü ” Ìº
+” Ìº” Ìº” Ìº”  Ìº”& Ìº”( Ìº”; Ìº1”= Ìº3”ÌQ ÌºÌG”ÌV ÌºÌL”ÌW ÌºÌM”Ì[ ÌºÌQ”Ìh ÌºÌ^”Ìm ÌºÌc”Ìn ÌºÌd”Ìu ÌºÌk”Ìw ÌºÌm”Ìx ÌºÌn”Ìy ÌºÌo”” Ì»” Ì»	” Ì»
+” Ì»’” Ì¼” Ì¼’” Ì ” Ì –” Ì ” Ì ” Ì¡”  Ì¡”! Ì¡”# Ì¡–” Ì ” Ì ” Ì¢”" Ì¢”# Ì¢”& Ì¢’” ÌŸ” ÌŸ	’” Ì¾” Ì¾	˜” Ì¾” Ì¾	” ÌÃ” ÌÃ” ÌÃ”( ÌÃ”) ÌÃ ”/ ÌÃ&˜” Ì¾” Ì¾	” ÌÄ” ÌÄ” ÌÄ”( ÌÄ”) ÌÄ ”/ ÌÄ&–” Ì¾” Ì¾	” ÌÅ” ÌÅ” ÌÅ” ÌÅ–” Ì¾” Ì¾	” ÌÆ” ÌÆ” ÌÆ” ÌÆ–” Ì¾” Ì¾	” ÌÇ” ÌÇ”  ÌÇ”5 ÌÇ,–” Ì¾” Ì¾	” ÌÈ” ÌÈ” ÌÈ” ÌÈš” Ì¾” Ì¾	” ÌÉ” ÌÉ” ÌÉ” ÌÉ” ÌÉ”  ÌÉ”! ÌÉ”# ÌÉ—” Ì¾” Ì¾	” ÌÊ” ÌÊ” ÌÊ” ÌÊ” ÌÊ˜” ÌË” ÌË” ÌË”% ÌË”& ÌË”* ÌË"”, ÌË$”- ÌË%’” ÌÌ” ÌÌ’” Ì¿” Ì¿–” Ì¿” Ì¿” ÌÀ”  ÌÀ”! ÌÀ”# ÌÀ–” Ì¿” Ì¿” ÌÁ”" ÌÁ”# ÌÁ”& ÌÁ’” Ì¾” Ì¾	’” ÌŒ” ÌŒ‘” ÌÏ’” ÌÒ” ÌÒ
+’” ÌÓ” ÌÓ
+–” ÌÓ” ÌÓ
+” Í” Í
+” Í” Í’” ÌÔ” ÌÔ	š” ÌÔ” ÌÔ	” ÌÙ” ÌÙ” ÌÙ” ÌÙ” ÌÙ” ÌÙ”  ÌÙ”" ÌÙ’” ÌÕ” ÌÕ–” ÌÕ” ÌÕ” ÌÖ”  ÌÖ”! ÌÖ”$ ÌÖ˜” ÌÕ” ÌÕ” Ì×”! Ì×”" Ì×”# Ì×”, Ì×”- Ì× ’” ÌÔ” ÌÔ	–” ÌÛ” ÌÛ
+” ÌÛ” ÌÛ” ÌÛ”! ÌÛ–” ÌÛ” ÌÛ
+” ÌÜ	” ÌÜ” ÌÜ”/ ÌÜ'–” ÌÛ” ÌÛ
+” ÌÝ	” ÌÝ” ÌÝ” ÌÝ–” ÌÛ” ÌÛ
+” ÌÞ	” ÌÞ” ÌÞ” ÌÞš” ÌÛ” ÌÛ
+” Ìß	” Ìß” Ìß” Ìß” Ìß” Ìß”! Ìß”# Ìß’” ÌÛ” ÌÛ
+’” Ìá” Ìáœ” Ìâ” Ìâ
+” Ìâ” Ìâ” Ìâ”" Ìâ”& Ìâ ”' Ìâ!”0 Ìâ*”5 Ìâ/”7 Ìâ1”9 Ìâ3–” Ìã” Ìã”$ Ìã”( Ìã”) Ìã”2 Ìã–” Ìã” Ìã” Ìä”% Ìä”& Ìä”( Ìä–” Ìã” Ìã” Ìå”& Ìå”' Ìå”0 Ìå–” Ìã” Ìã” Ìæ”' Ìæ”( Ìæ”+ Ìæš” Ìã” Ìã” Ìç”# Ìç”$ Ìç”& Ìç”) Ìç”+ Ìç”, Ìç”. ÌçÜ ” Ìã” Ìã” Ìè”$ Ìè”% Ìè”' Ìè”+ Ìè”- Ìè”/ Ìè”1 Ìè”6 Ìè$”8 Ìè&”: Ìè(”< Ìè*”? Ìè-”ÌA Ìè/”ÌB Ìè0”ÌD Ìè2”ÌJ Ìè8”ÌL Ìè:”ÌM Ìè;”ÌO Ìè=–” Ìã” Ìã” Ìé”, Ìé”- Ìé”ÌE Ìé3–” Ìã” Ìã” Ìê”) Ìê”* Ìê”+ Ìê’” Ìã” Ìã‘” Ìë‘” Ìë’” Ìí” Ìí	–” Ìí” Ìí	” Í” Í” Í” Íš” Ìí” Ìí	” Í” Í” Í” Í” Í” Í”  Í”" Íž” Ìí” Ìí	” Í” Í” Í” Í” Í”  Í”" Í”$ Í”) Í ”+ Í"”- Í$”/ Í&˜” Ìí” Ìí	” Í	” Í	” Í	”( Í	”) Í	 ”5 Í	,’” Ìî” Ìî˜” Ìî” Ìî” Ìó	” Ìó” Ìó”( Ìó!”) Ìó"”/ Ìó(˜” Ìî” Ìî” Ìô	” Ìô” Ìô”( Ìô!”) Ìô"”/ Ìô(–” Ìî” Ìî” Ìõ	” Ìõ” Ìõ” Ìõ–” Ìî” Ìî” Ìö	” Ìö” Ìö” Ìö–” Ìî” Ìî” Ì÷	” Ì÷”  Ì÷”) Ì÷"–” Ìî” Ìî” Ìø	” Ìø” Ìø”" Ìø’” Ìï
+” Ìï–” Ìï
+” Ìï” Ìð”  Ìð”! Ìð”# Ìðš” Ìï
+” Ìï” Ìñ”! Ìñ”" Ìñ”# Ìñ”( Ìñ”) Ìñ”. Ìñ#”/ Ìñ$’” Ìî” Ìî’” Ìú” Ìú˜” Ìú” Ìú” Ìÿ	” Ìÿ” Ìÿ”( Ìÿ!”) Ìÿ"”/ Ìÿ(˜” Ìú” Ìú” Í 	” Í ” Í ”( Í !”) Í "”/ Í (–” Ìú” Ìú” Í	” Í” Í” Í–” Ìú” Ìú” Í	” Í” Í” Í–” Ìú” Ìú” Í	” Í”  Í”) Í"–” Ìú” Ìú” Í	” Í” Í”" Í’” Ìû
+” Ìû–” Ìû
+” Ìû” Ìü”  Ìü”! Ìü”# Ìüš” Ìû
+” Ìû” Ìý”! Ìý”" Ìý”# Ìý”( Ìý”) Ìý”. Ìý#”/ Ìý$’” Ìú” Ìú’” Ìí” Ìí	’” Í” Íš” Í” Í” Í” Í” Í” Í” Í”! Í”# Í”% Í–” Í” Í” Í” Í” Í” Í“”, Í”= Í”ÌD Í–” Í
+”" Í”$ Í”( Í”) Í”2 Í$“” Í
+”% Í”Ìœ Í9‘” Í	–” Í
+”& Í”( Í”, Í”- Í”6 Í$’” Í
+”) Í–” Í
+”" Í”$ Í”( Í”) Í”2 Í$“” Í
+”% Í”Ìœ Í9“”, Í”= Í”ÌD Í–” Í
+”" Í”$ Í”( Í”) Í”. Í “” Í
+”% Í”Ìœ Í9‘” Í	–” Í
+”& Í”( Í”, Í”- Í”2 Í ’” Í
+”) Í–” Í
+”" Í”$ Í”( Í”) Í”. Í “” Í
+”% Í”Ìœ Í9“”, Í”= Í”ÌD Í–” Í
+”" Í”$ Í”( Í”) Í”0 Í"“” Í
+”% Í”Ìœ Í8‘” Í	–” Í
+”& Í”( Í”, Í”- Í”4 Í"’” Í
+”) Í–” Í
+”" Í”$ Í”( Í”) Í”0 Í"“” Í
+”% Í”Ìœ Í8’” Í” Í’” ÌÓ” ÌÓ
+‘” ÍÔrI–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜù‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
  ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”    ‘”  ! ‘”  " ‘”  # ‘”  $ ‘”  % ‘”  & ‘”  ' ‘”  ( ‘”  ) ‘”  * ‘”  + ‘”  , ‘”  - ‘”  . ‘”  / ‘”  0 ‘”  1 ‘”  2 ‘”  3 ‘”  4 ‘”  5 ‘”  6 ‘”  7 ‘”  8 ‘”  9 ‘”  : ‘”  ; ‘”  < ‘”  = ‘”  > ‘”  ? ‘”  Ì@ ‘”  ÌA ‘”  ÌB ‘”  ÌC ‘”  ÌD ‘”  ÌE ‘”  ÌF ‘”  ÌG ‘”  ÌH ‘”  ÌI ‘”  ÌJ ‘”  ÌK ‘”  ÌL ‘”  ÌM ‘”  ÌN ‘”  ÌO ‘”  ÌP ‘”  ÌQ ‘”  ÌR ‘”  ÌS ‘”  ÌT ‘”  ÌU ‘”  ÌV ‘”  ÌW ‘”  ÌX ‘”  ÌY ‘”  ÌZ ‘”  Ì[ ‘”  Ì\ ‘”  Ì] ‘”  Ì^ ‘”  Ì_ ‘”  Ì` ‘”  Ìa ‘”  Ìb ‘”  Ìc ‘”  Ìd ‘”  Ìe ‘”  Ìf ‘”  Ìg ‘”  Ìh ‘”  Ìi ‘”  Ìj ‘”  Ìk ‘”  Ìl ‘”  Ìm ‘”  Ìn ‘”  Ìo ‘”  Ìp ‘”  Ìq ‘”  Ìr ‘”  Ìs ‘”  Ìt ‘”  Ìu ‘”  Ìv ‘”  Ìw ‘”  Ìx ‘”  Ìy ‘”  Ìz ‘”  Ì{ ‘”  Ì| ‘”  Ì} ‘”  Ì~ ‘”  Ì ‘”  Ì€ ‘”  Ì ‘”  Ì‚ ‘”  Ìƒ ‘”  Ì„ ‘”  Ì… ‘”  Ì† ‘”  Ì‡ ‘”  Ìˆ ‘”  Ì‰ ‘”  ÌŠ ‘”  Ì‹ ‘”  ÌŒ ‘”  Ì ‘”  ÌŽ ‘”  Ì ‘”  Ì ‘”  Ì‘ ‘”  Ì’ ‘”  Ì“ ‘”  Ì” ‘”  Ì• ‘”  Ì– ‘”  Ì— ‘”  Ì˜ ‘”  Ì™ ‘”  Ìš ‘”  Ì› ‘”  Ìœ ‘”  Ì ‘”  Ìž ‘”  ÌŸ ‘”  Ì  ‘”  Ì¡ ‘”  Ì¢ ‘”  Ì£ ‘”  Ì¤ ‘”  Ì¥ ‘”  Ì¦ ‘”  Ì§ ‘”  Ì¨ ‘”  Ì© ‘”  Ìª ‘”  Ì« ‘”  Ì¬ ‘”  Ì­ ‘”  Ì® ‘”  Ì¯ ‘”  Ì° ‘”  Ì± ‘”  Ì² ‘”  Ì³ ‘”  Ì´ ‘”  Ìµ ‘”  Ì¶ ‘”  Ì· ‘”  Ì¸ ‘”  Ì¹ ‘”  Ìº ‘”  Ì» ‘”  Ì¼ ‘”  Ì½ ‘”  Ì¾ ‘”  Ì¿ ‘”  ÌÀ ‘”  ÌÁ ‘”  ÌÂ ‘”  ÌÃ ‘”  ÌÄ ‘”  ÌÅ ‘”  ÌÆ ‘”  ÌÇ ‘”  ÌÈ ‘”  ÌÉ ‘”  ÌÊ ‘”  ÌË ‘”  ÌÌ ‘”  ÌÍ ‘”  ÌÎ ‘”  ÌÏ ‘”  ÌÐ ‘”  ÌÑ ‘”  ÌÒ ‘”  ÌÓ ‘”  ÌÔ ‘”  ÌÕ ‘”  ÌÖ ‘”  Ì× ‘”  ÌØ ‘”  ÌÙ ‘”  ÌÚ ‘”  ÌÛ ‘”  ÌÜ ‘”  ÌÝ ‘”  ÌÞ ‘”  Ìß ‘”  Ìà ‘”  Ìá ‘”  Ìâ ‘”  Ìã ‘”  Ìä ‘”  Ìå ‘”  Ìæ ‘”  Ìç ‘”  Ìè ‘”  Ìé ‘”  Ìê ‘”  Ìë ‘”  Ìì ‘”  Ìí ‘”  Ìî ‘”  Ìï ‘”  Ìð ‘”  Ìñ ‘”  Ìò ‘”  Ìó ‘”  Ìô ‘”  Ìõ ‘”  Ìö ‘”  Ì÷ ‘”  Ìø ‘”  Ìù ‘”  Ìú ‘”  Ìû ‘”  Ìü ‘”  Ìý ‘”  Ìþ ‘”  Ìÿ ‘”  Í  ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í	 ‘”  Í
- ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í  ‘”  Í! ‘”  Í" ‘”  Í# ‘”  Í$ ‘”  Í% ‘”  Í& ‘”  Í' ‘”  Í( ‘”  Í) ‘”  Í* ‘”  Í+ ‘”  Í, ‘”  Í- ‘”  Í. ‘”  Í/ ‘”  Í0 ‘”  Í1 ‘”  Í2 ‘”  Í3 ‘”  Í4 ‘”  Í5 ‘”  Í6 ‘”  Í7 ‘”  Í8 ‘”  Í9 ‘”  Í: ‘”  Í; ‘”  Í< ‘”  Í= ‘”  Í> ‘”  Í? ‘”  Í@ ‘”  ÍA ‘”  ÍB ‘”  ÍC ‘”  ÍD ‘”  ÍE ‘”  ÍF ‘”  ÍG ‘”  ÍH ‘”  ÍI ‘”  ÍJ ‘”  ÍK ‘”  ÍL ‘”  ÍM ‘”  ÍN ‘”  ÍO ‘”  ÍP ‘”  ÍQ ‘”  ÍR ‘”  ÍS ‘”  ÍT ‘”  ÍU ‘”  ÍV ‘”  ÍW ‘”  ÍX ‘”  ÍY ‘”  ÍZ ‘”  Í[ ‘”  Í\ ‘”  Í] ‘”  Í^ ‘”  Í_ ‘”  Í` ‘”  Ía ‘”  Íb ‘”  Íc ‘”  Íd ‘”  Íe ‘”  Íf ‘”  Íg ‘”  Íh ‘”  Íi ‘”  Íj ‘”  Ík ‘”  Íl ‘”  Ím ‘”  Ín ‘”  Ío ‘”  Íp ‘”  Íq ‘”  Ír ‘”  Ís ‘”  Ít ‘”  Íu ‘”  Ív ‘”  Íw ‘”  Íx ‘”  Íy ‘”  Íz ‘”  Í{ ‘”  Í| ‘”  Í} ‘”  Í~ ‘”  Í ‘”  Í€ ‘”  Í ‘”  Í‚ ‘”  Íƒ ‘”  Í„ ‘”  Í… ‘”  Í† ‘”  Í‡ ‘”  Íˆ ‘”  Í‰ ‘”  ÍŠ ‘”  Í‹ ‘”  ÍŒ ‘”  Í ‘”  ÍŽ ‘”  Í ‘”  Í ‘”  Í‘ ‘”  Í’ ‘”  Í“ ‘”  Í” ‘”  Í• ‘”  Í– ‘”  Í— ‘”  Í˜ ‘”  Í™ ‘”  Íš ‘”  Í› ‘”  Íœ ‘”  Í ‘”  Íž ‘”  ÍŸ ‘”  Í  ‘”  Í¡ ‘”  Í¢ ‘”  Í£ ‘”  Í¤ ‘”  Í¥ ‘”  Í¦ ‘”  Í§ ‘”  Í¨ ‘”  Í© ‘”  Íª ‘”  Í« ‘”  Í¬ ‘”  Í­ ‘”  Í® ‘”  Í¯ ‘”  Í° ‘”  Í± ‘”  Í² ‘”  Í³ ‘”  Í´ ‘”  Íµ ‘”  Í¶ ‘”  Í· ‘”  Í¸ ‘”  Í¹ ‘”  Íº ‘”  Í» ‘”  Í¼ ‘”  Í½ ‘”  Í¾ ‘”  Í¿ ‘”  ÍÀ ‘”  ÍÁ ‘”  ÍÂ ‘”  ÍÃ ‘”  ÍÄ ‘”  ÍÅ ‘”  ÍÆ ‘”  ÍÇ ‘”  ÍÈ ‘”  ÍÉ ‘”  ÍÊ ‘”  ÍË ‘”  ÍÌ ‘”  ÍÍ ‘”  ÍÎ ‘”  ÍÏ ‘”  ÍÐ ‘”  ÍÑ ÔrH’§missing¦pluginÃ¦genAbcÂÔ  ÔrI”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCache”ÔrJ•¤type¥start£endªspecifiers¦source±ImportDeclarationÍùÍ‘ÔrK”¤type¥start£end¥local¶ImportDefaultSpecifierÍ ÍÔrL”¤type¥start£end¤nameªIdentifierÍ Í¥hilogÔrM•¤type¥start£end¥value£raw§LiteralÍÍ«@ohos.hilog­"@ohos.hilog"J±ImportDeclarationÍÍ[‘K¶ImportDefaultSpecifierÍ"Í3LªIdentifierÍ"Í3±ContactDetailItemM§LiteralÍ9ÍZ¿../components/ContactDetailItemÙ!'../components/ContactDetailItem'J±ImportDeclarationÍ]Í¥‘ÔrN•¤type¥start£end¨imported¥local¯ImportSpecifierÍfÍyLªIdentifierÍfÍy³ContactDeleteDialogLªIdentifierÍfÍy³ContactDeleteDialogM§LiteralÍÍ¤Ù!../components/ContactDeleteDialogÙ#'../components/ContactDeleteDialog'J±ImportDeclarationÍ§Íß‘K¶ImportDefaultSpecifierÍ®Í½LªIdentifierÍ®Í½¯CommonConstantsM§LiteralÍÃÍÞ¹../common/CommonConstants»'../common/CommonConstants'
+ ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í ‘”  Í  ‘”  Í! ‘”  Í" ‘”  Í# ‘”  Í$ ‘”  Í% ‘”  Í& ‘”  Í' ‘”  Í( ‘”  Í) ‘”  Í* ‘”  Í+ ‘”  Í, ‘”  Í- ‘”  Í. ‘”  Í/ ‘”  Í0 ‘”  Í1 ‘”  Í2 ‘”  Í3 ‘”  Í4 ‘”  Í5 ‘”  Í6 ‘”  Í7 ‘”  Í8 ‘”  Í9 ‘”  Í: ‘”  Í; ‘”  Í< ‘”  Í= ‘”  Í> ‘”  Í? ‘”  Í@ ‘”  ÍA ‘”  ÍB ‘”  ÍC ‘”  ÍD ‘”  ÍE ‘”  ÍF ‘”  ÍG ‘”  ÍH ‘”  ÍI ‘”  ÍJ ‘”  ÍK ‘”  ÍL ‘”  ÍM ‘”  ÍN ‘”  ÍO ‘”  ÍP ‘”  ÍQ ‘”  ÍR ‘”  ÍS ‘”  ÍT ‘”  ÍU ‘”  ÍV ‘”  ÍW ‘”  ÍX ‘”  ÍY ‘”  ÍZ ‘”  Í[ ‘”  Í\ ‘”  Í] ‘”  Í^ ‘”  Í_ ‘”  Í` ‘”  Ía ‘”  Íb ‘”  Íc ‘”  Íd ‘”  Íe ‘”  Íf ‘”  Íg ‘”  Íh ‘”  Íi ‘”  Íj ‘”  Ík ‘”  Íl ‘”  Ím ‘”  Ín ‘”  Ío ‘”  Íp ‘”  Íq ‘”  Ír ‘”  Ís ‘”  Ít ‘”  Íu ‘”  Ív ‘”  Íw ‘”  Íx ‘”  Íy ‘”  Íz ‘”  Í{ ‘”  Í| ‘”  Í} ‘”  Í~ ‘”  Í ‘”  Í€ ‘”  Í ‘”  Í‚ ‘”  Íƒ ‘”  Í„ ‘”  Í… ‘”  Í† ‘”  Í‡ ‘”  Íˆ ‘”  Í‰ ‘”  ÍŠ ‘”  Í‹ ‘”  ÍŒ ‘”  Í ‘”  ÍŽ ‘”  Í ‘”  Í ‘”  Í‘ ‘”  Í’ ‘”  Í“ ‘”  Í” ‘”  Í• ‘”  Í– ‘”  Í— ‘”  Í˜ ‘”  Í™ ‘”  Íš ‘”  Í› ‘”  Íœ ‘”  Í ‘”  Íž ‘”  ÍŸ ‘”  Í  ‘”  Í¡ ‘”  Í¢ ‘”  Í£ ‘”  Í¤ ‘”  Í¥ ‘”  Í¦ ‘”  Í§ ‘”  Í¨ ‘”  Í© ‘”  Íª ‘”  Í« ‘”  Í¬ ‘”  Í­ ‘”  Í® ‘”  Í¯ ‘”  Í° ‘”  Í± ‘”  Í² ‘”  Í³ ‘”  Í´ ‘”  Íµ ‘”  Í¶ ‘”  Í· ‘”  Í¸ ‘”  Í¹ ‘”  Íº ‘”  Í» ‘”  Í¼ ‘”  Í½ ‘”  Í¾ ‘”  Í¿ ‘”  ÍÀ ‘”  ÍÁ ‘”  ÍÂ ‘”  ÍÃ ‘”  ÍÄ ‘”  ÍÅ ‘”  ÍÆ ‘”  ÍÇ ‘”  ÍÈ ‘”  ÍÉ ‘”  ÍÊ ‘”  ÍË ‘”  ÍÌ ‘”  ÍÍ ‘”  ÍÎ ‘”  ÍÏ ‘”  ÍÐ ‘”  ÍÑ ‘”  ÍÒ ‘”  ÍÓ ‘”  ÍÔ ‘”  ÍÕ ‘”  ÍÖ ‘”  Í× ‘”  ÍØ ‘”  ÍÙ ‘”  ÍÚ ‘”  ÍÛ ‘”  ÍÜ ‘”  ÍÝ ‘”  ÍÞ ‘”  Íß ‘”  Íà ‘”  Íá ‘”  Íâ ‘”  Íã ‘”  Íä ‘”  Íå ‘”  Íæ ‘”  Íç ‘”  Íè ‘”  Íé ‘”  Íê ‘”  Íë ‘”  Íì ‘”  Íí ‘”  Íî ‘”  Íï ‘”  Íð ‘”  Íñ ‘”  Íò ‘”  Íó ‘”  Íô ‘”  Íõ ‘”  Íö ‘”  Í÷ ‘”  Íø ÔrJ’§missing¦pluginÃ¦genAbcÂÔ  ÔrK”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCache”ÔrL•¤type¥start£endªspecifiers¦source±ImportDeclarationÍùÍ‘ÔrM”¤type¥start£end¥local¶ImportDefaultSpecifierÍ ÍÔrN”¤type¥start£end¤nameªIdentifierÍ Í¥hilogÔrO•¤type¥start£end¥value£raw§LiteralÍÍ«@ohos.hilog­"@ohos.hilog"L±ImportDeclarationÍÍ[‘M¶ImportDefaultSpecifierÍ"Í3NªIdentifierÍ"Í3±ContactDetailItemO§LiteralÍ9ÍZ¿../components/ContactDetailItemÙ!'../components/ContactDetailItem'L±ImportDeclarationÍ]Í¥‘ÔrP•¤type¥start£end¨imported¥local¯ImportSpecifierÍfÍyNªIdentifierÍfÍy³ContactDeleteDialogNªIdentifierÍfÍy³ContactDeleteDialogO§LiteralÍÍ¤Ù!../components/ContactDeleteDialogÙ#'../components/ContactDeleteDialog'L±ImportDeclarationÍ§Íß‘M¶ImportDefaultSpecifierÍ®Í½NªIdentifierÍ®Í½¯CommonConstantsO§LiteralÍÃÍÞ¹../common/CommonConstants»'../common/CommonConstants'

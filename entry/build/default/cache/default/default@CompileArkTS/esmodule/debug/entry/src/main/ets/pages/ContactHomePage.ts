@@ -9,6 +9,9 @@ interface ContactHomePage_Params {
     deviceList?: Array<distributedDeviceManager.DeviceBasicInfo>;
     selectedDeviceIndex?: number;
     searchValue?: string;
+    selectedGroupIndex?: number;
+    groupOptions?: string[];
+    selectOptions?: Array<SelectOption>;
     context?: common.UIAbilityContext;
     contactDeviceManager?: ContactDeviceManager;
     kvManager?;
@@ -38,6 +41,14 @@ class ContactHomePage extends ViewPU {
         this.__deviceList = new ObservedPropertyObjectPU([], this, "deviceList");
         this.__selectedDeviceIndex = new ObservedPropertySimplePU(0, this, "selectedDeviceIndex");
         this.__searchValue = new ObservedPropertySimplePU('', this, "searchValue");
+        this.__selectedGroupIndex = new ObservedPropertySimplePU(0, this, "selectedGroupIndex");
+        this.groupOptions = ['全部', '家人', '朋友', '同事'];
+        this.selectOptions = [
+            { value: '全部' },
+            { value: '家人' },
+            { value: '朋友' },
+            { value: '同事' }
+        ];
         this.context = this.getUIContext().getHostContext() as common.UIAbilityContext;
         this.contactDeviceManager = new ContactDeviceManager(this.context);
         this.kvManager = AppStorage.get('kvManager') as KvManager;
@@ -47,7 +58,7 @@ class ContactHomePage extends ViewPU {
                     deviceList: this.__deviceList,
                     selectedDeviceIndex: this.__selectedDeviceIndex,
                     onSelectedIndexChange: (index: number): Promise<void> => this.onSelectedIndexChange(index)
-                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 42, col: 14 });
+                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 52, col: 14 });
                 jsDialog.setController(this.dialogController);
                 ViewPU.create(jsDialog);
                 let paramsLambda = () => {
@@ -89,6 +100,15 @@ class ContactHomePage extends ViewPU {
         if (params.searchValue !== undefined) {
             this.searchValue = params.searchValue;
         }
+        if (params.selectedGroupIndex !== undefined) {
+            this.selectedGroupIndex = params.selectedGroupIndex;
+        }
+        if (params.groupOptions !== undefined) {
+            this.groupOptions = params.groupOptions;
+        }
+        if (params.selectOptions !== undefined) {
+            this.selectOptions = params.selectOptions;
+        }
         if (params.context !== undefined) {
             this.context = params.context;
         }
@@ -112,6 +132,7 @@ class ContactHomePage extends ViewPU {
         this.__deviceList.purgeDependencyOnElmtId(rmElmtId);
         this.__selectedDeviceIndex.purgeDependencyOnElmtId(rmElmtId);
         this.__searchValue.purgeDependencyOnElmtId(rmElmtId);
+        this.__selectedGroupIndex.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__uiContext.aboutToBeDeleted();
@@ -121,6 +142,7 @@ class ContactHomePage extends ViewPU {
         this.__deviceList.aboutToBeDeleted();
         this.__selectedDeviceIndex.aboutToBeDeleted();
         this.__searchValue.aboutToBeDeleted();
+        this.__selectedGroupIndex.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -173,6 +195,17 @@ class ContactHomePage extends ViewPU {
     set searchValue(newValue: string) {
         this.__searchValue.set(newValue);
     }
+    // 分组筛选相关状态变量
+    private __selectedGroupIndex: ObservedPropertySimplePU<number>; // 当前选中的分组索引，0表示全部
+    get selectedGroupIndex() {
+        return this.__selectedGroupIndex.get();
+    }
+    set selectedGroupIndex(newValue: number) {
+        this.__selectedGroupIndex.set(newValue);
+    }
+    private groupOptions: string[]; // 分组选项
+    // Select 组件选项数据
+    private selectOptions: Array<SelectOption>;
     private context: common.UIAbilityContext;
     private contactDeviceManager: ContactDeviceManager;
     private kvManager;
@@ -201,12 +234,31 @@ class ContactHomePage extends ViewPU {
             let listItems: Array<ListItemData> = [];
             entries.forEach((item, index) => {
                 let itemInfo: ListItemData = new ListItemData();
-                itemInfo.name = JSON.parse(item.value.value as string).name;
+                let contactData = JSON.parse(item.value.value as string) as Record<string, string>;
+                itemInfo.name = contactData.name;
+                // 解析分组名称字段，兼容旧数据（无groupName字段时默认为空）
+                itemInfo.groupName = contactData.groupName || '';
                 itemInfo.id = index;
                 listItems.push(itemInfo);
             });
-            this.contactList = this.initContactList = listItems;
+            this.initContactList = listItems;
+            // 根据当前选中的分组进行过滤
+            this.filterContactsByGroup();
         });
+    }
+    /**
+     * 根据选中的分组过滤联系人列表
+     */
+    filterContactsByGroup(): void {
+        if (this.selectedGroupIndex === 0) {
+            // 选择"全部"时，显示所有联系人
+            this.contactList = this.initContactList;
+        }
+        else {
+            // 根据分组名称过滤
+            const selectedGroup = this.groupOptions[this.selectedGroupIndex];
+            this.contactList = this.initContactList.filter((item) => item.groupName === selectedGroup);
+        }
     }
     async onSelectedIndexChange(index: number) {
         this.selectedDeviceIndex = index;
@@ -275,8 +327,47 @@ class ContactHomePage extends ViewPU {
             Flex.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM]);
         }, Flex);
         this.NavigationTitle.bind(this)();
+        // 添加分组筛选 Picker 下拉选择器
+        this.GroupPicker.bind(this)();
         this.ContactList.bind(this)();
         Flex.pop();
+    }
+    /**
+     * 分组筛选下拉选择器
+     */
+    GroupPicker(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.width('100%');
+            Row.margin({ top: 8, bottom: 8 });
+            Row.justifyContent(FlexAlign.Start);
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('分组筛选：');
+            Text.fontSize(14);
+            Text.fontColor('rgba(0, 0, 0, 0.6)');
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Select.create(this.selectOptions);
+            Select.selected(this.selectedGroupIndex);
+            Select.value(this.groupOptions[this.selectedGroupIndex]);
+            Select.font({ size: 14 });
+            Select.fontColor('rgba(0, 0, 0, 0.9)');
+            Select.selectedOptionFont({ size: 14 });
+            Select.optionFont({ size: 14 });
+            Select.onSelect((index: number) => {
+                this.selectedGroupIndex = index;
+                // 切换分组时重新过滤联系人列表
+                this.filterContactsByGroup();
+            });
+            Select.width(120);
+            Select.height(40);
+            Select.backgroundColor('rgba(0, 0, 0, 0.05)');
+            Select.borderRadius(8);
+        }, Select);
+        Select.pop();
+        Row.pop();
     }
     NavigationTitle(parent = null) {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -476,7 +567,7 @@ class ContactHomePage extends ViewPU {
                         {
                             this.observeComponentCreation2((elmtId, isInitialRender) => {
                                 if (isInitialRender) {
-                                    let componentCall = new ContactListItem(this, { itemInfo: item }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 289, col: 15 });
+                                    let componentCall = new ContactListItem(this, { itemInfo: item }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactHomePage.ets", line: 351, col: 15 });
                                     ViewPU.create(componentCall);
                                     let paramsLambda = () => {
                                         return {

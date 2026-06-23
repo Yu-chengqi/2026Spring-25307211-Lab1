@@ -21,7 +21,8 @@ export struct ContactListItem {
   public itemInfo: ListItemData = {
     id: 0,
     name: '',
-    checked: false
+    checked: false,
+    groupName: ''
   };
   public isCanCheck = false;
   public onCheck: () => void = () => {};
@@ -47,6 +48,17 @@ export struct ContactListItem {
               .textOverflow({
                 overflow: TextOverflow.Ellipsis
               })
+            // 显示分组标签
+            if (this.itemInfo.groupName && this.itemInfo.groupName !== '') {
+              Text(this.itemInfo.groupName)
+                .fontSize(12)
+                .fontColor('#0A59F7')
+                .fontWeight(400)
+                .margin({ top: 4 })
+                .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+                .backgroundColor('rgba(10, 89, 247, 0.1)')
+                .borderRadius(4)
+            }
           }
           .layoutWeight(CommonConstants.TITLE_LAYOUT_WEIGHT)
           .alignItems(HorizontalAlign.Start)

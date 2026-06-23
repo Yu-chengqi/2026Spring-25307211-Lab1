@@ -35,6 +35,16 @@ struct ContactHomePage {
   @State deviceList: Array<distributedDeviceManager.DeviceBasicInfo> = [];
   @State selectedDeviceIndex: number = 0;
   @State searchValue: string = '';
+  // 分组筛选相关状态变量
+  @State selectedGroupIndex: number = 0; // 当前选中的分组索引，0表示全部
+  private groupOptions: string[] = ['全部', '家人', '朋友', '同事']; // 分组选项
+  // Select 组件选项数据
+  private selectOptions: Array<SelectOption> = [
+    { value: '全部' },
+    { value: '家人' },
+    { value: '朋友' },
+    { value: '同事' }
+  ];
   private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private contactDeviceManager: ContactDeviceManager = new ContactDeviceManager(this.context);
   kvManager = AppStorage.get('kvManager') as KvManager;
@@ -79,12 +89,31 @@ struct ContactHomePage {
       let listItems: Array<ListItemData> = [];
       entries.forEach((item, index) => {
         let itemInfo: ListItemData = new ListItemData();
-        itemInfo.name = JSON.parse(item.value.value as string).name;
+        let contactData = JSON.parse(item.value.value as string) as Record<string, string>;
+        itemInfo.name = contactData.name;
+        // 解析分组名称字段，兼容旧数据（无groupName字段时默认为空）
+        itemInfo.groupName = contactData.groupName || '';
         itemInfo.id = index;
         listItems.push(itemInfo);
       });
-      this.contactList = this.initContactList = listItems;
+      this.initContactList = listItems;
+      // 根据当前选中的分组进行过滤
+      this.filterContactsByGroup();
     });
+  }
+
+  /**
+   * 根据选中的分组过滤联系人列表
+   */
+  filterContactsByGroup(): void {
+    if (this.selectedGroupIndex === 0) {
+      // 选择"全部"时，显示所有联系人
+      this.contactList = this.initContactList;
+    } else {
+      // 根据分组名称过滤
+      const selectedGroup = this.groupOptions[this.selectedGroupIndex];
+      this.contactList = this.initContactList.filter((item) => item.groupName === selectedGroup);
+    }
   }
 
   async onSelectedIndexChange(index: number) {
@@ -149,6 +178,8 @@ struct ContactHomePage {
   build() {
     Flex({ direction: FlexDirection.Column }) {
       this.NavigationTitle();
+      // 添加分组筛选 Picker 下拉选择器
+      this.GroupPicker();
       this.ContactList();
     }
     .width('100%')
@@ -156,6 +187,37 @@ struct ContactHomePage {
     .padding({ left: 16, right: 16 })
     .backgroundColor(Color.White)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  /**
+   * 分组筛选下拉选择器
+   */
+  @Builder
+  GroupPicker() {
+    Row() {
+      Text('分组筛选：')
+        .fontSize(14)
+        .fontColor('rgba(0, 0, 0, 0.6)')
+      Select(this.selectOptions)
+        .selected(this.selectedGroupIndex)
+        .value(this.groupOptions[this.selectedGroupIndex])
+        .font({ size: 14 })
+        .fontColor('rgba(0, 0, 0, 0.9)')
+        .selectedOptionFont({ size: 14 })
+        .optionFont({ size: 14 })
+        .onSelect((index: number) => {
+          this.selectedGroupIndex = index;
+          // 切换分组时重新过滤联系人列表
+          this.filterContactsByGroup();
+        })
+        .width(120)
+        .height(40)
+        .backgroundColor('rgba(0, 0, 0, 0.05)')
+        .borderRadius(8)
+    }
+    .width('100%')
+    .margin({ top: 8, bottom: 8 })
+    .justifyContent(FlexAlign.Start)
   }
 
   @Builder

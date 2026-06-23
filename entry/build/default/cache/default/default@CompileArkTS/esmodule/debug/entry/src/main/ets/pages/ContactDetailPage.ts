@@ -8,6 +8,7 @@ interface ContractDetailPage_Params {
     email?: string;
     remarks?: string;
     address?: string;
+    groupName?: string;
     kvManager?;
     dialogController?: CustomDialogController;
 }
@@ -30,6 +31,7 @@ class ContractDetailPage extends ViewPU {
         this.__email = new ObservedPropertySimplePU('', this, "email");
         this.__remarks = new ObservedPropertySimplePU('', this, "remarks");
         this.__address = new ObservedPropertySimplePU('', this, "address");
+        this.__groupName = new ObservedPropertySimplePU('', this, "groupName");
         this.kvManager = AppStorage.get('kvManager') as KvManager;
         this.dialogController = new CustomDialogController({
             builder: () => {
@@ -41,7 +43,7 @@ class ContractDetailPage extends ViewPU {
                         this.onConfirm();
                     },
                     promptMessage: { "id": 16777260, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" },
-                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 35, col: 14 });
+                }, undefined, -1, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 36, col: 14 });
                 jsDialog.setController(this.dialogController);
                 ViewPU.create(jsDialog);
                 let paramsLambda = () => {
@@ -83,6 +85,9 @@ class ContractDetailPage extends ViewPU {
         if (params.address !== undefined) {
             this.address = params.address;
         }
+        if (params.groupName !== undefined) {
+            this.groupName = params.groupName;
+        }
         if (params.kvManager !== undefined) {
             this.kvManager = params.kvManager;
         }
@@ -99,6 +104,7 @@ class ContractDetailPage extends ViewPU {
         this.__email.purgeDependencyOnElmtId(rmElmtId);
         this.__remarks.purgeDependencyOnElmtId(rmElmtId);
         this.__address.purgeDependencyOnElmtId(rmElmtId);
+        this.__groupName.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__uiContext.aboutToBeDeleted();
@@ -107,6 +113,7 @@ class ContractDetailPage extends ViewPU {
         this.__email.aboutToBeDeleted();
         this.__remarks.aboutToBeDeleted();
         this.__address.aboutToBeDeleted();
+        this.__groupName.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -151,6 +158,13 @@ class ContractDetailPage extends ViewPU {
     }
     set address(newValue: string) {
         this.__address.set(newValue);
+    }
+    private __groupName: ObservedPropertySimplePU<string>; // 分组名称
+    get groupName() {
+        return this.__groupName.get();
+    }
+    set groupName(newValue: string) {
+        this.__groupName.set(newValue);
     }
     private kvManager;
     private dialogController: CustomDialogController;
@@ -210,6 +224,8 @@ class ContractDetailPage extends ViewPU {
             this.telephony = contactsData.telephony as string;
             this.email = contactsData.email as string;
             this.remarks = contactsData.remarks as string;
+            // 解析分组名称，兼容旧数据
+            this.groupName = contactsData.groupName || '';
         });
     }
     onBackPress() {
@@ -287,7 +303,8 @@ class ContractDetailPage extends ViewPU {
                         address: this.address,
                         telephony: this.telephony,
                         email: this.email,
-                        remarks: this.remarks
+                        remarks: this.remarks,
+                        groupName: this.groupName
                     }
                 }).catch((error: BusinessError) => {
                     hilog.error(0x0000, 'ContactDetailPage', `have error .Code:${error.code},message: ${error.message}`);
@@ -345,6 +362,30 @@ class ContractDetailPage extends ViewPU {
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            // 显示分组标签
+            if (this.groupName && this.groupName !== '') {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.groupName);
+                        Text.fontSize(14);
+                        Text.fontColor('#0A59F7');
+                        Text.fontWeight(500);
+                        Text.margin({ top: 8 });
+                        Text.padding({ left: 12, right: 12, top: 4, bottom: 4 });
+                        Text.backgroundColor('rgba(10, 89, 247, 0.1)');
+                        Text.borderRadius(8);
+                    }, Text);
+                    Text.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
             Row.create();
             Row.width('100%');
             Row.margin({ top: 28 });
@@ -393,7 +434,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.telephony,
                         bottomContent: { "id": 16777241, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 253, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 269, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -417,7 +458,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.email,
                         bottomContent: { "id": 16777238, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 257, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 273, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -441,7 +482,7 @@ class ContractDetailPage extends ViewPU {
                     let componentCall = new ContactDetailItem(this, {
                         topContent: this.remarks,
                         bottomContent: { "id": 16777240, "type": 10003, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 261, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/ContactDetailPage.ets", line: 277, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {

@@ -163,6 +163,41 @@ export class KvManager {
         }
     }
     /**
+     * 根据分组名称筛选联系人（重载方法）
+     * Obtains all key-value pairs that match the specified key prefix and group name.
+     * @param key Indicates the key prefix to be matched.
+     * @param groupName Indicates the group name to filter (分组名称：家人、朋友、同事).
+     * @param callback Callback function.
+     */
+    getEntriesByGroup(key: string, groupName: string, callback: AsyncCallback<distributedKVStore.Entry[]>): void {
+        try {
+            this.kvStore?.getEntries(key, (err: BusinessError, entries: distributedKVStore.Entry[]) => {
+                if (err) {
+                    hilog.error(0x0000, 'KvManager', `getEntriesByGroup failed, Code:${err.code}, message: ${err.message}`);
+                    callback(err, []);
+                    return;
+                }
+                // 根据分组名称过滤条目
+                const filteredEntries: distributedKVStore.Entry[] = entries.filter((entry) => {
+                    try {
+                        const contactData = JSON.parse(entry.value.value as string) as Record<string, string>;
+                        return contactData.groupName === groupName;
+                    }
+                    catch (parseErr) {
+                        hilog.error(0x0000, 'KvManager', `Parse entry failed`);
+                        return false;
+                    }
+                });
+                // 成功时传递空的 BusinessError
+                const successErr: BusinessError = { code: 0, name: '', message: '' };
+                callback(successErr, filteredEntries);
+            });
+        }
+        catch (err) {
+            hilog.error(0x0000, 'KvManager', `getEntriesByGroup an unexpected error occurred, Code:${err.code}, message: ${err.message}`);
+        }
+    }
+    /**
      * Remote synchronization of data
      */
     private syncRemote() {

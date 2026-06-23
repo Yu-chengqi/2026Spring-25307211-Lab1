@@ -30,6 +30,7 @@ struct ContractDetailPage {
   @State email: string = '';
   @State remarks: string = '';
   @State address: string = '';
+  @State groupName: string = ''; // 分组名称
   kvManager = AppStorage.get('kvManager') as KvManager;
   dialogController: CustomDialogController = new CustomDialogController({
     builder: ContactDeleteDialog({
@@ -103,6 +104,8 @@ struct ContractDetailPage {
       this.telephony = contactsData.telephony as string;
       this.email = contactsData.email as string;
       this.remarks = contactsData.remarks as string;
+      // 解析分组名称，兼容旧数据
+      this.groupName = contactsData.groupName || '';
     });
   }
 
@@ -177,7 +180,8 @@ struct ContractDetailPage {
             address: this.address,
             telephony: this.telephony,
             email: this.email,
-            remarks: this.remarks
+            remarks: this.remarks,
+            groupName: this.groupName
           }
         }).catch((error: BusinessError) => {
           hilog.error(0x0000, 'ContactDetailPage', `have error .Code:${error.code},message: ${error.message}`);
@@ -218,6 +222,18 @@ struct ContractDetailPage {
         .fontSize(38)
         .fontWeight(700)
         .margin({ top: 32 })
+
+      // 显示分组标签
+      if (this.groupName && this.groupName !== '') {
+        Text(this.groupName)
+          .fontSize(14)
+          .fontColor('#0A59F7')
+          .fontWeight(500)
+          .margin({ top: 8 })
+          .padding({ left: 12, right: 12, top: 4, bottom: 4 })
+          .backgroundColor('rgba(10, 89, 247, 0.1)')
+          .borderRadius(8)
+      }
 
       Row() {
         Row() {

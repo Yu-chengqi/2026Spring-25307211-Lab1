@@ -30,6 +30,15 @@ struct ContactAddAndEditPage {
   @State telephony: string = '';
   @State email: string = '';
   @State remarks: string = '';
+  // 分组选择相关状态变量
+  @State selectedGroupIndex: number = 0; // 当前选中的分组索引
+  private groupOptions: string[] = ['家人', '朋友', '同事']; // 分组选项（不包含"全部"）
+  // Select 组件选项数据
+  private selectOptions: Array<SelectOption> = [
+    { value: '家人' },
+    { value: '朋友' },
+    { value: '同事' }
+  ];
   private isEdit: boolean = false;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   kvManager = AppStorage.get('kvManager') as KvManager;
@@ -86,6 +95,14 @@ struct ContactAddAndEditPage {
       this.telephony = params.telephony as string;
       this.email = params.email as string;
       this.remarks = params.remarks as string;
+      // 初始化分组信息
+      const groupName = params.groupName as string;
+      if (groupName) {
+        const groupIndex = this.groupOptions.indexOf(groupName);
+        if (groupIndex !== -1) {
+          this.selectedGroupIndex = groupIndex;
+        }
+      }
     }
   }
 
@@ -110,6 +127,8 @@ struct ContactAddAndEditPage {
           this.Item('edit_item_phone', $r('app.media.ic_phone'), this.telephony);
           this.Item('edit_item_email', $r('sys.symbol.envelope'), this.email, true);
           this.Item('edit_item_note', $r('app.media.ic_note'), this.remarks);
+          // 添加分组选择器
+          this.GroupSelector();
         }
         .margin({ top: 16, bottom: 64 })
         .layoutWeight(CommonConstants.WEIGHT)
@@ -124,6 +143,49 @@ struct ContactAddAndEditPage {
     .padding({ left: 16, right: 16 })
     .backgroundColor($r('app.color.detail_page_background'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  /**
+   * 分组选择器组件
+   */
+  @Builder
+  GroupSelector() {
+    Row() {
+      SymbolGlyph($r('sys.symbol.folder'))
+        .fontSize(24)
+        .fontColor([$r('app.color.font_color')])
+        .margin({ right: $r('app.float.item_icon_margin') })
+      Text('分组')
+        .fontSize($r('app.float.item_font_size'))
+        .fontColor($r('app.color.font_color'))
+        .fontWeight(FontWeight.Regular)
+      Column() {
+        Select(this.selectOptions)
+          .selected(this.selectedGroupIndex)
+          .value(this.groupOptions[this.selectedGroupIndex])
+          .font({ size: 14 })
+          .fontColor('rgba(0, 0, 0, 0.9)')
+          .selectedOptionFont({ size: 14 })
+          .optionFont({ size: 14 })
+          .onSelect((index: number) => {
+            this.selectedGroupIndex = index;
+          })
+      }
+      .width(CommonConstants.EDIT_INPUT_WIDTH)
+      .margin({ right: $r('app.float.edit_input_margin') })
+      .alignItems(HorizontalAlign.End)
+    }
+    .padding({
+      top: 16,
+      bottom: 16,
+      left: 12,
+      right: 12
+    })
+    .margin({ bottom: 12 })
+    .justifyContent(FlexAlign.Start)
+    .backgroundColor(Color.White)
+    .borderRadius(24)
+    .width('100%')
   }
 
   @Builder
@@ -175,8 +237,10 @@ struct ContactAddAndEditPage {
       .margin({ right: 8 })
       .onClick(() => {
         if (this.name !== '') {
+          // 获取选中的分组名称
+          const groupName = this.groupOptions[this.selectedGroupIndex];
           const contactData: ContactData =
-            new ContactData(this.name, this.address, this.telephony, this.email, this.remarks);
+            new ContactData(this.name, this.address, this.telephony, this.email, this.remarks, groupName);
           let contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + contactData.name;
           // Save the contact information.
           this.kvManager.addAndSave(contactsKey, JSON.stringify(contactData));

@@ -8,6 +8,9 @@ interface ContactAddAndEditPage_Params {
     telephony?: string;
     email?: string;
     remarks?: string;
+    selectedGroupIndex?: number;
+    groupOptions?: string[];
+    selectOptions?: Array<SelectOption>;
     isEdit?: boolean;
     context?;
     kvManager?;
@@ -31,6 +34,13 @@ class ContactAddAndEditPage extends ViewPU {
         this.__telephony = new ObservedPropertySimplePU('', this, "telephony");
         this.__email = new ObservedPropertySimplePU('', this, "email");
         this.__remarks = new ObservedPropertySimplePU('', this, "remarks");
+        this.__selectedGroupIndex = new ObservedPropertySimplePU(0, this, "selectedGroupIndex");
+        this.groupOptions = ['家人', '朋友', '同事'];
+        this.selectOptions = [
+            { value: '家人' },
+            { value: '朋友' },
+            { value: '同事' }
+        ];
         this.isEdit = false;
         this.context = this.getUIContext().getHostContext() as common.UIAbilityContext;
         this.kvManager = AppStorage.get('kvManager') as KvManager;
@@ -56,6 +66,15 @@ class ContactAddAndEditPage extends ViewPU {
         if (params.remarks !== undefined) {
             this.remarks = params.remarks;
         }
+        if (params.selectedGroupIndex !== undefined) {
+            this.selectedGroupIndex = params.selectedGroupIndex;
+        }
+        if (params.groupOptions !== undefined) {
+            this.groupOptions = params.groupOptions;
+        }
+        if (params.selectOptions !== undefined) {
+            this.selectOptions = params.selectOptions;
+        }
         if (params.isEdit !== undefined) {
             this.isEdit = params.isEdit;
         }
@@ -75,6 +94,7 @@ class ContactAddAndEditPage extends ViewPU {
         this.__telephony.purgeDependencyOnElmtId(rmElmtId);
         this.__email.purgeDependencyOnElmtId(rmElmtId);
         this.__remarks.purgeDependencyOnElmtId(rmElmtId);
+        this.__selectedGroupIndex.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__isSelectAll.aboutToBeDeleted();
@@ -83,6 +103,7 @@ class ContactAddAndEditPage extends ViewPU {
         this.__telephony.aboutToBeDeleted();
         this.__email.aboutToBeDeleted();
         this.__remarks.aboutToBeDeleted();
+        this.__selectedGroupIndex.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -128,6 +149,17 @@ class ContactAddAndEditPage extends ViewPU {
     set remarks(newValue: string) {
         this.__remarks.set(newValue);
     }
+    // 分组选择相关状态变量
+    private __selectedGroupIndex: ObservedPropertySimplePU<number>; // 当前选中的分组索引
+    get selectedGroupIndex() {
+        return this.__selectedGroupIndex.get();
+    }
+    set selectedGroupIndex(newValue: number) {
+        this.__selectedGroupIndex.set(newValue);
+    }
+    private groupOptions: string[]; // 分组选项（不包含"全部"）
+    // Select 组件选项数据
+    private selectOptions: Array<SelectOption>;
     private isEdit: boolean;
     private context;
     private kvManager;
@@ -182,6 +214,14 @@ class ContactAddAndEditPage extends ViewPU {
             this.telephony = params.telephony as string;
             this.email = params.email as string;
             this.remarks = params.remarks as string;
+            // 初始化分组信息
+            const groupName = params.groupName as string;
+            if (groupName) {
+                const groupIndex = this.groupOptions.indexOf(groupName);
+                if (groupIndex !== -1) {
+                    this.selectedGroupIndex = groupIndex;
+                }
+            }
         }
     }
     initialRender() {
@@ -237,9 +277,64 @@ class ContactAddAndEditPage extends ViewPU {
         this.Item.bind(this)('edit_item_phone', { "id": 16777410, "type": 20000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }, this.telephony);
         this.Item.bind(this)('edit_item_email', { "id": 125831746, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }, this.email, true);
         this.Item.bind(this)('edit_item_note', { "id": 16777409, "type": 20000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }, this.remarks);
+        // 添加分组选择器
+        this.GroupSelector.bind(this)();
         Column.pop();
         Scroll.pop();
         Column.pop();
+    }
+    /**
+     * 分组选择器组件
+     */
+    GroupSelector(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.padding({
+                top: 16,
+                bottom: 16,
+                left: 12,
+                right: 12
+            });
+            Row.margin({ bottom: 12 });
+            Row.justifyContent(FlexAlign.Start);
+            Row.backgroundColor(Color.White);
+            Row.borderRadius(24);
+            Row.width('100%');
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            SymbolGlyph.create({ "id": 125831897, "type": 40000, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            SymbolGlyph.fontSize(24);
+            SymbolGlyph.fontColor([{ "id": 16777271, "type": 10001, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" }]);
+            SymbolGlyph.margin({ right: { "id": 16777368, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" } });
+        }, SymbolGlyph);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('分组');
+            Text.fontSize({ "id": 16777367, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontColor({ "id": 16777271, "type": 10001, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" });
+            Text.fontWeight(FontWeight.Regular);
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width(CommonConstants.EDIT_INPUT_WIDTH);
+            Column.margin({ right: { "id": 16777347, "type": 10002, params: [], "bundleName": "com.example.distributedcontacts", "moduleName": "entry" } });
+            Column.alignItems(HorizontalAlign.End);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Select.create(this.selectOptions);
+            Select.selected(this.selectedGroupIndex);
+            Select.value(this.groupOptions[this.selectedGroupIndex]);
+            Select.font({ size: 14 });
+            Select.fontColor('rgba(0, 0, 0, 0.9)');
+            Select.selectedOptionFont({ size: 14 });
+            Select.optionFont({ size: 14 });
+            Select.onSelect((index: number) => {
+                this.selectedGroupIndex = index;
+            });
+        }, Select);
+        Select.pop();
+        Column.pop();
+        Row.pop();
     }
     NavigationTitle(parent = null) {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -299,7 +394,9 @@ class ContactAddAndEditPage extends ViewPU {
             Row.margin({ right: 8 });
             Row.onClick(() => {
                 if (this.name !== '') {
-                    const contactData: ContactData = new ContactData(this.name, this.address, this.telephony, this.email, this.remarks);
+                    // 获取选中的分组名称
+                    const groupName = this.groupOptions[this.selectedGroupIndex];
+                    const contactData: ContactData = new ContactData(this.name, this.address, this.telephony, this.email, this.remarks, groupName);
                     let contactsKey = CommonConstants.CONTACTS_DATABASE_KEY + contactData.name;
                     // Save the contact information.
                     this.kvManager.addAndSave(contactsKey, JSON.stringify(contactData));

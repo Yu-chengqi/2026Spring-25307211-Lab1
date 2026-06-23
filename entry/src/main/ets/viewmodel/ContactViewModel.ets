@@ -37,13 +37,18 @@ export class ContactData {
    * Contact remarks.
    */
   remarks?: string;
+  /**
+   * Contact group name (分组名称：家人、朋友、同事).
+   */
+  groupName?: string;
 
-  constructor(name: string, address?: string, telephony?: string, email?: string, remarks?: string) {
+  constructor(name: string, address?: string, telephony?: string, email?: string, remarks?: string, groupName?: string) {
     this.name = name;
     this.address = address;
     this.telephony = telephony;
     this.email = email;
     this.remarks = remarks;
+    this.groupName = groupName;
   }
 }
 
@@ -60,4 +65,8 @@ export class ListItemData {
    * Contact selection box.
    */
   checked: boolean = false;
+  /**
+   * Contact group name (分组名称).
+   */
+  groupName: string = '';
 }
